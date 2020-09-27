@@ -5,7 +5,8 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 </head>
 <body>
-<!--/*@thymesVar id="picUrl" type="String"*/-->
-<img th:src="${picUrl}"  alt="A random image from Unsplash"/>
+<!--/*@thymesVar id="url" type="String"*/-->
+<img th:src="${image.url}"  th:alt="${image.alt}"/>
+<p th:text="${image.attribution}" />
 </body>
 </html>
