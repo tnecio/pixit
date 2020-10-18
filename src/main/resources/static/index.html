@@ -1,11 +1,25 @@
 <!DOCTYPE HTML>
-<html lang="pl">
+<html lang="pl" xmlns:th="https://www.thymeleaf.org">
 <head>
     <title>Pixit Index</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, height=device-height, user-scalable=no, initial-scale=1.0"/>
+    <meta name="description" content="It's even more fucking perfect than the others motherfucking websites."/>
+    <link rel="canonical" href="http://evenbettermotherfucking.website"/>
+    <style>
+        body {margin: 5% auto; background: #f2f2f2; color: #444444; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 16px; line-height: 1.8; text-shadow: 0 1px 0 #ffffff; max-width: 73%;}
+        code {background: white;}
+        a {border-bottom: 1px solid #444444; color: #444444; text-decoration: none;}
+        a:hover {border-bottom: 0;}
+    </style>
 </head>
+
 <body>
 <h1>PiXiT!</h1>
-<p><a href="/start">Załóż grę</a></p>
+<form action="/start" method="post">
+    <label>Imię:<input type="text" name="displayName"></label>
+    <button type="submit" value="Submit">Załóż grę</button>
+</form>
+
 </body>
 </html>

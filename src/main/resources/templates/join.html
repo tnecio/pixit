@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html lang="pl" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Pixit Game</title>
+    <title>Pixit Join Game</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta name="viewport" content="width=device-width, height=device-height, user-scalable=no, initial-scale=1.0"/>
     <meta name="description" content="It's even more fucking perfect than the others motherfucking websites."/>
@@ -14,9 +14,10 @@
     </style>
 </head>
 <body>
-<!--/*@thymesVar id="url" type="String"*/-->
-<img th:src="${image.url}"  th:alt="${image.alt}"/>
-<p th:text="${image.attribution}"></p>
-<p th:text="'Gracz: ' + ${playerName}"></p>
+<form action="#" method="post">
+    <label>Imię:<input type="text" name="displayName"></label>
+    <button type="submit">Dołącz do gry</button>
+</form>
+
 </body>
 </html>

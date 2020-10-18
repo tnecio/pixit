@@ -2,6 +2,8 @@ package io.tnec.pixit
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.JsonSetter
+import com.fasterxml.jackson.annotation.Nulls
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpMethod
 import org.springframework.http.RequestEntity
@@ -21,25 +23,31 @@ data class PhotoUrls(
 data class UserDescription(
         val name: String?,
         val username: String,
-        val portfolio_url: String = "#",
-        val bio: String = "",
+        val portfolio_url: String?,
+        val bio: String?,
         val links: Map<String, String>
 ) {
     fun getUnsplashHtmlLink() = links["html"]!!
     fun getDisplayName() = name ?: username
 }
 
+data class ImageInfo(
+        val url: String,
+        val alt: String,
+        val attribution: String
+)
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class GetPhotoResponse(
         val urls: PhotoUrls,
-        @JsonProperty("alt_description") val alt: String = "Missing alt description",
+        @JsonProperty("alt_description") val alt: String?,
         val user: UserDescription
 ) {
     fun getAttribution() = user.getDisplayName()
 
     fun toSmallImageInfo() = ImageInfo(
             url = urls.small,
-            alt = alt,
+            alt = alt ?: "Missing alt description",
             attribution = getAttribution()
     )
 }

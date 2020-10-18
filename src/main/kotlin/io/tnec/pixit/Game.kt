@@ -2,4 +2,13 @@ package io.tnec.pixit
 
 data class Card(val image: ImageInfo)
 
-data class Game(val card: Card)
+typealias UserToken = String
+
+data class Player(
+        val playerName: String,
+        var deck: Card
+)
+
+data class Game(
+        var players: MutableMap<UserToken, Player> = mutableMapOf()
+)
