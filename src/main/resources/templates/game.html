@@ -14,6 +14,9 @@
     </style>
 </head>
 <body>
+
+<header th:insert="header :: copy"></header>
+
 <!--/*@thymesVar id="url" type="String"*/-->
 <img th:src="${image.url}"  th:alt="${image.alt}"/>
 <p th:text="${image.attribution}"></p>
