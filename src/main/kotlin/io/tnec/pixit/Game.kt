@@ -2,13 +2,21 @@ package io.tnec.pixit
 
 data class Card(val image: ImageInfo)
 
-typealias UserToken = String
+typealias SessionId = String
 
-data class Player(
+typealias GameId = String
+
+data class Avatar(
         val playerName: String,
-        var deck: Card
+        val deck: List<Card>
 )
 
+data class Word(val word: String)
+
 data class Game(
-        var players: MutableMap<UserToken, Player> = mutableMapOf()
+        val players: Map<SessionId, Avatar> = mapOf(),
+        val narrator: SessionId? = null,
+        val table: List<Card> = listOf(),
+        val word: Word? = null,
+        val admin: SessionId
 )

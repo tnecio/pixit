@@ -31,12 +31,6 @@ data class UserDescription(
     fun getDisplayName() = name ?: username
 }
 
-data class ImageInfo(
-        val url: String,
-        val alt: String,
-        val attribution: String
-)
-
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class GetPhotoResponse(
         val urls: PhotoUrls,

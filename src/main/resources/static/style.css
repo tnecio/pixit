@@ -1,5 +1,5 @@
 body {
-    margin: 5% auto;
+    margin: auto;
     background: #f2f2f2;
     color: #222;
     font-family: sans-serif;
@@ -13,17 +13,22 @@ code {
 }
 
 a {
-    border-bottom: 1px solid #444444;
-    color: #444444;
+    border-bottom: 1px solid #181144;
+    color: #181144;
     text-decoration: none;
 }
 
-a:hover {
+h1 a {
     border-bottom: 0;
+    color: inherit;
+}
+
+h3 {
+    margin: 0 auto;
 }
 
 img {
-    max-width: 250px;
+    width: 100%;
 }
 
 figcaption {
@@ -34,11 +39,40 @@ figcaption {
 figure {
     padding: 0.5em;
     background-color: black;
-    width: min-content;
+    width: min(80%, 250px);
+    height: min-content;
+    max-height: 500px;
+    margin: 1.5em auto;
 }
 
-.deck {
+.game-info {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+}
+
+.game-info div {
+    flex-grow: 1;
+    flex-basis: 250px;
+    text-align: center;
+    padding: 0.5em 0;
+}
+
+.idea {
+    width: 100%;
+    text-align: center;
+}
+
+.table img {
+    opacity: 50%; /* FOR DEBUG only */
+}
+
+.deck div, .table div {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-around;
+}
+
+footer {
+    margin-top: 5em;
 }

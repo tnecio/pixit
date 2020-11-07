@@ -5,14 +5,39 @@
 <body>
 <header th:replace="fragments/header :: copy"></header>
 
-<p th:text="'Player: ' + ${playerName}"></p>
+<section class="game-info">
+    <div>Players in the game: <br> A (500), B (400), OtherPlayer (700), D (80)</div>
+    <div>Vote for OtherPlayer's card!</div>
+    <div>Your points: 500</div>
+    <div><a href="#">Leave Game</a></div>
+</section>
 
-<div class="deck">
-    <figure th:replace="fragments/figure :: fig (${image})"></figure>
-    <figure th:replace="fragments/figure :: fig (${image})"></figure>
-    <figure th:replace="fragments/figure :: fig (${image})"></figure>
-    <figure th:replace="fragments/figure :: fig (${image})"></figure>
-</div>
+<section class="idea">
+    <h2>Idea: Vuvuzela</h2>
+</section>
+
+<section class="table">
+    <h3>Table</h3>
+
+    <div>
+        <figure th:replace="fragments/figure :: fig (${image})"></figure>
+        <figure th:replace="fragments/figure :: fig (${image})"></figure>
+        <figure th:replace="fragments/figure :: fig (${image})"></figure>
+        <figure th:replace="fragments/figure :: fig (${image})"></figure>
+    </div>
+
+</section>
+
+<section class="deck">
+    <h3 th:text="'Player ' + ${playerName} + '\'s deck'"></h3>
+
+    <div>
+        <figure th:replace="fragments/figure :: fig (${image})"></figure>
+        <figure th:replace="fragments/figure :: fig (${image})"></figure>
+        <figure th:replace="fragments/figure :: fig (${image})"></figure>
+        <figure th:replace="fragments/figure :: fig (${image})"></figure>
+    </div>
+</section>
 
 <footer th:replace="fragments/footer :: copy"></footer>
 </body>
