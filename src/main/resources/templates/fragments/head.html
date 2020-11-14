@@ -2,13 +2,13 @@
 
 <html xmlns:th="http://www.thymeleaf.org">
 
-<head th:fragment="headFragment (pageTitle)">
+<div th:fragment="headFragment (pageTitle)" th:remove="tag">
     <title th:text="${pageTitle}"></title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta name="viewport" content="width=device-width, height=device-height, user-scalable=no, initial-scale=1.0"/>
-    <meta name="description" content="It's even more fucking perfect than the others motherfucking websites."/>
-    <link rel="canonical" href="http://evenbettermotherfucking.website"/>
+    <meta name="description" content="Play Pixit online"/>
+    <link rel="canonical" href="http://pixit.tnec.io"/>
     <link rel="stylesheet" href="/style.css">
-</head>
+</div>
 
 </html>

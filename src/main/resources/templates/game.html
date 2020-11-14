@@ -1,44 +1,47 @@
 <!DOCTYPE HTML>
 <html lang="pl" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/head :: headFragment (pageTitle='PiXiT Game')"></head>
-
+<head>
+    <th:block th:insert="fragments/head :: headFragment (pageTitle='PiXiT Game')"></th:block>
+    <script src="/vue.js"></script>
+</head>
 <body>
 <header th:replace="fragments/header :: copy"></header>
+<main id="pixit">
+    <section class="game-info">
+        <div>Players in the game: <br> A (500), B (400), OtherPlayer (700), D (80)</div>
+        <div>Vote for OtherPlayer's card!</div>
+        <div>Your points: 500</div>
+        <div><a href="#">Leave Game</a></div>
+    </section>
 
-<section class="game-info">
-    <div>Players in the game: <br> A (500), B (400), OtherPlayer (700), D (80)</div>
-    <div>Vote for OtherPlayer's card!</div>
-    <div>Your points: 500</div>
-    <div><a href="#">Leave Game</a></div>
-</section>
+    <section class="idea">
+        <h2>Idea: Vuvuzela</h2>
+    </section>
 
-<section class="idea">
-    <h2>Idea: Vuvuzela</h2>
-</section>
+    <section class="table">
+        <h3>Table</h3>
+        <div class="deck">
+            <card v-for="(card, index) in cards" v-bind:key="card.image.url" v-bind:image="card.image"></card>
+        </div>
+        <button @click="addCard()">Add Card</button>
+    </section>
 
-<section class="table">
-    <h3>Table</h3>
+    <section class="deck">
+        <h3 th:text="'Player ' + ${playerName} + '\'s deck'"></h3>
 
-    <div>
-        <figure th:replace="fragments/figure :: fig (${image})"></figure>
-        <figure th:replace="fragments/figure :: fig (${image})"></figure>
-        <figure th:replace="fragments/figure :: fig (${image})"></figure>
-        <figure th:replace="fragments/figure :: fig (${image})"></figure>
-    </div>
-
-</section>
-
-<section class="deck">
-    <h3 th:text="'Player ' + ${playerName} + '\'s deck'"></h3>
-
-    <div>
-        <figure th:replace="fragments/figure :: fig (${image})"></figure>
-        <figure th:replace="fragments/figure :: fig (${image})"></figure>
-        <figure th:replace="fragments/figure :: fig (${image})"></figure>
-        <figure th:replace="fragments/figure :: fig (${image})"></figure>
-    </div>
-</section>
-
+        <div>
+            <figure th:replace="fragments/figure :: fig (${image})"></figure>
+            <figure th:replace="fragments/figure :: fig (${image})"></figure>
+            <figure th:replace="fragments/figure :: fig (${image})"></figure>
+            <figure th:replace="fragments/figure :: fig (${image})"></figure>
+        </div>
+    </section>
+</main>
 <footer th:replace="fragments/footer :: copy"></footer>
+
+<script th:inline="javascript">
+    let image = /*[[${image}]]*/ {};
+</script>
+<th:block th:insert="fragments/game-scripts :: copy"></th:block>
 </body>
 </html>
