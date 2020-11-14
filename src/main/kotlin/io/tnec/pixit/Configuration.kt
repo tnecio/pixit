@@ -6,9 +6,19 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory
 import org.springframework.data.redis.core.RedisTemplate
+import org.springframework.http.server.ServerHttpRequest
+import org.springframework.http.server.ServerHttpResponse
+import org.springframework.http.server.ServletServerHttpRequest
+import org.springframework.messaging.simp.config.MessageBrokerRegistry
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession
 import org.springframework.session.web.context.AbstractHttpSessionApplicationInitializer
 import org.springframework.web.client.RestTemplate
+import org.springframework.web.socket.WebSocketHandler
+import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker
+import org.springframework.web.socket.config.annotation.StompEndpointRegistry
+import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer
+import org.springframework.web.socket.server.HandshakeInterceptor
+
 
 @Configuration
 class PixitConfiguration {
@@ -55,5 +65,19 @@ class StorageConfiguration : AbstractHttpSessionApplicationInitializer() {
 //        template.setConnectionFactory(connectionFactory())
 //        return GameRepositoryWithRedisEventStorage(template)
         return GameRepositoryInMemory()
+    }
+}
+
+
+@Configuration
+@EnableWebSocketMessageBroker
+class WebSocketConfig : WebSocketMessageBrokerConfigurer {
+    override fun configureMessageBroker(config: MessageBrokerRegistry) {
+        config.enableSimpleBroker("/topic")
+        config.setApplicationDestinationPrefixes("/app")
+    }
+
+    override fun registerStompEndpoints(registry: StompEndpointRegistry) {
+        registry.addEndpoint("/pixit-websocket").withSockJS()
     }
 }

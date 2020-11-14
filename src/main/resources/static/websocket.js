@@ -13,13 +13,13 @@ function setConnected(connected) {
 }
 
 function connect() {
-    var socket = new SockJS('/gs-guide-websocket');
+    var socket = new SockJS('/pixit-websocket');
     stompClient = Stomp.over(socket);
     stompClient.connect({}, frame => {
         setConnected(true);
         console.log('Connected: ' + frame);
-        stompClient.subscribe('/topic/greetings', greeting => {
-            showGreeting(JSON.parse(greeting.body).text);
+        stompClient.subscribe('/topic/game-events', event  => {
+            receiveEvent(JSON.parse(event.body));
         });
     });
 }
@@ -32,19 +32,12 @@ function disconnect() {
     console.log("Disconnected");
 }
 
-function sendName() {
-    stompClient.send("/app/game/v1/greeting", {}, JSON.stringify({'who': $("#name").val()}));
+function sendRequest(request) {
+    stompClient.send("/app/game/v1/requests", {}, JSON.stringify(request));
 }
 
-function showGreeting(message) {
-    $("#greetings").append("<tr><td>" + message + "</td></tr>");
+function receiveEvent(event) {
+    pixit.addCard(event.event.card.image);
 }
 
-$(() => {
-    $("form").on('submit', e => {
-        e.preventDefault();
-    });
-    $( "#connect" ).click(() => { connect(); });
-    $( "#disconnect" ).click(() => { disconnect(); });
-    $( "#send" ).click(() => { sendName(); });
-});
+connect();

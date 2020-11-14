@@ -23,7 +23,7 @@
         <div class="deck">
             <card v-for="(card, index) in cards" v-bind:key="card.image.url" v-bind:image="card.image"></card>
         </div>
-        <button @click="addCard()">Add Card</button>
+        <button @click="requestAddCard()">Add Card</button>
     </section>
 
     <section class="deck">

@@ -13,13 +13,17 @@ var pixit = new Vue({
         ]
     },
     methods: {
-        addCard: function () {
+        requestAddCard: function() {
+            sendRequest(new AddCardRequest())
+        },
+        addCard: function (image) {
             this.cards.push({
-                image: {
-                    url: "https://i.imgur.com/3IFTi.jpg",
-                    alt: "Bienvenidos",
-                    attribution: "www.maxitter.com/imgur/"
-                }
+                // image: {
+                //     url: "https://i.imgur.com/3IFTi.jpg",
+                //     alt: "Bienvenidos",
+                //     attribution: "www.maxitter.com/imgur/"
+                // }
+                image: image
             })
         }
     }

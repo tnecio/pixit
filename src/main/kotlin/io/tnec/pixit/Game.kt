@@ -1,8 +1,8 @@
 package io.tnec.pixit
 
-data class Card(val image: ImageInfo)
+data class Card(val image: ImageInfo, val originalOwner: UserId)
 
-typealias SessionId = String
+typealias UserId = String
 
 typealias GameId = String
 
@@ -13,10 +13,18 @@ data class Avatar(
 
 data class Word(val word: String)
 
+enum class GameState {
+    WAITING_FOR_PLAYERS,
+    WAITING_FOR_WORD,
+    WAITING_FOR_CARDS,
+    WAITING_FOR_VOTES
+}
+
 data class Game(
-        val players: Map<SessionId, Avatar> = mapOf(),
-        val narrator: SessionId? = null,
+        val players: Map<UserId, Avatar> = mapOf(),
+        val narrator: UserId? = null,
         val table: List<Card> = listOf(),
         val word: Word? = null,
-        val admin: SessionId
+        val admin: UserId,
+        val state: GameState = GameState.WAITING_FOR_PLAYERS
 )
