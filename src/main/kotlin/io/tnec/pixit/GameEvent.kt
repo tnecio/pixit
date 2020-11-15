@@ -1,5 +1,6 @@
 package io.tnec.pixit
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import java.io.Serializable
 import java.time.Instant
 
@@ -31,6 +32,7 @@ abstract class GameEvent(
 
     abstract fun validate(game: Game)
 
+    @JsonIgnore
     abstract fun getLogMessage(): String
 }
 

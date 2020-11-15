@@ -1,3 +1,7 @@
+/*
+ * This file abstracts away implementation of the WebSocket interface
+ */
+
 let stompClient = null;
 
 function setConnected(connected) {
@@ -19,7 +23,7 @@ function connect() {
         setConnected(true);
         console.log('Connected: ' + frame);
         stompClient.subscribe('/topic/game-events', event  => {
-            receiveEvent(JSON.parse(event.body));
+            dispatch(JSON.parse(event.body));
         });
     });
 }
@@ -34,10 +38,6 @@ function disconnect() {
 
 function sendRequest(request) {
     stompClient.send("/app/game/v1/requests", {}, JSON.stringify(request));
-}
-
-function receiveEvent(event) {
-    pixit.addCard(event.event.card.image);
 }
 
 connect();

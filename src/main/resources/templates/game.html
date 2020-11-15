@@ -2,7 +2,6 @@
 <html lang="pl" xmlns:th="http://www.thymeleaf.org">
 <head>
     <th:block th:insert="fragments/head :: headFragment (pageTitle='PiXiT Game')"></th:block>
-    <script src="/vue.js"></script>
 </head>
 <body>
 <header th:replace="fragments/header :: copy"></header>
@@ -15,25 +14,22 @@
     </section>
 
     <section class="idea">
-        <h2>Idea: Vuvuzela</h2>
+        <word v-bind:value="word.value"></word>
     </section>
 
     <section class="table">
         <h3>Table</h3>
         <div class="deck">
-            <card v-for="(card, index) in cards" v-bind:key="card.image.url" v-bind:image="card.image"></card>
+            <card v-for="(card, index) in table" v-bind:key="index" v-bind:image="card.image"></card>
         </div>
-        <button @click="requestAddCard()">Add Card</button>
+        <button @click="executeRequest(requests.addCard)">Add Card</button>
     </section>
 
-    <section class="deck">
+    <section>
         <h3 th:text="'Player ' + ${playerName} + '\'s deck'"></h3>
 
-        <div>
-            <figure th:replace="fragments/figure :: fig (${image})"></figure>
-            <figure th:replace="fragments/figure :: fig (${image})"></figure>
-            <figure th:replace="fragments/figure :: fig (${image})"></figure>
-            <figure th:replace="fragments/figure :: fig (${image})"></figure>
+        <div class="deck">
+            <card v-for="(card, index) in player.deck" v-bind:key="index" v-bind:image="card.image"></card>
         </div>
     </section>
 </main>

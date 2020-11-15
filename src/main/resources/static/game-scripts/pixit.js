@@ -1,29 +1,40 @@
+/*
+ * Definition of the Vue app representing the curent game
+ */
+
 var pixit = new Vue({
     el: "#pixit",
+
     data: {
-        cards: [
-            {
-                image: {
-                    url: "https://i.imgur.com/3IFTi.jpg",
-                    alt: "Bienvenidos",
-                    attribution: "www.maxitter.com/imgur/"
-                }
-            },
+        table: [
             {image: image}
-        ]
-    },
-    methods: {
-        requestAddCard: function() {
-            sendRequest(new AddCardRequest())
+        ],
+        player: {
+            name: "(Loading player's name)",
+            deck: [
+                {image: image}
+            ],
+            points: 0
         },
-        addCard: function (image) {
-            this.cards.push({
-                // image: {
-                //     url: "https://i.imgur.com/3IFTi.jpg",
-                //     alt: "Bienvenidos",
-                //     attribution: "www.maxitter.com/imgur/"
-                // }
-                image: image
+        word: {
+            value: "No word set"
+        },
+        game: {
+            state: "WAITING_FOR_PLAYERS"
+        },
+
+        requests: requests
+    },
+
+    methods: {
+        executeRequest: function(request) {
+            console.log(request)
+            request().send()
+        },
+
+        addCard: function (card) {
+            this.table.push({
+                image: card.image
             })
         }
     }

@@ -1,9 +1,14 @@
 class Request {
+    constructor(_name) {
+        this.name = _name
+    }
     send() {
         sendRequest(this);
     }
 }
 
-class AddCardRequest extends Request {
-    name = "AddCard";
-}
+let requests = {
+    addCard() {
+        return new Request("AddCard");
+    }
+};

@@ -1,6 +1,9 @@
 package io.tnec.pixit
 
-data class Card(val image: ImageInfo, val originalOwner: UserId)
+data class Card(
+        val image: ImageInfo,
+        val originalOwner: UserId
+)
 
 typealias UserId = String
 
