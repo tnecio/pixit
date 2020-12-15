@@ -28,8 +28,8 @@ var pixit = new Vue({
 
     methods: {
         executeRequest: function(request) {
-            console.log(request)
-            request().send()
+            console.log(request);
+            new RequestWrapper(request).send();
         },
 
         addCard: function (card) {

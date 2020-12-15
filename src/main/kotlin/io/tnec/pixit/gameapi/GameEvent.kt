@@ -1,22 +1,20 @@
-package io.tnec.pixit
+package io.tnec.pixit.gameapi
 
 import com.fasterxml.jackson.annotation.JsonIgnore
+import io.tnec.pixit.*
 import java.io.Serializable
 import java.time.Instant
 
 
 class GameEventFactory(val imageFactory: ImageFactory) {
-    fun addPlayer(id: UserId, playerName: String): GameEvent {
-        return AddPlayer(id, Avatar(
+    fun addPlayer(id: UserId, playerName: String): GameEvent = AddPlayer(id, Avatar(
                 playerName = playerName,
                 deck = (0..9).map { Card(imageFactory.getNewImage(), id) }
         ))
-    }
 
     fun drawCard(id: UserId): GameEvent = DrawCard(id, Card(imageFactory.getNewImage(), id))
 
     fun sendCard(id: UserId, card: Card): GameEvent = SendCard(id, card)
-
 
 }
 

@@ -1,5 +1,8 @@
 package io.tnec.pixit
 
+import io.tnec.pixit.gameapi.Game
+import io.tnec.pixit.gameapi.GameEventFactory
+import io.tnec.pixit.storage.GameRepository
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.*

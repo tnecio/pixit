@@ -1,5 +1,8 @@
-package io.tnec.pixit;
+package io.tnec.pixit.storage;
 
+import io.tnec.pixit.GameNotFoundException
+import io.tnec.pixit.gameapi.*
+import io.tnec.pixit.getRandomId
 import java.util.concurrent.ConcurrentHashMap
 
 interface GameRepository {

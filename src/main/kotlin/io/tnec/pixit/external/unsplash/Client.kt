@@ -1,9 +1,8 @@
-package io.tnec.pixit
+package io.tnec.pixit.external.unsplash
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.annotation.JsonSetter
-import com.fasterxml.jackson.annotation.Nulls
+import io.tnec.pixit.gameapi.ImageInfo
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpMethod
 import org.springframework.http.RequestEntity
@@ -59,3 +58,4 @@ class UnsplashClient(var properties: UnsplashProperties, var restTemplate: RestT
         return response.body!!
     }
 }
+

@@ -1,4 +1,4 @@
-package io.tnec.pixit
+package io.tnec.pixit.gameapi
 
 data class Card(
         val image: ImageInfo,

@@ -1,24 +1,35 @@
 package io.tnec.pixit
 
+import io.tnec.pixit.external.unsplash.UnsplashClient
+import io.tnec.pixit.gameapi.GameEventFactory
+import io.tnec.pixit.external.unsplash.UnsplashImageFactory
+import io.tnec.pixit.external.unsplash.UnsplashProperties
+import io.tnec.pixit.gameapi.ImageFactory
+import io.tnec.pixit.storage.GameRepository
+import io.tnec.pixit.storage.GameRepositoryInMemory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.runApplication
 import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory
 import org.springframework.data.redis.core.RedisTemplate
-import org.springframework.http.server.ServerHttpRequest
-import org.springframework.http.server.ServerHttpResponse
-import org.springframework.http.server.ServletServerHttpRequest
 import org.springframework.messaging.simp.config.MessageBrokerRegistry
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession
 import org.springframework.session.web.context.AbstractHttpSessionApplicationInitializer
 import org.springframework.web.client.RestTemplate
-import org.springframework.web.socket.WebSocketHandler
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer
-import org.springframework.web.socket.server.HandshakeInterceptor
 
+
+@SpringBootApplication
+class PixitApplication
+
+fun main(args: Array<String>) {
+    runApplication<PixitApplication>(*args)
+}
 
 @Configuration
 class PixitConfiguration {
@@ -37,12 +48,17 @@ class PixitConfiguration {
 
     @Bean
     fun imageFactory(unsplashClient: UnsplashClient): ImageFactory {
-        return ImageFactory(unsplashClient)
+        return UnsplashImageFactory(unsplashClient)
     }
 
     @Bean
     fun gameEventFactory(imageFactory: ImageFactory): GameEventFactory {
         return GameEventFactory(imageFactory)
+    }
+
+    @Bean
+    fun gameManager(gameEventFactory: GameEventFactory): RequestsHandler {
+        return RequestsHandler(gameEventFactory)
     }
 }
 
