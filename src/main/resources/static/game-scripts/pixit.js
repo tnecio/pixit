@@ -6,17 +6,24 @@ var pixit = new Vue({
     el: "#pixit",
 
     data: {
-        table: [],
-        player: {
+        game: {
+            state: "WAITING_FOR_PLAYERS",
+            word: {
+                value: ""
+            },
+            table: [],
+            players: []
+        },
+        avatar: {
             name: "(Loading player's name)",
             deck: [],
             points: 0
         },
-        word: {
-            value: "No word set"
-        },
-        game: {
-            state: "WAITING_FOR_PLAYERS"
+        isAdmin: false,
+        isNarrator: false,
+
+        ui: {
+            chosenCardId: null
         },
 
         requests: requests
@@ -30,16 +37,27 @@ var pixit = new Vue({
                 );
         },
 
+        commonPartsGameUpdate: function (newGameCommon) {
+            this.game = newGameCommon;
+        },
+
+        wholeGameUpdate: function (newGame) {
+            this.game = newGame.game;
+            this.avatar = newGame.avatar;
+            this.isAdmin = newGame.isAdmin;
+            this.isNarrator = newGame.isNarrator;
+        },
+
         updateGame: function (newGame) {
             console.log("updateGame called"); // DEBUG
             // TODO update all fields
-            this.word = newGame.word;
-            this.game = newGame.game;
-            this.player.deck = newGame.player.deck;
+            this.game.word = newGame.word;
+            this.game.state = newGame.game.state;
+            this.avatar.deck = newGame.player.deck;
         },
 
         addCard: function (card) {
-            this.table.push({
+            this.game.table.push({
                 image: card.image
             })
         },
@@ -50,7 +68,7 @@ var pixit = new Vue({
         },
 
         setWord: function (word) {
-            this.word.value = word;
+            this.game.word.value = word;
         }
     }
 });

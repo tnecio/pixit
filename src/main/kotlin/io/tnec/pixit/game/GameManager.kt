@@ -22,7 +22,7 @@ class GameManager(val gameRepository: GameRepository,
         gameRepository.updateGame(gameId) {
             it.players = it.players + mapOf(id to avatarManager.newAvatar(id, playerName))
 
-            gameMessageSender.notifyGameUpdate(it, gameId)
+            gameMessageSender.notifyCommonGameViewUpdate(it, gameId)
             it
         }
     }
@@ -35,7 +35,7 @@ class GameManager(val gameRepository: GameRepository,
         }
 
         it.state = it.nextState()
-        gameMessageSender.notifyGameUpdate(it, gameId)
+        gameMessageSender.notifyCommonGameViewUpdate(it, gameId)
         it
     }
 
@@ -49,7 +49,7 @@ class GameManager(val gameRepository: GameRepository,
         it.word = word
         it.state = it.nextState()
 
-        gameMessageSender.notifyGameUpdate(it, gameId)
+        gameMessageSender.notifyCommonGameViewUpdate(it, gameId)
         it
     }
 

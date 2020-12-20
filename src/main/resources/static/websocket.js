@@ -40,6 +40,10 @@ function connect() {
             console.log(currentTime() + " Received new game update:" + event.body); // DEBUG
             dispatchGameUpdate(JSON.parse(event.body));
         });
+        stompClient.subscribe('/topic/' + gameId + '/' + userId + '/gameUpdate', event  => {
+            console.log(currentTime() + " Received new game update for current user:" + event.body); // DEBUG
+            dispatchUserGameUpdate(JSON.parse(event.body));
+        });
         stompClient.subscribe('/topic/heartbeat', event  => {
             console.log(currentTime() + "Received heartbeat:" + event.body); // DEBUG
         });

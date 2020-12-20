@@ -58,7 +58,7 @@ class MainController(val userManager: UserManager) {
         val avatar = game.players[session.id] ?: throw NotFoundException(session.id)
 
         model.addAttribute("image", avatar.deck[0].image)
-        model.addAttribute("playerName", avatar.playerName)
+        model.addAttribute("playerName", avatar.name)
 
         model.addAttribute("userId", session.id)
         model.addAttribute("gameId", id)

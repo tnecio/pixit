@@ -15,25 +15,28 @@
 <header th:replace="fragments/header :: copy"></header>
 <main id="pixit">
     <section class="game-info">
-        <div>Players in the game: <br> A (500), B (400), OtherPlayer (700), D (80)</div>
         <div>
-            <gamestate-info v-bind:state="game.state"></gamestate-info>
+            <gamestate-info
+                    v-bind:game="game"
+                    v-bind:player="avatar"
+                    v-bind:is-admin="isAdmin"
+                    v-bind:is-narrator="isNarrator"
+            ></gamestate-info>
             <button @click="executeRequest(requests.startGame)">Start</button>
         </div>
-        <div>Your points: 500</div>
         <div><a href="#">Leave Game</a></div>
     </section>
 
     <section class="idea">
         <label for="wordInput"><input type="text" name="wordInput" id="wordInput"></label>
         <button @click="executeRequest(requests.setWord)">Set</button>
-        <word v-bind:value="word.value"></word>
+        <word v-bind:value="game.word.value"></word>
     </section>
 
     <section class="table">
         <h3>Table</h3>
         <div class="deck">
-            <card v-for="(card, index) in table" v-bind:key="index" v-bind:image="card.image"></card>
+            <card v-for="(card, index) in table" v-bind:key="index" v-bind:card="card"></card>
         </div>
         <button @click="executeRequest(requests.addCard)">Add Card (defunct for now!)</button><!-- TODO -->
     </section>
@@ -42,7 +45,11 @@
         <h3 th:text="'Player ' + ${playerName} + '\'s deck'"></h3>
 
         <div class="deck">
-            <card v-for="(card, index) in player.deck" v-bind:key="index" v-bind:image="card.image"></card>
+            <card v-for="(card, index) in avatar.deck"
+                  v-bind:key="index"
+                  v-bind:card="card"
+                  v-bind:chosenCardId="ui.chosenCardId">
+            </card>
         </div>
     </section>
 </main>
