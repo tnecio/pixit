@@ -4,7 +4,6 @@ import io.tnec.pixit.avatar.AvatarManager
 import io.tnec.pixit.common.Id
 import io.tnec.pixit.common.NotFoundException
 import io.tnec.pixit.common.ValidationError
-import io.tnec.pixit.common.next
 import io.tnec.pixit.user.UserId
 import org.springframework.stereotype.Component
 
@@ -35,7 +34,7 @@ class GameManager(val gameRepository: GameRepository,
             throw ValidationError("Game ${gameId} is not in WAITING_FOR_PLAYERS state")
         }
 
-        it.state = it.state.next()
+        it.state = it.nextState()
         gameMessageSender.notifyGameUpdate(it, gameId)
         it
     }
@@ -48,7 +47,7 @@ class GameManager(val gameRepository: GameRepository,
         }
 
         it.word = word
-        it.state = it.state.next()
+        it.state = it.nextState()
 
         gameMessageSender.notifyGameUpdate(it, gameId)
         it
