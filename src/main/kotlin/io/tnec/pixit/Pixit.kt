@@ -1,12 +1,16 @@
 package io.tnec.pixit
 
 import io.tnec.pixit.external.unsplash.UnsplashClient
-import io.tnec.pixit.gameapi.GameEventFactory
 import io.tnec.pixit.external.unsplash.UnsplashImageFactory
 import io.tnec.pixit.external.unsplash.UnsplashProperties
-import io.tnec.pixit.gameapi.ImageFactory
-import io.tnec.pixit.storage.GameRepository
-import io.tnec.pixit.storage.GameRepositoryInMemory
+import io.tnec.pixit.card.ImageFactory
+import io.tnec.pixit.common.storage.InMemoryStoreFactory
+import io.tnec.pixit.common.storage.SqlStoreFactory
+import io.tnec.pixit.common.storage.Store
+import io.tnec.pixit.common.storage.StoreFactory
+import io.tnec.pixit.game.Game
+import io.tnec.pixit.game.GameRepository
+import io.tnec.pixit.game.GameManager
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
@@ -15,6 +19,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory
 import org.springframework.data.redis.core.RedisTemplate
+import org.springframework.messaging.simp.SimpMessagingTemplate
 import org.springframework.messaging.simp.config.MessageBrokerRegistry
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession
 import org.springframework.session.web.context.AbstractHttpSessionApplicationInitializer
@@ -33,33 +38,18 @@ fun main(args: Array<String>) {
 
 @Configuration
 class PixitConfiguration {
-    @Autowired
-    lateinit var unsplashProperties: UnsplashProperties
+    // TODO split and move into appropriate packages
+    @Bean
+    fun restTemplate(builder: RestTemplateBuilder): RestTemplate = builder.build()
 
     @Bean
-    fun restTemplate(builder: RestTemplateBuilder): RestTemplate {
-        return builder.build()
-    }
+    fun imageFactory(unsplashClient: UnsplashClient): ImageFactory = UnsplashImageFactory(unsplashClient)
 
     @Bean
-    fun unsplashClient(restTemplate: RestTemplate): UnsplashClient {
-        return UnsplashClient(unsplashProperties, restTemplate)
-    }
+    fun persistentStoreFactory(): StoreFactory = SqlStoreFactory()
 
     @Bean
-    fun imageFactory(unsplashClient: UnsplashClient): ImageFactory {
-        return UnsplashImageFactory(unsplashClient)
-    }
-
-    @Bean
-    fun gameEventFactory(imageFactory: ImageFactory): GameEventFactory {
-        return GameEventFactory(imageFactory)
-    }
-
-    @Bean
-    fun gameManager(gameEventFactory: GameEventFactory): RequestsHandler {
-        return RequestsHandler(gameEventFactory)
-    }
+    fun rapidAccessStoreFactory(): StoreFactory = InMemoryStoreFactory()
 }
 
 @Configuration
@@ -73,14 +63,6 @@ class StorageConfiguration : AbstractHttpSessionApplicationInitializer() {
         val template = RedisTemplate<String, Any>()
         template.setConnectionFactory(connectionFactory())
         return template
-    }
-
-    @Bean
-    fun gameRepository(): GameRepository {
-//        val template = RedisTemplate<GameId, GameEvent>()
-//        template.setConnectionFactory(connectionFactory())
-//        return GameRepositoryWithRedisEventStorage(template)
-        return GameRepositoryInMemory()
     }
 }
 

@@ -1,6 +1,14 @@
 <!DOCTYPE HTML>
 <html lang="pl" xmlns:th="http://www.thymeleaf.org">
 <head>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+
+        var gameId = /*[[${gameId}]]*/ 'NO_GAME_ID';
+        var userId = /*[[${userId}]]*/ 'NO_USER_ID';
+
+        /*]]>*/
+    </script>
     <th:block th:insert="fragments/head :: headFragment (pageTitle='PiXiT Game')"></th:block>
 </head>
 <body>
@@ -8,12 +16,17 @@
 <main id="pixit">
     <section class="game-info">
         <div>Players in the game: <br> A (500), B (400), OtherPlayer (700), D (80)</div>
-        <div>Vote for OtherPlayer's card!</div>
+        <div>
+            <gamestate-info v-bind:state="game.state"></gamestate-info>
+            <button @click="executeRequest(requests.startGame)">Start</button>
+        </div>
         <div>Your points: 500</div>
         <div><a href="#">Leave Game</a></div>
     </section>
 
     <section class="idea">
+        <label for="wordInput"><input type="text" name="wordInput" id="wordInput"></label>
+        <button @click="executeRequest(requests.setWord)">Set</button>
         <word v-bind:value="word.value"></word>
     </section>
 
@@ -22,7 +35,7 @@
         <div class="deck">
             <card v-for="(card, index) in table" v-bind:key="index" v-bind:image="card.image"></card>
         </div>
-        <button @click="executeRequest(requests.addCard)">Add Card</button>
+        <button @click="executeRequest(requests.addCard)">Add Card (defunct for now!)</button><!-- TODO -->
     </section>
 
     <section>

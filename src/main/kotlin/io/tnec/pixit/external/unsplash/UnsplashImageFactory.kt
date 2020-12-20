@@ -2,10 +2,12 @@ package io.tnec.pixit.external.unsplash
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
-import io.tnec.pixit.gameapi.ImageInfo
+import io.tnec.pixit.card.Image
+import io.tnec.pixit.card.ImageFactory
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpMethod
 import org.springframework.http.RequestEntity
+import org.springframework.stereotype.Component
 import org.springframework.web.client.RestTemplate
 import java.net.URI
 
@@ -38,13 +40,14 @@ data class GetPhotoResponse(
 ) {
     fun getAttribution() = user.getDisplayName()
 
-    fun toSmallImageInfo() = ImageInfo(
+    fun toSmallImageInfo() = Image(
             url = urls.small,
             alt = alt ?: "Missing alt description",
             attribution = getAttribution()
     )
 }
 
+@Component
 class UnsplashClient(var properties: UnsplashProperties, var restTemplate: RestTemplate) {
     // TODO: move onto using a cache when the rate limit is hit
 
@@ -59,3 +62,6 @@ class UnsplashClient(var properties: UnsplashProperties, var restTemplate: RestT
     }
 }
 
+class UnsplashImageFactory(val unsplashClient: UnsplashClient) : ImageFactory {
+    override fun getNewImage(): Image = unsplashClient.getRandomPhoto().toSmallImageInfo()
+}

@@ -67,7 +67,7 @@ figure {
     opacity: 50%; /* FOR DEBUG only */
 }
 
-.deck div, .table div {
+.deck {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-around;

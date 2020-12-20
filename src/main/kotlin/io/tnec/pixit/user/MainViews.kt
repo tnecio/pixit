@@ -1,8 +1,6 @@
-package io.tnec.pixit
+package io.tnec.pixit.user
 
-import io.tnec.pixit.gameapi.Game
-import io.tnec.pixit.gameapi.GameEventFactory
-import io.tnec.pixit.storage.GameRepository
+import io.tnec.pixit.common.NotFoundException
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.*
@@ -12,9 +10,7 @@ import javax.servlet.http.HttpSession
 data class NewUser(val playerName: String)
 
 @Controller
-class MainController(val gameRepository: GameRepository,
-                     val gameEventFactory: GameEventFactory
-) {
+class MainController(val userManager: UserManager) {
     // GetMapping("/") is static
 
     @PostMapping("/start")
@@ -22,8 +18,7 @@ class MainController(val gameRepository: GameRepository,
               model: Model,
               response: HttpServletResponse,
               session: HttpSession) {
-        val id = gameRepository.createGame(session.id)
-        gameRepository.updateGame(id, gameEventFactory.addPlayer(session.id, newUser.playerName))
+        val id = userManager.createGame(session.id, newUser.playerName)
         response.sendRedirect("game/${id}")
     }
 
@@ -33,18 +28,10 @@ class MainController(val gameRepository: GameRepository,
                 model: Model,
                 response: HttpServletResponse,
                 session: HttpSession): String {
-        val sessionId = session.id
-
-        if (userInGame(sessionId, id)) {
+        if (userManager.userInGame(session.id, id)) {
             return game(id, model, session)
         }
-
         return "join"
-    }
-
-    private fun userInGame(sessionId: String, gameId: String): Boolean {
-        val game: Game = gameRepository.getGame(gameId)
-        return game.players.containsKey(sessionId)
     }
 
     @PostMapping("/join/{id}")
@@ -53,7 +40,7 @@ class MainController(val gameRepository: GameRepository,
                  model: Model,
                  response: HttpServletResponse,
                  session: HttpSession) {
-        gameRepository.updateGame(id, gameEventFactory.addPlayer(session.id, newUser.playerName))
+        userManager.addPlayerToGame(id, session.id, newUser.playerName)
         response.sendRedirect("/game/${id}")
     }
 
@@ -61,17 +48,20 @@ class MainController(val gameRepository: GameRepository,
     fun game(@PathVariable id: String,
              model: Model,
              session: HttpSession): String {
-        val game = gameRepository.getGame(id)
 
-        if (!userInGame(session.id, id)) {
+        if (!userManager.userInGame(session.id, id)) {
             // Player is unknown
             return "redirect:/join/${id}"
         }
 
-        val player = game.players[session.id]!!
+        val game = userManager.getGame(id)
+        val avatar = game.players[session.id] ?: throw NotFoundException(session.id)
 
-        model.addAttribute("image", player.deck[0].image)
-        model.addAttribute("playerName", player.playerName)
+        model.addAttribute("image", avatar.deck[0].image)
+        model.addAttribute("playerName", avatar.playerName)
+
+        model.addAttribute("userId", session.id)
+        model.addAttribute("gameId", id)
         return "game"
     }
 }

@@ -1,22 +1,19 @@
-class RequestWrapper {
-    constructor(_request) {
-        this.request = _request;
-        this.name = _request.name;
-    }
-
-    send() {
-        sendRequest(this);
-    }
-}
-
-class Request {
-    constructor(_name) {
-        this.name = _name
+class GameControlRequest {
+    constructor(_endpoint, _payload) {
+        this.endpoint = _endpoint;
+        this.payload = _payload;
     }
 }
 
 let requests = {
+    startGame() {
+        return new GameControlRequest("start", { });
+    },
+    setWord() {
+        var word = document.getElementById("wordInput").value;
+        return new GameControlRequest("set-word", { "value": word })
+    },
     addCard() {
-        return new Request("DrawCard");
+        // TODO not implemented yet!
     }
 };
