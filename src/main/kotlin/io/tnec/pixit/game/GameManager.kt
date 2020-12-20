@@ -18,11 +18,12 @@ class GameManager(val gameRepository: GameRepository,
         return gameRepository.createGame(newGame)
     }
 
-    fun addPlayer(gameId: GameId, id: UserId, playerName: String) {
+    fun addPlayer(gameId: GameId, userId: UserId, playerName: String) {
         gameRepository.updateGame(gameId) {
-            it.players = it.players + mapOf(id to avatarManager.newAvatar(id, playerName))
+            it.players = it.players + mapOf(userId to avatarManager.newAvatar(userId, playerName))
 
             gameMessageSender.notifyCommonGameViewUpdate(it, gameId)
+            gameMessageSender.notifyUserGameViewUpdate(it, gameId, userId)
             it
         }
     }
@@ -35,7 +36,12 @@ class GameManager(val gameRepository: GameRepository,
         }
 
         it.state = it.nextState()
+
         gameMessageSender.notifyCommonGameViewUpdate(it, gameId)
+        for (eachUserId in it.players.keys) {
+            gameMessageSender.notifyUserGameViewUpdate(it, gameId, eachUserId)
+        }
+
         it
     }
 

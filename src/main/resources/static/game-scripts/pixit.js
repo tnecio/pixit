@@ -27,11 +27,11 @@ var pixit = new Vue({
                 isNarrator: false,
                 name: playerName,
                 userId: userId
-            }
-        },
+            },
 
-        ui: {
-            chosenCardId: null
+            local: {
+                chosenCardId: null
+            }
         },
 
         requests: requests
@@ -62,6 +62,10 @@ var pixit = new Vue({
 
         setWord: function (word) {
             this.pixit.game.word.value = word;
+        },
+
+        chooseCard: function(cardId) {
+            this.pixit.local.chosenCardId = cardId;
         }
     }
 });

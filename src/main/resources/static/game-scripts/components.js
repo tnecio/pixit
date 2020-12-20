@@ -1,12 +1,13 @@
 Vue.component('card', {
-    props: ['card', 'chosenCardId'],
+    props: ['card', 'pixit'],
     template: `
-<figure>
+<figure v-bind:class="{ chosenCard: pixit.local.chosenCardId == card.id }">
     <img v-bind:src="card.image.url" v-bind:alt="card.image.alt"/>
 
-    <figcaption
-    v-bind:style= "[card.image.id == chosenCardId ? {styleA} : {styleB}]"
-    >{{image.attribution}}, Unsplash <a click="chooseCard({{card.id}})">✅</a></figcaption>
+    <figcaption>
+        {{card.image.attribution}}, Unsplash
+        <a v-on:click="pixit.local.chosenCardId = card.id">✅</a>
+    </figcaption>
 </figure>`
 });
 
@@ -51,7 +52,7 @@ Vue.component('playerdeck', {
             <card v-for="(card, index) in pixit.avatar.deck"
                   v-bind:key="index"
                   v-bind:card="card"
-                  v-bind:chosenCardId="ui.chosenCardId">
+                  v-bind:pixit="pixit">
             </card>
         </div>
     </section>    
@@ -64,7 +65,12 @@ Vue.component('pixittable', {
 <section class="table">
     <h3>Table</h3>
     <div class="deck">
-    <card v-for="(card, index) in pixit.table" v-bind:key="index" v-bind:card="card"></card>
+        <card
+            v-for="(card, index) in pixit.table"
+            v-bind:key="index"
+            v-bind:card="card"
+            v-bind:pixit="pixit">
+        </card>
     </div>
     <button @click="executeRequest(requests.addCard)">Add Card (defunct for now!)</button><!-- TODO -->
 </section>

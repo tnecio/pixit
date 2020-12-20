@@ -24,7 +24,7 @@ class GameMessageSender(@Autowired val simpTemplate: SimpMessagingTemplate) {
 
     fun notifyUserGameViewUpdate(game: Game, gameId: GameId, userId: UserId) {
         simpTemplate.convertAndSend(usersUpdatesTopic(gameId, userId),
-                Message("wholeGameUpdate", gameViewFor(userId, game))
+                Message("gameViewUpdate", gameViewFor(userId, game))
         )
     }
 }
