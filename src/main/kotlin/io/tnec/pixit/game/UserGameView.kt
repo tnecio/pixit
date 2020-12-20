@@ -2,6 +2,7 @@ package io.tnec.pixit.game
 
 import io.tnec.pixit.avatar.Avatar
 import io.tnec.pixit.card.Card
+import io.tnec.pixit.card.CardId
 import io.tnec.pixit.user.UserId
 import org.webjars.NotFoundException
 
@@ -10,20 +11,36 @@ import org.webjars.NotFoundException
 data class UserGameView(
         val game: CommonGameView,
         val avatar: Avatar,
+        val player: PlayerSelfView
+)
+
+data class PlayerSelfView(
+        val votedCardId: CardId?,
+        val cardSent: Boolean,
         val isAdmin: Boolean,
-        val isNarrator: Boolean
+        val isNarrator: Boolean,
+        val name: String,
+        val userId: UserId
 )
 
 fun gameViewFor(userId: UserId, game: Game) = UserGameView(
         avatar = game.players[userId] ?: throw NotFoundException(userId),
         game = commonGameView(game),
-        isAdmin = game.admin == userId,
-        isNarrator = game.narrator == userId
+        player = PlayerSelfView(
+                votedCardId = game.players[userId]!!.vote,
+                cardSent = game.players[userId]!!.sentTheirCard,
+                isAdmin = game.admin == userId,
+                isNarrator = game.narrator == userId,
+                name = game.players[userId]!!.name,
+                userId = userId
+        )
 )
 
 data class OtherPlayerView(
         val name: String,
-        val points: Int
+        val points: Int,
+        val hasVoted: Boolean,
+        val sentTheirCard: Boolean
 )
 
 data class CommonGameView(
@@ -37,5 +54,12 @@ fun commonGameView(game: Game) = CommonGameView(
         table = game.table,
         word = game.word ?: Word(""),
         state = game.state,
-        players = game.players.entries.map { OtherPlayerView(it.value.name, it.value.points) }
+        players = game.players.entries.map {
+            OtherPlayerView(
+                    name = it.value.name,
+                    points = it.value.points,
+                    hasVoted = it.value.vote != null,
+                    sentTheirCard = it.value.sentTheirCard
+            )
+        }
 )

@@ -9,13 +9,15 @@ function dispatchPlayerEvent(event) {
 function dispatchGameUpdate(msg) {
     if (msg.type === "commonGameViewUpdate") {
         pixit.commonPartsGameUpdate(msg.payload);
+    } else {
+        console.log("Couldn't dispatch game update: " + JSON.stringify(msg));
     }
-    console.log("Couldn't dispatch game update: " + msg);
 }
 
 function dispatchUserGameUpdate(msg) {
     if (msg.type === "gameViewUpdate") {
         pixit.wholeGameUpdate(msg.payload);
+    } else {
+        console.log("Couldn't dispatch user's game update: " + JSON.stringify(msg));
     }
-    console.log("Couldn't dispatch user's game update: " + msg);
 }

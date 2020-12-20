@@ -6,21 +6,29 @@ var pixit = new Vue({
     el: "#pixit",
 
     data: {
-        game: {
-            state: "WAITING_FOR_PLAYERS",
-            word: {
-                value: ""
+        pixit: {
+            game: {
+                state: "WAITING_FOR_PLAYERS",
+                word: {
+                    value: ""
+                },
+                table: [],
+                players: []
             },
-            table: [],
-            players: []
+            avatar: {
+                name: "(Loading player's name)",
+                deck: [],
+                points: 0
+            },
+            player: {
+                votedCardId: null,
+                cardSent: false,
+                isAdmin: false,
+                isNarrator: false,
+                name: playerName,
+                userId: userId
+            }
         },
-        avatar: {
-            name: "(Loading player's name)",
-            deck: [],
-            points: 0
-        },
-        isAdmin: false,
-        isNarrator: false,
 
         ui: {
             chosenCardId: null
@@ -38,37 +46,22 @@ var pixit = new Vue({
         },
 
         commonPartsGameUpdate: function (newGameCommon) {
-            this.game = newGameCommon;
+            this.pixit.game = newGameCommon;
         },
 
         wholeGameUpdate: function (newGame) {
-            this.game = newGame.game;
-            this.avatar = newGame.avatar;
-            this.isAdmin = newGame.isAdmin;
-            this.isNarrator = newGame.isNarrator;
-        },
-
-        updateGame: function (newGame) {
-            console.log("updateGame called"); // DEBUG
-            // TODO update all fields
-            this.game.word = newGame.word;
-            this.game.state = newGame.game.state;
-            this.avatar.deck = newGame.player.deck;
-        },
-
-        addCard: function (card) {
-            this.game.table.push({
-                image: card.image
-            })
+            this.pixit.game = newGame.game;
+            this.pixit.avatar = newGame.avatar;
+            this.pixit.player = newGame.player;
         },
 
         start: function () {
             console.log("start method called");
-            this.game.state = "WAITING_FOR_WORD"
+            this.pixit.game.state = "WAITING_FOR_WORD"
         },
 
         setWord: function (word) {
-            this.game.word.value = word;
+            this.pixit.game.word.value = word;
         }
     }
 });

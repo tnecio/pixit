@@ -6,6 +6,7 @@
 
         var gameId = /*[[${gameId}]]*/ 'NO_GAME_ID';
         var userId = /*[[${userId}]]*/ 'NO_USER_ID';
+        var playerName = /*[[${playerName}]]*/ 'UNSPECIFIED_PLAYER_NAME';
 
         /*]]>*/
     </script>
@@ -16,12 +17,7 @@
 <main id="pixit">
     <section class="game-info">
         <div>
-            <gamestate-info
-                    v-bind:game="game"
-                    v-bind:player="avatar"
-                    v-bind:is-admin="isAdmin"
-                    v-bind:is-narrator="isNarrator"
-            ></gamestate-info>
+            <gamestate-info v-bind:pixit="pixit"></gamestate-info>
             <button @click="executeRequest(requests.startGame)">Start</button>
         </div>
         <div><a href="#">Leave Game</a></div>
@@ -30,28 +26,12 @@
     <section class="idea">
         <label for="wordInput"><input type="text" name="wordInput" id="wordInput"></label>
         <button @click="executeRequest(requests.setWord)">Set</button>
-        <word v-bind:value="game.word.value"></word>
+        <word v-bind:value="pixit.game.word.value"></word>
     </section>
 
-    <section class="table">
-        <h3>Table</h3>
-        <div class="deck">
-            <card v-for="(card, index) in table" v-bind:key="index" v-bind:card="card"></card>
-        </div>
-        <button @click="executeRequest(requests.addCard)">Add Card (defunct for now!)</button><!-- TODO -->
-    </section>
+    <pixittable v-bind:pixit="pixit"></pixittable>
 
-    <section>
-        <h3 th:text="'Player ' + ${playerName} + '\'s deck'"></h3>
-
-        <div class="deck">
-            <card v-for="(card, index) in avatar.deck"
-                  v-bind:key="index"
-                  v-bind:card="card"
-                  v-bind:chosenCardId="ui.chosenCardId">
-            </card>
-        </div>
-    </section>
+    <playerdeck v-bind:pixit="pixit"></playerdeck>
 </main>
 <footer th:replace="fragments/footer :: copy"></footer>
 

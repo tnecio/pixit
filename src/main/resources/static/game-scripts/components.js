@@ -24,15 +24,49 @@ Vue.component('playerEntry', {
 });
 
 Vue.component('gamestate-info', {
-    props: ['game', 'avatar', 'is-admin', 'is-narrator'],
+    props: ['pixit'],
     template: `
 <div>
-    <h3>{{game.state}}</h3> Player name: {{avatar.name}} ({{avatar.points}} pts)
-    <span v-if="is-admin"> (ADMIN) </span>
-    <span v-if="is-narrator"> (NARRATOR) </span>
+    <h3>{{pixit.game.state}}</h3> Player name: {{pixit.avatar.name}} ({{pixit.avatar.points}} pts)
+    <span v-if="pixit.player.isAdmin"> (ADMIN) </span>
+    <span v-if="pixit.player.isNarrator"> (NARRATOR) </span>
     <li>
-        <playerEntry v-for="(player, index) in game.players" v-bind:player="player"></playerEntry>
+        <playerEntry
+            v-for="(player, index) in pixit.game.players"
+            v-bind:key="index"
+            v-bind:player="player">
+        </playerEntry>
     </li>
 </div>
+`
+});
+
+Vue.component('playerdeck', {
+    props: ['pixit'],
+    template: `
+    <section>
+        <h3>Player {{pixit.player.name}}</h3>
+
+        <div class="deck">
+            <card v-for="(card, index) in pixit.avatar.deck"
+                  v-bind:key="index"
+                  v-bind:card="card"
+                  v-bind:chosenCardId="ui.chosenCardId">
+            </card>
+        </div>
+    </section>    
+`
+});
+
+Vue.component('pixittable', {
+    props: ['pixit'],
+    template: `
+<section class="table">
+    <h3>Table</h3>
+    <div class="deck">
+    <card v-for="(card, index) in pixit.table" v-bind:key="index" v-bind:card="card"></card>
+    </div>
+    <button @click="executeRequest(requests.addCard)">Add Card (defunct for now!)</button><!-- TODO -->
+</section>
 `
 });
