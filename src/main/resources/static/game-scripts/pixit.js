@@ -35,7 +35,7 @@ var pixit = new Vue({
                     deck: [],
                     points: 0,
                     vote: null,
-                    sentTheirCard: false
+                    sentCard: null
                 }
             },
             version: 0,
@@ -44,60 +44,69 @@ var pixit = new Vue({
         },
 
         interface: {
-            word: null
+            word: null,
+            chosenCardId: null
         }
     },
 
     template: `
 <main>
-    <section class="game-info">
-        <li style="display: block">
-            <ul><h3>{{GAME_STATES_DESCRIPTIONS[game.state]}}</h3></ul>
+    <section id="game-info">
+        <div id="game-state">
+            <h3>{{GAME_STATES_DESCRIPTIONS[game.state]}}</h3>
             <playerEntry
                 v-for="(player, index) in game.players"
                 v-bind:key="index"
                 v-bind:player="player">
             </playerEntry>
-        </li>
-        <div>
+        </div>
+        <div id="game-control">
             <button @click="requests.startGame()" v-if="canStartGame()">Start</button>
             <button @click="console.log('TODO')" v-if="canFinishGame()">Finish game for all</button>
+            <button @click="requests.proceed()" v-if="canProceed()">Proceed</button>
             <button @click="console.log('TODO')">Leave Game</button>
         </div>
     </section>
     
-    <section class="phrase">
+    <section id="phrase">
         <div v-if="canSetWord()">
             <label for="wordInput"><input type="text" name="wordInput" v-model="interface.word" placeholder="Set a phrase"></label>
-            <button @click="requests.setWord(interface.word)">Set</button>
+            <button @click="setWord()">Set</button>
         </div>
         <h2 v-if="shouldDisplayWord()">
             {{game.word.value}}
         </h2>
     </section>
 
-    <section class="table" v-if="gameStarted()">
+    <section id="table" v-if="gameStarted()">
         <h3>Table</h3>
         <div class="deck">
             <card
                 v-for="(card, index) in game.table"
-                v-bind:key="index" v-bind:index="index"
+                v-bind:key="index"
                 v-bind:card="card"
-                v-bind:state="{ displayed: false, sendable: false, votable: false }">
+                v-bind:state="{ sendable: false, votable: canVote(card.id), choosable: false, chosen: false }"
+                @vote-card="(id) => requests.vote(id)"
+            >
             </card>
         </div>
     </section>
 
-    <section v-if="gameStarted()">
+    <section id="playersPrivateArea" v-if="gameStarted()">
         <h3>Player {{game.players[userId].name}}</h3>
 
         <div class="deck">
             <card v-for="(card, index) in game.players[userId].deck"
-                  v-bind:key="index" v-bind:index="index"
+                  v-bind:key="index"
                   v-bind:card="card"
-                  v-bind:state="{ displayed: true, sendable: true, votable: false }"
+                  v-bind:state="{ sendable: canSendCard(),
+                  votable: false,
+                  choosable: canSetWord(),
+                  chosen: card.id === interface.chosenCardId }"
+                  @send-card="(id) => requests.sendCard(id)"
+                  @choose-card="(id) => { interface.chosenCardId = id; }"
             >
-            </card> <!-- TODO: send-card, vote-card -->
+            </card>
         </div>
     </section>
 </main>
@@ -106,6 +115,10 @@ var pixit = new Vue({
     methods: {
         update: function (newGame) {
             if (newGame.version > this.game.version) {
+                if (newGame.state === 'WAITING_FOR_WORD' && this.game.state !== 'WAITING_FOR_WORD') {
+                    this.interface.word = null;
+                }
+
                 this.game = newGame;
             } else {
                 this.console.log("Out of order game update " + newGame.version + " < " + this.game.version);
@@ -131,8 +144,26 @@ var pixit = new Vue({
         canSetWord() {
             return this.game.state === "WAITING_FOR_WORD" && this.game.narrator === userId;
         },
+        canVote(cardId) {
+            return this.game.state === "WAITING_FOR_VOTES" && this.game.players[userId].vote === null
+                && this.game.narrator !== userId && this.game.players[userId].sentCard !== cardId;
+        },
+        canSendCard() {
+            return this.game.state === "WAITING_FOR_CARDS" && this.game.players[userId].sentCard === null;
+        },
         shouldDisplayWord() {
             return this.game.state !== 'WAITING_FOR_WORD' && this.game.state !== 'WAITING_FOR_PLAYERS';
+        },
+        canProceed() {
+            return this.game.admin === userId && this.game.state === "WAITING_TO_PROCEED";
+        },
+
+        setWord() {
+            if (this.interface.chosenCardId !== null) {
+                this.requests.setWord(this.interface.word, this.interface.chosenCardId);
+            } else {
+                // TODO an aesthetic warning
+            }
         }
     }
 });

@@ -6,6 +6,6 @@ import org.springframework.stereotype.Component
 
 @Component
 class AvatarManager(val cardManager: CardManager) { // Add GameRepository here and if working on an avatar, call it's withGame method (reader lock)
-    fun newAvatar(id: UserId, playerName: String): Avatar =
-            Avatar(playerName, IntRange(0, 9).map{ cardManager.newCard(id) })
+    fun newAvatar(playerName: String): Avatar =
+            Avatar(playerName, IntRange(0, 9).map{ cardManager.newCard() })
 }

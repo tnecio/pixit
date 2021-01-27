@@ -1,23 +1,24 @@
 const EXAMPLE_CARD_STATE = {
-    displayed: false,
     sendable: false,
-    votable: false
+    votable: false,
+    choosable: false,
+    chosen: false
 };
 
 Vue.component('card', {
-    props: ['index', 'card', 'state'],
+    props: ['card', 'state'],
     template: `
 <figure
-    v-on:click="$emit('choose-card', card.id)"
+    v-on="state.choosable ? { click: () => $emit('choose-card', card.id) } : {}"
+    v-bind:class="{ chosenCard: state.chosen }"
 >
-    <img v-if="state.displayed" v-bind:src="card.image.url" v-bind:alt="card.image.alt" />
-    <img v-if="!(state.displayed)" src="TODO" alt="Card's back" />
+    <img v-bind:src="card.image.url" v-bind:alt="card.image.alt" />
 
     <figcaption>
         <div>{{card.image.attribution}}, Unsplash</div>
         <div>
-            <a v-if="state.sendable" v-on:click="$emit('send-card', index)">✅ Send</a>
-            <a v-if="state.votable" v-on:click="$emit('vote-card', index)">✅ Vote</a>
+            <button type="button" v-if="state.sendable" v-on:click="$emit('send-card', card.id)">✅ Send</button>
+            <button type="button" v-if="state.votable" v-on:click="$emit('vote-card', card.id)">✅ Vote</button>
         </div>
     </figcaption>
 </figure>`
@@ -27,7 +28,7 @@ Vue.component('playerEntry', {
     props: ['player', 'isCurrent'],
     template: `
     <ul v-bind:class="{ currentPlayerEntry: isCurrent }" >
-        {{player.name}} ({{player.points}} points)
+        <b>{{player.name}}</b> <br> ({{player.points}} points)
         <span title="Player voted for a card" v-if="player.vote != null">✅</span>
         <span title="Player sent their card" v-if="player.sentTheirCard">🃏</span>
     </ul>

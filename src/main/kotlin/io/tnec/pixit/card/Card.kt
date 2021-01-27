@@ -8,6 +8,5 @@ typealias CardId = Id
 data class Card(
         val id: CardId,
         val image: Image,
-        val originalOwner: UserId,
         val revealed: Boolean
 )

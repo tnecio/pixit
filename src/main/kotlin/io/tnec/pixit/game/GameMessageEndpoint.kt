@@ -1,5 +1,6 @@
 package io.tnec.pixit.game
 
+import io.tnec.pixit.card.CardId
 import io.tnec.pixit.common.NotFoundException
 import io.tnec.pixit.common.ValidationError
 import io.tnec.pixit.common.messaging.*
@@ -24,6 +25,8 @@ class GameController(val gameManager: GameManager) {
             respond(request, NotFoundResponse(e))
         }
     }
+
+    // TODO How do we verify the userId???!!!
 
     @MessageMapping("/{gameId}/send-state")
     @SendTo("/topic/{gameId}/response")
@@ -51,4 +54,33 @@ class GameController(val gameManager: GameManager) {
         gameManager.setWord(gameId, request.userId, request.payload)
         Acknowledgment()
     }
+
+    @MessageMapping("/{gameId}/send-card")
+    @SendTo("/topic/{gameId}/response")
+    fun sendCard(request: Request<CardIdentifier>, @DestinationVariable gameId: GameId): Message<out Any> = answer(request) {
+        println("[${Instant.now()}] Got SendCardRequest: ${request} from ${request.userId}")
+
+        gameManager.sendCard(gameId, request.userId, request.payload)
+        Acknowledgment()
+    }
+
+    @MessageMapping("/{gameId}/vote")
+    @SendTo("/topic/{gameId}/response")
+    fun vote(request: Request<CardIdentifier>, @DestinationVariable gameId: GameId): Message<out Any> = answer(request) {
+        println("[${Instant.now()}] Got VoteRequest: ${request} from ${request.userId}")
+
+        gameManager.vote(gameId, request.userId, request.payload)
+        Acknowledgment()
+    }
+
+    @MessageMapping("/{gameId}/proceed")
+    @SendTo("/topic/{gameId}/response")
+    fun proceed(request: Request<EmptyPayload>, @DestinationVariable gameId: GameId) = answer(request) {
+        println("[${Instant.now()}] Got proceed request: ${request} from ${request.userId}")
+
+        gameManager.proceed(gameId, request.userId)
+        Acknowledgment()
+    }
 }
+
+data class CardIdentifier(val cardId: CardId)

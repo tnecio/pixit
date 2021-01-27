@@ -18,14 +18,27 @@ class Requester {
     }
 
     startGame() {
-        this.send(new GameControlRequest("start", { }));
+        this.send(new GameControlRequest("start", {}));
     }
 
-    setWord(word) {
-        this.send(new GameControlRequest("set-word", { "value": word }));
+    setWord(word, chosenCardId) {
+        this.send(new GameControlRequest("set-word", {"value": word}));
+        this.send(new GameControlRequest("send-card", {"cardId": chosenCardId}));
+    }
+
+    sendCard(cardId) {
+        this.send(new GameControlRequest("send-card", {"cardId": cardId}));
+    }
+
+    vote(cardId) {
+        this.send(new GameControlRequest("vote", {"cardId": cardId}));
+    }
+
+    proceed() {
+        this.send(new GameControlRequest("proceed", {}));
     }
 
     requestGameState() {
-        this.send(new GameControlRequest("send-state", { }));
+        this.send(new GameControlRequest("send-state", {}));
     }
 }

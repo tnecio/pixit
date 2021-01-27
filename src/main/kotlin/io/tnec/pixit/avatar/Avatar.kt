@@ -4,9 +4,9 @@ import io.tnec.pixit.card.Card
 import io.tnec.pixit.card.CardId
 
 data class Avatar(
-        val name: String,
-        val deck: List<Card>,
-        val points: Int = 0,
-        val vote: CardId? = null,
-        val sentTheirCard: Boolean = false
+        var name: String,
+        var deck: List<Card>,
+        var points: Int = 0,
+        var vote: CardId? = null,
+        var sentCard: CardId? = null
 )
