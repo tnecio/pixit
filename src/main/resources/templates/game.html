@@ -15,23 +15,7 @@
 <body>
 <header th:replace="fragments/header :: copy"></header>
 <main id="pixit">
-    <section class="game-info">
-        <div>
-            <gamestate-info v-bind:pixit="pixit"></gamestate-info>
-            <button @click="executeRequest(requests.startGame)">Start</button>
-        </div>
-        <div><a href="#">Leave Game</a></div>
-    </section>
 
-    <section class="idea">
-        <label for="wordInput"><input type="text" name="wordInput" id="wordInput"></label>
-        <button @click="executeRequest(requests.setWord)">Set</button>
-        <word v-bind:value="pixit.game.word.value"></word>
-    </section>
-
-    <pixittable v-bind:pixit="pixit"></pixittable>
-
-    <playerdeck v-bind:pixit="pixit"></playerdeck>
 </main>
 <footer th:replace="fragments/footer :: copy"></footer>
 

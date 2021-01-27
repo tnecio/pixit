@@ -1,78 +1,35 @@
+const EXAMPLE_CARD_STATE = {
+    displayed: false,
+    sendable: false,
+    votable: false
+};
+
 Vue.component('card', {
-    props: ['card', 'pixit'],
+    props: ['index', 'card', 'state'],
     template: `
-<figure v-bind:class="{ chosenCard: pixit.local.chosenCardId == card.id }">
-    <img v-bind:src="card.image.url" v-bind:alt="card.image.alt"/>
+<figure
+    v-on:click="$emit('choose-card', card.id)"
+>
+    <img v-if="state.displayed" v-bind:src="card.image.url" v-bind:alt="card.image.alt" />
+    <img v-if="!(state.displayed)" src="TODO" alt="Card's back" />
 
     <figcaption>
-        {{card.image.attribution}}, Unsplash
-        <a v-on:click="pixit.local.chosenCardId = card.id">✅</a>
+        <div>{{card.image.attribution}}, Unsplash</div>
+        <div>
+            <a v-if="state.sendable" v-on:click="$emit('send-card', index)">✅ Send</a>
+            <a v-if="state.votable" v-on:click="$emit('vote-card', index)">✅ Vote</a>
+        </div>
     </figcaption>
 </figure>`
 });
 
-Vue.component('word', {
-    props: ['value'],
-    template: `
-    <h2>{{value}}</h2>`
-});
-
 Vue.component('playerEntry', {
-    props: ['player'],
+    props: ['player', 'isCurrent'],
     template: `
-    <ul>{{player.name}} ({{player.points}}</ul>
+    <ul v-bind:class="{ currentPlayerEntry: isCurrent }" >
+        {{player.name}} ({{player.points}} points)
+        <span title="Player voted for a card" v-if="player.vote != null">✅</span>
+        <span title="Player sent their card" v-if="player.sentTheirCard">🃏</span>
+    </ul>
     `
-});
-
-Vue.component('gamestate-info', {
-    props: ['pixit'],
-    template: `
-<div>
-    <h3>{{pixit.game.state}}</h3> Player name: {{pixit.avatar.name}} ({{pixit.avatar.points}} pts)
-    <span v-if="pixit.player.isAdmin"> (ADMIN) </span>
-    <span v-if="pixit.player.isNarrator"> (NARRATOR) </span>
-    <li>
-        <playerEntry
-            v-for="(player, index) in pixit.game.players"
-            v-bind:key="index"
-            v-bind:player="player">
-        </playerEntry>
-    </li>
-</div>
-`
-});
-
-Vue.component('playerdeck', {
-    props: ['pixit'],
-    template: `
-    <section>
-        <h3>Player {{pixit.player.name}}</h3>
-
-        <div class="deck">
-            <card v-for="(card, index) in pixit.avatar.deck"
-                  v-bind:key="index"
-                  v-bind:card="card"
-                  v-bind:pixit="pixit">
-            </card>
-        </div>
-    </section>    
-`
-});
-
-Vue.component('pixittable', {
-    props: ['pixit'],
-    template: `
-<section class="table">
-    <h3>Table</h3>
-    <div class="deck">
-        <card
-            v-for="(card, index) in pixit.table"
-            v-bind:key="index"
-            v-bind:card="card"
-            v-bind:pixit="pixit">
-        </card>
-    </div>
-    <button @click="executeRequest(requests.addCard)">Add Card (defunct for now!)</button><!-- TODO -->
-</section>
-`
 });

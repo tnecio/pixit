@@ -1,6 +1,5 @@
 package io.tnec.pixit.user
 
-import io.tnec.pixit.common.NotFoundException
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.*
@@ -53,12 +52,6 @@ class MainController(val userManager: UserManager) {
             // Player is unknown
             return "redirect:/join/${id}"
         }
-
-        val game = userManager.getGame(id)
-        val avatar = game.players[session.id] ?: throw NotFoundException(session.id)
-
-        model.addAttribute("image", avatar.deck[0].image)
-        model.addAttribute("playerName", avatar.name)
 
         model.addAttribute("userId", session.id)
         model.addAttribute("gameId", id)

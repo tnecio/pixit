@@ -29,24 +29,19 @@ function connect() {
         setConnected(true);
         console.log('Connected: ' + frame);
         stompClient.subscribe('/topic/' + gameId + '/response', event  => {
-            console.log(currentTime() + " Received response for game request:" + event.body); // DEBUG
-            dispatchGameEvent(JSON.parse(event.body));
-        });
-        stompClient.subscribe('/topic/' + gameId + '/player/' + userId + '/response', event  => {
-            console.log(currentTime() + " Received response for player request:" + event.body); // DEBUG
-            dispatchPlayerEvent(JSON.parse(event.body));
-        });
-        stompClient.subscribe('/topic/' + gameId + '/gameUpdate', event  => {
-            console.log(currentTime() + " Received new game update:" + event.body); // DEBUG
-            dispatchGameUpdate(JSON.parse(event.body));
+            console.log(currentTime() + " Received acknowledgment for game request:" + event.body); // DEBUG
+            handleAcknowledgment(JSON.parse(event.body));
         });
         stompClient.subscribe('/topic/' + gameId + '/' + userId + '/gameUpdate', event  => {
             console.log(currentTime() + " Received new game update for current user:" + event.body); // DEBUG
-            dispatchUserGameUpdate(JSON.parse(event.body));
+            dispatchGameUpdate(JSON.parse(event.body)); // TODO this should work without heartbeats!!!
         });
-        stompClient.subscribe('/topic/heartbeat', event  => {
+        stompClient.subscribe('/topic/' + gameId + '/heartbeat', event  => {
             console.log(currentTime() + "Received heartbeat:" + event.body); // DEBUG
+            handleHeartbeat(JSON.parse(event.body));
         });
+
+        // TODO Here request full game info to update the view
     });
 }
 

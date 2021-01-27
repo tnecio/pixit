@@ -5,15 +5,27 @@ class GameControlRequest {
     }
 }
 
-let requests = {
-    startGame() {
-        return new GameControlRequest("start", { });
-    },
-    setWord() {
-        var word = document.getElementById("wordInput").value;
-        return new GameControlRequest("set-word", { "value": word })
-    },
-    addCard() {
-        // TODO not implemented yet!
+class Requester {
+    constructor(_userId) {
+        this.userId = _userId;
     }
-};
+
+    send(request) {
+        console.log("Sending request " + JSON.stringify(request));
+        sendRequest(gameControlEndpoint(request.endpoint),
+            {payload: request.payload, userId: userId}
+        );
+    }
+
+    startGame() {
+        this.send(new GameControlRequest("start", { }));
+    }
+
+    setWord(word) {
+        this.send(new GameControlRequest("set-word", { "value": word }));
+    }
+
+    requestGameState() {
+        this.send(new GameControlRequest("send-state", { }));
+    }
+}

@@ -6,6 +6,9 @@ import io.tnec.pixit.card.CardId
 import io.tnec.pixit.user.UserId
 import org.webjars.NotFoundException
 
+// TODO remove this
+// There should just be stg ike Game{ config/metadata: GameConfig/GameMetadata, model: Game }
+
 // Model of Game seen from the one player's perspective
 // Closely corresponds to pixit Vue's data
 data class UserGameView(
@@ -23,7 +26,7 @@ data class PlayerSelfView(
         val userId: UserId
 )
 
-fun gameViewFor(userId: UserId, game: Game) = UserGameView(
+fun gameViewFor(userId: UserId, game: GameModel) = UserGameView(
         avatar = game.players[userId] ?: throw NotFoundException(userId),
         game = commonGameView(game),
         player = PlayerSelfView(
@@ -40,7 +43,8 @@ data class OtherPlayerView(
         val name: String,
         val points: Int,
         val hasVoted: Boolean,
-        val sentTheirCard: Boolean
+        val sentTheirCard: Boolean,
+        val userId: UserId
 )
 
 data class CommonGameView(
@@ -50,7 +54,7 @@ data class CommonGameView(
         val players: List<OtherPlayerView>
 )
 
-fun commonGameView(game: Game) = CommonGameView(
+fun commonGameView(game: GameModel) = CommonGameView(
         table = game.table,
         word = game.word ?: Word(""),
         state = game.state,
@@ -59,7 +63,8 @@ fun commonGameView(game: Game) = CommonGameView(
                     name = it.value.name,
                     points = it.value.points,
                     hasVoted = it.value.vote != null,
-                    sentTheirCard = it.value.sentTheirCard
+                    sentTheirCard = it.value.sentTheirCard,
+                    userId = it.key
             )
         }
 )

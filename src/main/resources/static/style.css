@@ -27,6 +27,10 @@ h3 {
     margin: 0 auto;
 }
 
+.currentPlayerEntry {
+    font-weight: bold;
+}
+
 img {
     width: 100%;
 }
@@ -34,6 +38,8 @@ img {
 figcaption {
     color: white;
     font-size: 0.8em;
+    display: flex;
+    justify-content: space-between;
 }
 
 figure {
@@ -62,7 +68,7 @@ figure {
     padding: 0.5em 0;
 }
 
-.idea {
+.phrase {
     width: 100%;
     text-align: center;
 }
@@ -79,4 +85,9 @@ figure {
 
 footer {
     margin-top: 5em;
+}
+
+/* debug */
+.game-info div {
+    border: 2px dashed black;
 }

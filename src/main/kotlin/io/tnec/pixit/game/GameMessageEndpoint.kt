@@ -25,11 +25,18 @@ class GameController(val gameManager: GameManager) {
         }
     }
 
+    @MessageMapping("/{gameId}/send-state")
+    @SendTo("/topic/{gameId}/response")
+    fun sendState(request: Request<EmptyPayload>, @DestinationVariable gameId: GameId) = answer(request) {
+        println("[${Instant.now()}] Got sendState request: ${request} from ${request.userId}")
+
+        gameManager.sendState(gameId)
+        Acknowledgment()
+    }
+
     @MessageMapping("/{gameId}/start")
     @SendTo("/topic/{gameId}/response")
-    fun startGame(request: Request<EmptyPayload>,
-                  @DestinationVariable gameId: GameId
-    ) = answer(request) {
+    fun startGame(request: Request<EmptyPayload>, @DestinationVariable gameId: GameId) = answer(request) {
         println("[${Instant.now()}] Got startGame request: ${request} from ${request.userId}")
 
         gameManager.start(gameId, request.userId)
@@ -38,9 +45,7 @@ class GameController(val gameManager: GameManager) {
 
     @MessageMapping("/{gameId}/set-word")
     @SendTo("/topic/{gameId}/response")
-    fun setWord(request: Request<Word>,
-                @DestinationVariable gameId: GameId
-    ): Message<out Any> = answer(request) {
+    fun setWord(request: Request<Word>, @DestinationVariable gameId: GameId): Message<out Any> = answer(request) {
         println("[${Instant.now()}] Got SetWordRequest: ${request} from ${request.userId}")
 
         gameManager.setWord(gameId, request.userId, request.payload)
