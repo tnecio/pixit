@@ -5,31 +5,210 @@ body {
     font-family: sans-serif;
     font-size: 16px;
     line-height: 1.5;
-    max-width: 75%;
+    max-width: max(75%, 1024px);
 }
 
-code {
-    background: white;
-}
+/* * * HEADER * * */
 
 a {
-    border-bottom: 1px solid #181144;
     color: #181144;
     text-decoration: none;
+}
+
+@media(max-width: 800px) {
+    body > header > nav > a {
+        font-size: 0.75em;
+        display:block;
+        line-height: 2em;
+    }
+    body > header > nav {
+        margin: auto 0;
+    }
+    .separator {
+        display: none;
+    }
+}
+
+body > header {
+    padding: 1em;
+    display: flex;
+    justify-content: space-between;
 }
 
 h1 a {
     border-bottom: 0;
     color: inherit;
+    text-decoration: none;
 }
 
 h3 {
     margin: 0 auto;
 }
 
-.currentPlayerEntry {
-    font-weight: bold;
+.separator {
+    color: gray;
 }
+
+/* * * MAIN * * */
+
+main {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+/* * * GAME INFO SECTION * * */
+
+#game-info {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 1em;
+}
+
+#game-players {
+    flex-grow: 1;
+    flex-basis: 25%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    margin: auto;
+}
+
+.playerEntry {
+    display: block;
+    font-size: 0.9em;
+    background-color: white;
+    border: 1px solid darkgray;
+    margin: 0.5em;
+    padding: 0.5em;
+    min-width: 7.5em;
+    width: max-content;
+    height: min-content;
+}
+
+.currentPlayerEntry b {
+    text-decoration: underline;
+}
+
+#game-state {
+    display: block;
+    text-align: center;
+    flex-grow: 1;
+    flex-basis: 30%;
+    margin: auto;
+    min-width: min(20em, 80vw);
+}
+
+#game-control {
+    flex-grow: 1;
+    flex-basis: 25%;
+    text-align: center;
+    padding: 0.5em 0;
+}
+
+#game-control > button {
+    margin: 1em auto;
+    display: block;
+    width: min(100%, 16em);
+    height: 3em;
+}
+
+.danger {
+    color: maroon;
+}
+
+/* * * TABLE SECTION * * */
+
+#table {
+    background-color: white;
+    border: 1px solid darkgray;
+    flex-basis: 45%;
+    flex-grow: 1;
+    min-width: min(70vw, 500px);
+}
+
+#phrase, #phrase-set {
+    width: 100%;
+    text-align: center;
+}
+#phrase > h2 {
+    display: inline-block;
+}
+#phrase-set {
+    padding: 1em;
+}
+#phrase-set input, #phrase-set button {
+    font-size: 1.2em;
+}
+#phrase-set input {
+    width: min(90vw, 60%);
+}
+
+.deck {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    padding-left: 1em;
+    padding-right: 1em;
+}
+
+figure {
+    padding: 0.5em;
+    background-color: black;
+    height: min-content;
+}
+
+.cardFigureNormal {
+    width: 150px;
+    max-height: 500px;
+    margin: 1.5em auto;
+}
+
+.cardFigureNormal > img {
+    cursor: pointer; /* zoom-in does not seem to work (?) */
+}
+
+.hiddenModal {
+    display: none;
+}
+
+.shownModal {
+    display: block;
+}
+
+.modal {
+    position: fixed;
+    left: 0; top: 0; width: 100%; height: 100%;
+    overflow: auto;
+    z-index: 1;
+}
+
+.modal > figure {
+    margin: auto;
+    border: 1px solid darkgray;
+    width: min-content;
+    height: min-content;
+}
+
+.modal > figure > img {
+    margin: auto;
+    border: 1px solid darkgray;
+    max-width: 75vw;
+    max-height: 90vh;
+    width: auto;
+    height: auto;
+}
+
+.modal button {
+    text-decoration: underline;
+}
+
+.chosenCard {
+    border: 0.5em orange solid;
+}
+
 
 img {
     width: 100%;
@@ -42,49 +221,37 @@ figcaption {
     justify-content: space-between;
 }
 
-figure {
-    padding: 0.5em;
-    background-color: black;
-    width: min(80%, 250px);
-    height: min-content;
-    max-height: 500px;
-    margin: 1.5em auto;
+figcaption > button {
+    /*width: 2em;*/
+    font-size: 1.5em;
+    border: none;
+    background-color: transparent;
+    color: white; /* fallback for browsers showing characters in black-and-white */
+    font-family: inherit;
+    padding: 0;
+    cursor: pointer;
 }
 
-.chosenCard {
-    border: 0.5em orange solid;
-}
-
-.game-info {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-evenly;
-}
-
-.game-info div {
+/* * * PLAYER'S PRIVATE AREA SECTION * * */
+#playersPrivateArea {
+    flex-basis: 45%;
     flex-grow: 1;
-    flex-basis: 250px;
-    text-align: center;
-    padding: 0.5em 0;
 }
 
-.phrase {
+#playersPrivateArea > h2 {
     width: 100%;
     text-align: center;
 }
 
-.table img {
-    opacity: 50%; /* FOR DEBUG only */
-}
-
-.deck {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-around;
-}
+/* * * FOOTER * * */
 
 footer {
     margin-top: 5em;
+}
+
+hr {
+    border-top: none;
+    border-bottom: 1px solid darkgray;
 }
 
 /* debug */

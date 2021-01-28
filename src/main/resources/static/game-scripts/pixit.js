@@ -16,9 +16,11 @@ var pixit = new Vue({
     el: "#pixit",
 
     created() {
+        // TODO preload game values
         this.userId = userId;
         this.requests = new Requester(userId);
-        this.GAME_STATES_DESCRIPTIONS = GAME_STATES_DESCRIPTIONS;
+        this.GAME_STATES_DESCRIPTIONS = GAME_STATES_DESCRIPTIONS; // TODO proper i18n
+
         this.console = console; // TODO remove once we get rid of TODOs
     },
 
@@ -52,34 +54,42 @@ var pixit = new Vue({
     template: `
 <main>
     <section id="game-info">
-        <div id="game-state">
-            <h3>{{GAME_STATES_DESCRIPTIONS[game.state]}}</h3>
+        <aside id="game-players">
             <playerEntry
-                v-for="(player, index) in game.players"
-                v-bind:key="index"
-                v-bind:player="player">
+                v-for="(player, k) in game.players"
+                v-bind:key="k"
+                v-bind:player="player"
+                v-bind:isCurrent="k == userId"
+                v-bind:isNarrator="k == game.narrator"
+                v-bind:isAdmin="k == game.admin">
             </playerEntry>
-        </div>
-        <div id="game-control">
+        </aside>
+        <div id="game-state">{{GAME_STATES_DESCRIPTIONS[game.state]}}</div> <!-- TODO proper 18n, discoverability etc. -->
+        <nav id="game-control">
             <button @click="requests.startGame()" v-if="canStartGame()">Start</button>
-            <button @click="console.log('TODO')" v-if="canFinishGame()">Finish game for all</button>
             <button @click="requests.proceed()" v-if="canProceed()">Proceed</button>
-            <button @click="console.log('TODO')">Leave Game</button>
-        </div>
-    </section>
-    
-    <section id="phrase">
-        <div v-if="canSetWord()">
-            <label for="wordInput"><input type="text" name="wordInput" v-model="interface.word" placeholder="Set a phrase"></label>
-            <button @click="setWord()">Set</button>
-        </div>
-        <h2 v-if="shouldDisplayWord()">
-            {{game.word.value}}
-        </h2>
+            <button @click="alert('TODO')" v-if="canFinishGame()" class="danger">Finish game for all</button>
+            <button @click="alert('TODO')" class="danger">Leave Game</button>
+        </nav>
     </section>
 
     <section id="table" v-if="gameStarted()">
-        <h3>Table</h3>
+        <form  v-on:submit.prevent="setWord()" id="phrase-set" v-if="canSetWord()">
+            <label for="wordInput"><input type="text" name="wordInput" v-model="interface.word" placeholder="Set a phrase"></label>
+            <button type="submit"
+                v-bind:disabled="!interface.chosenCardId"
+                v-bind:title="interface.chosenCardId ? 'Set phrase' : 'Select a card to go with the phrase' "
+            >
+                Set
+            </button>
+        </form>
+        <header id="phrase" v-else>
+            <span v-if="game.word">Phrase:</span>
+            <span v-else>Waiting for the narrator...</span>
+            <h2 v-if="shouldDisplayWord()">
+                {{game.word.value}}
+            </h2>
+        </header>
         <div class="deck">
             <card
                 v-for="(card, index) in game.table"
@@ -93,7 +103,7 @@ var pixit = new Vue({
     </section>
 
     <section id="playersPrivateArea" v-if="gameStarted()">
-        <h3>Player {{game.players[userId].name}}</h3>
+        <h2>Your deck</h2>
 
         <div class="deck">
             <card v-for="(card, index) in game.players[userId].deck"
@@ -152,7 +162,7 @@ var pixit = new Vue({
             return this.game.state === "WAITING_FOR_CARDS" && this.game.players[userId].sentCard === null;
         },
         shouldDisplayWord() {
-            return this.game.state !== 'WAITING_FOR_WORD' && this.game.state !== 'WAITING_FOR_PLAYERS';
+            return this.game.state !== 'WAITING_FOR_WORD' && this.game.state !== 'WAITING_FOR_PLAYERS' && this.game.word;
         },
         canProceed() {
             return this.game.admin === userId && this.game.state === "WAITING_TO_PROCEED";
