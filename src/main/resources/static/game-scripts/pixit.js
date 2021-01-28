@@ -22,6 +22,8 @@ var pixit = new Vue({
         this.GAME_STATES_DESCRIPTIONS = GAME_STATES_DESCRIPTIONS; // TODO proper i18n
 
         this.console = console; // TODO remove once we get rid of TODOs
+
+        this.game = initialGame;
     },
 
     data: { // TODO: preload data with values of the player on http request??

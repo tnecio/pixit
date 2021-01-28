@@ -134,4 +134,9 @@ class GameManager(val gameRepository: GameRepository,
         val game = gameRepository.getGame(gameId) ?: throw IllegalArgumentException("No such game ${gameId}")
         return game.model.players.containsKey(userId)
     }
+
+    fun getGameFor(gameId: GameId, userId: UserId): GameModel {
+        val game = gameRepository.getGame(gameId) ?: throw IllegalArgumentException("No such game ${gameId}")
+        return game.model.obfuscateFor(userId)
+    }
 }

@@ -55,6 +55,9 @@ class MainController(val userManager: UserManager) {
 
         model.addAttribute("userId", session.id)
         model.addAttribute("gameId", id)
+
+        model.addAttribute("initialGame", userManager.getGameFor(session.id, id))
+
         return "game"
     }
 }

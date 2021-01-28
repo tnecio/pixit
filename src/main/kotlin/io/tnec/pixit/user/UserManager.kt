@@ -17,4 +17,6 @@ class UserManager(val gameManager: GameManager) {
 
     fun addPlayerToGame(gameId: GameId, id: UserId, playerName: String) =
             gameManager.addPlayer(gameId, id, playerName)
+
+    fun getGameFor(userId: UserId, gameId: GameId): GameModel = gameManager.getGameFor(gameId, userId)
 }
