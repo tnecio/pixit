@@ -57,22 +57,23 @@ Vue.component('card', {
 });
 
 Vue.component('playerEntry', {
-    props: ['player', 'isCurrent', 'isNarrator', 'isAdmin', 'gameState'],
+    props: ['player', 'isCurrent', 'isNarrator', 'gameState'],
     template: `
     <div class="playerEntry" v-bind:class="{ currentPlayerEntry: isCurrent }">
         <b>{{player.name}}</b>
-        <sup style="color: maroon" title="Administrator" v-if="isAdmin">A</sup>
         <span title="Narrator" v-if="isNarrator"> 📜 </span>
-        <span title="still thinking on their choice..." v-if="isThinking(player, isCurrent, isNarrator, gameState)"> 💭</span>
+        <span title="still thinking..." v-if="isThinking(player, isCurrent, isNarrator, gameState)"> 💭</span>
         <br>
         {{player.points}} points
     </div>
     `,
     methods: {
         isThinking: function(player, isCurrent, isNarrator, gameState) {
-            if (isCurrent || isNarrator) { return false; }
+            if (isCurrent) { return false; }
+            if (gameState === 'WAITING_FOR_PLAYERS' && !player.startRequested) { return true; }
+
+            if (isNarrator) { return false; }
             if (gameState === 'WAITING_FOR_VOTES' && player.vote === null) { return true; }
-            // noinspection RedundantIfStatementJS
             if (gameState === 'WAITING_FOR_CARDS' && player.sentCard === null) { return true; }
             return false;
         }

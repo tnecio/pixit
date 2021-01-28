@@ -19,7 +19,6 @@ data class GameModel(
         var narrator: UserId,
         var table: List<Card> = listOf(),
         var word: Word? = null,
-        var admin: UserId,
         var state: GameState = GameState.WAITING_FOR_PLAYERS,
         var version: Long = 1
 ) {

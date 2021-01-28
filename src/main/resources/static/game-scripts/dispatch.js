@@ -11,6 +11,7 @@ function dispatchGameUpdate(msg) {
     }
 }
 
+// TODO we need two-way heartbeats
 function handleHeartbeat(heartbeat) {
     console.log("Calling Pixit with heartbeat " + JSON.stringify(heartbeat));
     pixit.updateIfVersionIsNewer(heartbeat.payload.version);

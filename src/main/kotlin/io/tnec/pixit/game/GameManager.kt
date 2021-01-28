@@ -16,7 +16,7 @@ class GameManager(val gameRepository: GameRepository,
                   val avatarManager: AvatarManager
 ) {
     fun createGame(id: UserId): GameId {
-        val newGameModel = GameModel(narrator = id, admin = id)
+        val newGameModel = GameModel(narrator = id)
         val newGame = Game(model = newGameModel, properties = GameProperties())
         return gameRepository.createGame(newGame)
     }
@@ -27,17 +27,21 @@ class GameManager(val gameRepository: GameRepository,
     }
 
     fun start(gameId: GameId, userId: UserId) = update(gameId) {
-        if (it.model.admin != userId) {
-            throw ValidationError("User ${userId} is not the admin in game ${gameId}")
-        } else if (it.model.state != GameState.WAITING_FOR_PLAYERS) {
+        if (it.model.state != GameState.WAITING_FOR_PLAYERS) {
             throw ValidationError("Game ${gameId} is not in ${GameState.WAITING_FOR_PLAYERS} state")
+        } else if (it.model.players[userId] == null) {
+            throw ValidationError("User ${userId} is not in game ${gameId}")
         }
 
-        it.model.state = it.model.state.next()
+        it.model.players[userId]!!.startRequested = true
+
+        if (it.model.players.all { (_, avatar) -> avatar.startRequested }) {
+            it.model.state = it.model.state.next()
+        }
     }
 
     fun setWord(gameId: GameId, userId: Id, word: Word) = update(gameId) {
-        if (userId != it.model.narrator && userId != it.model.admin) {
+        if (userId != it.model.narrator) {
             throw ValidationError("User ${userId} is not the narrator in game ${gameId}")
         } else if (it.model.state != GameState.WAITING_FOR_WORD) {
             throw ValidationError("Game ${gameId} is not in ${GameState.WAITING_FOR_WORD} state")
@@ -98,22 +102,31 @@ class GameManager(val gameRepository: GameRepository,
     }
 
     fun proceed(gameId: GameId, userId: UserId) = update(gameId) {
-        if (it.model.admin != userId) {
-            throw ValidationError("User ${userId} is not the admin in game ${gameId}")
+        if (it.model.players[userId] == null) {
+            throw ValidationError("User ${userId} is not in game ${gameId}")
         } else if (it.model.state != GameState.WAITING_TO_PROCEED) {
             throw ValidationError("Game ${gameId} is not in ${GameState.WAITING_TO_PROCEED} state")
         }
 
-        // Clear all variables
-        it.model.table = emptyList()
-        it.model.word = null
-        it.model.players = it.model.players.mapValues { (_, avatar) -> avatar.copy(vote = null, sentCard = null) }
+        it.model.players[userId]!!.proceedRequested = true
 
-        val players = it.model.players.keys.stream().sorted().collect(toList())
-        val narratorId = it.model.narrator
-        val narratorIndex = players.indexOfFirst { it == narratorId }
-        it.model.narrator = players[(narratorIndex + 1) % players.size]
-        it.model.state = it.model.state.next()
+        if (it.model.players.all { (_, avatar) -> avatar.proceedRequested }) {
+
+            // Clear all variables
+            it.model.table = emptyList()
+            it.model.word = null
+            it.model.players = it.model.players.mapValues { (_, avatar) ->
+                avatar.copy(
+                        vote = null, sentCard = null, proceedRequested = false
+                )
+            }
+
+            val players = it.model.players.keys.stream().sorted().collect(toList())
+            val narratorId = it.model.narrator
+            val narratorIndex = players.indexOfFirst { it == narratorId }
+            it.model.narrator = players[(narratorIndex + 1) % players.size]
+            it.model.state = it.model.state.next()
+        }
     }
 
     fun sendState(gameId: GameId) = gameRepository.withGame(gameId) {

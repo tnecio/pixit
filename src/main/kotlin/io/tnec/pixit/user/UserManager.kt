@@ -1,5 +1,6 @@
 package io.tnec.pixit.user
 
+import io.tnec.pixit.game.Game
 import io.tnec.pixit.game.GameModel
 import io.tnec.pixit.game.GameId
 import io.tnec.pixit.game.GameManager

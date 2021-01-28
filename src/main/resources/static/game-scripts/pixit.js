@@ -3,11 +3,11 @@
  */
 
 const GAME_STATES_DESCRIPTIONS = {
-    "WAITING_FOR_PLAYERS": "Awaiting start by game-admin",
+    "WAITING_FOR_PLAYERS": "All players must press 'Start' to begin!",
     "WAITING_FOR_WORD": "Waiting for the narrator to set the phrase",
     "WAITING_FOR_CARDS": "Waiting for all players to choose a card",
     "WAITING_FOR_VOTES": "Waiting for all players to cast their vote",
-    "WAITING_TO_PROCEED": "Waiting for the game-admin to proceed to the next round",
+    "WAITING_TO_PROCEED": "All players must press 'Proceed' to begin next round!",
     "FINISHED": "Game is over!",
     "CORRUPTED": "Sorry but this game instance is corrupted. No further play is possible"
 };
@@ -39,12 +39,13 @@ var pixit = new Vue({
                     deck: [],
                     points: 0,
                     vote: null,
-                    sentCard: null
+                    sentCard: null,
+                    startRequested: false,
+                    proceedRequested: false
                 }
             },
             version: 0,
-            narrator: null,
-            admin: null
+            narrator: null
         },
 
         interface: {
@@ -63,17 +64,23 @@ var pixit = new Vue({
                 v-bind:player="player"
                 v-bind:isCurrent="k == userId"
                 v-bind:isNarrator="k == game.narrator"
-                v-bind:isAdmin="k == game.admin"
                 v-bind:gameState="game.state">
             </playerEntry>
         </aside>
         <div id="game-state">{{GAME_STATES_DESCRIPTIONS[game.state]}}</div> <!-- TODO proper 18n, discoverability etc. -->
         <nav id="game-control">
-            <button @click="requests.startGame()" v-if="canStartGame()">Start</button>
-            <button @click="requests.proceed()" v-if="canProceed()">Proceed</button>
-            <button @click="alert('TODO')" v-if="canFinishGame()" class="danger">Finish game for all</button>
-            <button @click="alert('TODO')" class="danger">Leave Game</button>
+            <button @click="requests.leave()" class="danger">Leave</button>
         </nav>
+    </section>
+    
+    <section id="preStart" v-if="!gameStarted()">
+        <button @click="requests.startGame()" v-if="!game.players[userId].startRequested">Start</button>
+        <span v-else>Waiting for the other players...</span>
+    </section>
+    
+    <section id="roundEnd" v-if="game.state === 'WAITING_TO_PROCEED'">
+        <button @click="requests.proceed()">Proceed</button>
+        <span v-else>Waiting for the other players...</span>
     </section>
 
     <section id="playersPrivateArea" v-if="gameStarted()">
@@ -148,12 +155,6 @@ var pixit = new Vue({
         gameStarted() {
             return this.game.state !== 'WAITING_FOR_PLAYERS';
         },
-        canStartGame() {
-            return this.game.admin === userId && this.game.state === "WAITING_FOR_PLAYERS";
-        },
-        canFinishGame() {
-            return this.game.admin === userId && this.game.state !== "WAITING_FOR_PLAYERS";
-        },
         canSetWord() {
             return this.game.state === "WAITING_FOR_WORD" && this.game.narrator === userId;
         },
@@ -166,9 +167,6 @@ var pixit = new Vue({
         },
         shouldDisplayWord() {
             return this.game.state !== 'WAITING_FOR_WORD' && this.game.state !== 'WAITING_FOR_PLAYERS' && this.game.word;
-        },
-        canProceed() {
-            return this.game.admin === userId && this.game.state === "WAITING_TO_PROCEED";
         },
 
         setWord() {

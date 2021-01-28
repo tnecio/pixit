@@ -39,7 +39,7 @@ class GameController(val gameManager: GameManager) {
 
     @MessageMapping("/{gameId}/start")
     @SendTo("/topic/{gameId}/response")
-    fun startGame(request: Request<EmptyPayload>, @DestinationVariable gameId: GameId) = answer(request) {
+    fun start(request: Request<EmptyPayload>, @DestinationVariable gameId: GameId) = answer(request) {
         println("[${Instant.now()}] Got startGame request: ${request} from ${request.userId}")
 
         gameManager.start(gameId, request.userId)

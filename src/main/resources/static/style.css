@@ -100,12 +100,6 @@ main {
     background-color: antiquewhite;
 }
 
-sup {
-    vertical-align: top;
-    font-size: 0.7em;
-    font-weight: bold
-}
-
 #game-state {
     display: block;
     text-align: center;
@@ -243,15 +237,17 @@ figcaption {
     justify-content: space-between;
 }
 
-figcaption > button {
-    /*width: 2em;*/
-    font-size: 1.5em;
+.cardFigureNormal figcaption > button {
     border: none;
     background-color: transparent;
-    color: white; /* fallback for browsers showing characters in black-and-white */
+    color: white;
     font-family: inherit;
     padding: 0;
     cursor: pointer;
+}
+
+.modal figcaption > button {
+    font-size: 1.25em;
 }
 
 /* * * PLAYER'S PRIVATE AREA SECTION * * */
@@ -265,6 +261,19 @@ figcaption > button {
 #playersPrivateArea > h2 {
     width: 100%;
     text-align: center;
+}
+
+/* * * PRESTART AND PROCEED * * */
+
+#preStart, #roundEnd {
+    width: 100%;
+    text-align: center;
+}
+
+#preStart button, #roundEnd button {
+    display: block;
+    margin: 1em auto;
+    font-size: 2em;
 }
 
 /* * * FOOTER * * */
