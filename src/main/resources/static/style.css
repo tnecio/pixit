@@ -277,8 +277,3 @@ hr {
     border-top: none;
     border-bottom: 1px solid darkgray;
 }
-
-/* debug */
-.game-info div {
-    border: 2px dashed black;
-}
