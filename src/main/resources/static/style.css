@@ -15,22 +15,25 @@ a {
     text-decoration: none;
 }
 
-@media(max-width: 800px) {
+@media (max-width: 800px) {
     body > header > nav > a {
         font-size: 0.75em;
-        display:block;
+        display: block;
         line-height: 2em;
     }
+
     body > header > nav {
         margin: auto 0;
     }
-    .separator {
+
+    body > header .separator {
         display: none;
     }
 }
 
 body > header {
-    padding: 1em;
+    padding-left: 1em;
+    padding-right: 1em;
     display: flex;
     justify-content: space-between;
 }
@@ -39,6 +42,7 @@ h1 a {
     border-bottom: 0;
     color: inherit;
     text-decoration: none;
+    margin-bottom: 0;
 }
 
 h3 {
@@ -67,6 +71,10 @@ main {
     margin-bottom: 1em;
 }
 
+#game-info > * {
+    padding: 0.25em;
+}
+
 #game-players {
     flex-grow: 1;
     flex-basis: 25%;
@@ -88,8 +96,14 @@ main {
     height: min-content;
 }
 
-.currentPlayerEntry b {
-    text-decoration: underline;
+.currentPlayerEntry {
+    background-color: antiquewhite;
+}
+
+sup {
+    vertical-align: top;
+    font-size: 0.7em;
+    font-weight: bold
 }
 
 #game-state {
@@ -133,15 +147,19 @@ main {
     width: 100%;
     text-align: center;
 }
+
 #phrase > h2 {
     display: inline-block;
 }
+
 #phrase-set {
-    padding: 1em;
+    padding: 1em 0;
 }
+
 #phrase-set input, #phrase-set button {
     font-size: 1.2em;
 }
+
 #phrase-set input {
     width: min(90vw, 60%);
 }
@@ -180,7 +198,10 @@ figure {
 
 .modal {
     position: fixed;
-    left: 0; top: 0; width: 100%; height: 100%;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
     overflow: auto;
     z-index: 1;
     background-color: rgba(0, 0, 0, 0.75);
@@ -237,6 +258,8 @@ figcaption > button {
 #playersPrivateArea {
     flex-basis: 45%;
     flex-grow: 1;
+    background-color: antiquewhite;
+    border: 1px solid darkgray;
 }
 
 #playersPrivateArea > h2 {
@@ -247,7 +270,7 @@ figcaption > button {
 /* * * FOOTER * * */
 
 footer {
-    margin-top: 5em;
+    margin: 5em 1em 0 1em;
 }
 
 hr {

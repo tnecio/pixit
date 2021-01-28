@@ -61,7 +61,8 @@ var pixit = new Vue({
                 v-bind:player="player"
                 v-bind:isCurrent="k == userId"
                 v-bind:isNarrator="k == game.narrator"
-                v-bind:isAdmin="k == game.admin">
+                v-bind:isAdmin="k == game.admin"
+                v-bind:gameState="game.state">
             </playerEntry>
         </aside>
         <div id="game-state">{{GAME_STATES_DESCRIPTIONS[game.state]}}</div> <!-- TODO proper 18n, discoverability etc. -->
