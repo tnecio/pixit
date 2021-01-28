@@ -73,6 +73,24 @@ var pixit = new Vue({
         </nav>
     </section>
 
+    <section id="playersPrivateArea" v-if="gameStarted()">
+        <h2>Your deck</h2>
+
+        <div class="deck">
+            <card v-for="(card, index) in game.players[userId].deck"
+                  v-bind:key="index"
+                  v-bind:card="card"
+                  v-bind:state="{ sendable: canSendCard(),
+                  votable: false,
+                  choosable: canSetWord(),
+                  chosen: card.id === interface.chosenCardId }"
+                  @send-card="(id) => requests.sendCard(id)"
+                  @choose-card="(id) => { interface.chosenCardId = id; }"
+            >
+            </card>
+        </div>
+    </section>
+    
     <section id="table" v-if="gameStarted()">
         <form  v-on:submit.prevent="setWord()" id="phrase-set" v-if="canSetWord()">
             <label for="wordInput"><input type="text" name="wordInput" v-model="interface.word" placeholder="Set a phrase"></label>
@@ -97,24 +115,6 @@ var pixit = new Vue({
                 v-bind:card="card"
                 v-bind:state="{ sendable: false, votable: canVote(card.id), choosable: false, chosen: false }"
                 @vote-card="(id) => requests.vote(id)"
-            >
-            </card>
-        </div>
-    </section>
-
-    <section id="playersPrivateArea" v-if="gameStarted()">
-        <h2>Your deck</h2>
-
-        <div class="deck">
-            <card v-for="(card, index) in game.players[userId].deck"
-                  v-bind:key="index"
-                  v-bind:card="card"
-                  v-bind:state="{ sendable: canSendCard(),
-                  votable: false,
-                  choosable: canSetWord(),
-                  chosen: card.id === interface.chosenCardId }"
-                  @send-card="(id) => requests.sendCard(id)"
-                  @choose-card="(id) => { interface.chosenCardId = id; }"
             >
             </card>
         </div>
