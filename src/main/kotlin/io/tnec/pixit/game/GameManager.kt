@@ -94,7 +94,42 @@ class GameManager(val gameRepository: GameRepository,
 
         val narratorId = it.model.narrator
         if (it.model.players.all { (id, avatar) -> avatar.vote != null || id == narratorId }) {
+            countPoints(it.model)
             it.model.state = it.model.state.next()
+        }
+    }
+
+    private fun countPoints(model: GameModel) {
+        val narratorId = model.narrator
+        val whoseCardIsIt: MutableMap<CardId, UserId> = HashMap()
+        for ((playerId, avatar) in model.players) {
+            whoseCardIsIt[avatar.sentCard!!] = playerId
+        }
+
+        val whoVotedForWhom: MutableMap<UserId, UserId> = HashMap()
+        for ((playerId, avatar) in model.players) {
+            if (playerId == narratorId) continue
+            whoVotedForWhom[playerId] = whoseCardIsIt[avatar.vote!!] ?: continue
+        }
+
+        // If everyone voted on narrator's card: 2 points for everyone except the narrator
+        if (whoVotedForWhom.all { it.value == narratorId }) {
+            model.players = model.players.mapValues {
+                if (it.key == narratorId) it.value else it.value.copy(points = it.value.points + 2)
+            }
+            return
+        }
+
+        // Otherwise:
+        // If someone voted on narrator's card (but not everyone): 3 points for the narrator
+        if (whoVotedForWhom.any { it.value == narratorId }) {
+            model.players[narratorId]!!.points += 3
+        }
+        // and additionally 1 point for each person who voted for your card if you're not the narrator
+        for (playerId in model.players.keys) {
+            val fooler = whoVotedForWhom[playerId] ?: continue
+            if (fooler == narratorId) continue
+            model.players[fooler]!!.points += 1
         }
     }
 
