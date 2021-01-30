@@ -83,6 +83,7 @@ Vue.component('playerEntry', {
         isThinking: function(player, isCurrent, isNarrator, gameState) {
             if (isCurrent) { return false; }
             if (gameState === 'WAITING_FOR_PLAYERS' && !player.startRequested) { return true; }
+            if (gameState === 'WAITING_TO_PROCEED' && !player.proceedRequested) { return true; }
 
             if (isNarrator) { return false; }
             if (gameState === 'WAITING_FOR_VOTES' && player.vote === null) { return true; }
