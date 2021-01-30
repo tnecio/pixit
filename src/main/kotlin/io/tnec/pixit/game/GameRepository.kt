@@ -5,6 +5,7 @@ import io.tnec.pixit.common.NotFoundException
 import io.tnec.pixit.common.getUniqueId
 import io.tnec.pixit.common.storage.Store
 import io.tnec.pixit.common.storage.StoreFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentMap
@@ -16,8 +17,8 @@ import kotlin.concurrent.write
  * This class is thread-safe
  */
 @Component
-class GameRepository(storeFactory: StoreFactory) {
-    private val store: Store<Game> = storeFactory.get("Game")
+class GameRepository(storeFactory: StoreFactory, gameRepositoryProperties: GameRepositoryProperties) {
+    private var store: Store<Game> = storeFactory.get("Game", gameRepositoryProperties.gamePersistenceTimeoutMs)
     private val rwls: ConcurrentMap<Id, ReentrantReadWriteLock> = ConcurrentHashMap()
 
     init {
@@ -67,4 +68,10 @@ class GameRepository(storeFactory: StoreFactory) {
             rwls.remove(id)
         }
     }
+}
+
+@Component
+class GameRepositoryProperties {
+    @Value("\${game.persistenceTimeoutMs}")
+    var gamePersistenceTimeoutMs: Long = 0
 }

@@ -7,7 +7,7 @@ interface StoreFactory {
     /**
      * Prefix should be unique for each caller
      */
-    fun <T: Serializable> get(prefix: String): Store<T>
+    fun <T: Serializable> get(prefix: String, persistenceTimeoutMs: Long?): Store<T>
 }
 
 interface Store<T> {
