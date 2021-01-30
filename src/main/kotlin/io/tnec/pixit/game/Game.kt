@@ -5,14 +5,14 @@ import io.tnec.pixit.card.Card
 import io.tnec.pixit.card.hiddenCard
 import io.tnec.pixit.common.Id
 import io.tnec.pixit.user.UserId
-import java.lang.UnsupportedOperationException
+import java.io.Serializable
 
-data class Game(val model: GameModel, val properties: GameProperties)
+data class Game(val model: GameModel, val properties: GameProperties): Serializable
 
 typealias GameId = Id
 
-// Will hold game's server-side configuration
-data class GameProperties(val placeholder: String = "")
+// Will hold game's server-side configuration (like: imageSet)
+data class GameProperties(val placeholder: String = ""): Serializable
 
 // This is the part of Game that will be serialized
 data class GameModel(
@@ -23,7 +23,7 @@ data class GameModel(
         var state: GameState = GameState.WAITING_FOR_PLAYERS,
         var version: Long = 1,
         var roundResult: RoundResult = RoundResult.IN_PROGRESS
-) {
+): Serializable {
     fun obfuscateFor(userId: UserId): GameModel = copy(
             players = players.mapValues {
                 if (it.key == userId) it.value else it.value.copy(
@@ -74,4 +74,4 @@ fun GameState.next(): GameState {
     }
 }
 
-data class Word(val value: String)
+data class Word(val value: String): Serializable

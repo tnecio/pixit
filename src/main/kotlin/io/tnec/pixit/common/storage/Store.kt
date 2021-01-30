@@ -1,9 +1,13 @@
 package io.tnec.pixit.common.storage
 
 import io.tnec.pixit.common.Id
+import java.io.Serializable
 
 interface StoreFactory {
-    fun <T> get(): Store<T>
+    /**
+     * Prefix should be unique for each caller
+     */
+    fun <T: Serializable> get(prefix: String): Store<T>
 }
 
 interface Store<T> {

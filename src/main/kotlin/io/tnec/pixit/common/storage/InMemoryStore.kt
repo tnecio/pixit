@@ -1,10 +1,11 @@
 package io.tnec.pixit.common.storage
 
 import io.tnec.pixit.common.Id
+import java.io.Serializable
 import java.util.concurrent.ConcurrentHashMap
 
 class InMemoryStoreFactory: StoreFactory {
-    override fun <T> get(): Store<T> {
+    override fun <T: Serializable> get(prefix: String): Store<T> {
         return InMemoryStore()
     }
 }

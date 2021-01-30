@@ -16,26 +16,22 @@ import kotlin.concurrent.write
  * This class is thread-safe
  */
 @Component
-class GameRepository(persistentStoreFactory: StoreFactory, rapidAccessStoreFactory: StoreFactory) {
-    private val persistentStore: Store<Game> = persistentStoreFactory.get()
-    private val rapidAccessStore: Store<Game> = rapidAccessStoreFactory.get()
+class GameRepository(storeFactory: StoreFactory) {
+    private val store: Store<Game> = storeFactory.get("Game")
     private val rwls: ConcurrentMap<Id, ReentrantReadWriteLock> = ConcurrentHashMap()
 
-//    init {
-        //        // TODO dopracowac init: wczytywanie aktynych gier po crashu
-//        persistentStore.forEach { id, game ->
-//            rapidAccessStore.put(id, game)
-//            rwls[id] = ReentrantReadWriteLock()
-//        }
-//    }
+    init {
+        store.forEach { id, game ->
+            rwls[id] = ReentrantReadWriteLock()
+        }
+    }
 
     fun createGame(game: Game): GameId {
         val id = getUniqueId()
         val rwl = ReentrantReadWriteLock()
         rwls[id] = rwl
         rwl.write {
-            persistentStore.put(id, game)
-            rapidAccessStore.put(id, game)
+            store.put(id, game)
         }
         return id
     }
@@ -43,24 +39,23 @@ class GameRepository(persistentStoreFactory: StoreFactory, rapidAccessStoreFacto
     fun getGame(id: GameId): Game? {
         val rwl = rwls[id] ?: return null
         rwl.read {
-            return rapidAccessStore.get(id)
+            return store.get(id)
         }
     }
 
     fun updateGame(id: GameId, action: (Game) -> Game) {
         val rwl = rwls[id] ?: throw NotFoundException(id)
         rwl.write {
-            val game = rapidAccessStore.get(id) ?: persistentStore.get(id)!!
+            val game = store.get(id) ?: throw IllegalStateException("No game for rwl ${id}")
             val newGame = action(game)
-            persistentStore.put(id, newGame)
-            rapidAccessStore.put(id, newGame)
+            store.put(id, newGame)
         }
     }
 
     fun withGame(id: GameId, action: (Game) -> Unit) {
         val rwl = rwls[id] ?: throw NotFoundException(id)
         rwl.read {
-            val game = rapidAccessStore.get(id) ?: persistentStore.get(id)!!
+            val game = store.get(id) ?: throw IllegalStateException("No game for rwl ${id}")
             action(game)
         }
     }
@@ -68,8 +63,7 @@ class GameRepository(persistentStoreFactory: StoreFactory, rapidAccessStoreFacto
     fun dropGame(id: GameId) {
         val rwl = rwls[id] ?: throw NotFoundException(id)
         rwl.write {
-            persistentStore.drop(id)
-            rapidAccessStore.drop(id)
+            store.drop(id)
             rwls.remove(id)
         }
     }
