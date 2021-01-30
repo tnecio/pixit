@@ -142,7 +142,7 @@ var pixit = new Vue({
                 v-bind:card="card"
                 v-bind:state="{
                     sendable: false, votable: canVote(card.id), choosable: false, chosen: false,
-                    narrators: game.players[game.narrator].sentCard === card.id,
+                    narrators: game.state === 'WAITING_TO_PROCEED' && game.players[game.narrator].sentCard === card.id,
                     whoVotedNames: getWhoVotedNames(card.id),
                     owner: getOwnerOfCardOnTableName(card.id)
                 }"

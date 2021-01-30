@@ -40,8 +40,8 @@ data class GetPhotoResponse(
 ) {
     fun getAttribution() = user.getDisplayName()
 
-    fun toSmallImageInfo() = Image(
-            url = urls.small,
+    fun toImage() = Image(
+            url = urls.regular,
             alt = alt ?: "Missing alt description",
             attribution = getAttribution()
     )
@@ -49,7 +49,7 @@ data class GetPhotoResponse(
 
 @Component
 class UnsplashClient(var properties: UnsplashProperties, var restTemplate: RestTemplate) {
-    // TODO: move onto using a cache when the rate limit is hit
+    // TODO: retrieve a lot of URLs at once instead of one-by-one
 
     val UNSPLASH_URL: String = "https://api.unsplash.com/"
 
@@ -63,5 +63,5 @@ class UnsplashClient(var properties: UnsplashProperties, var restTemplate: RestT
 }
 
 class UnsplashImageFactory(val unsplashClient: UnsplashClient) : ImageFactory {
-    override fun getNewImage(): Image = unsplashClient.getRandomPhoto().toSmallImageInfo()
+    override fun getNewImage(): Image = unsplashClient.getRandomPhoto().toImage()
 }

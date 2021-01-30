@@ -19,11 +19,9 @@ Vue.component('card', {
 <div>
     <figure
         v-bind:class="{ chosenCard: state.chosen || state.narrators }"
+        v-bind:title="state.narrators ? 'Narrator\\'s card' : ''"
         class="cardFigureNormal"
     >
-        <aside v-if="state.owner" class="cardOwner">
-            <b>{{state.owner}}</b>'s card
-        </aside>
         <img
             v-bind:src="card.image.url"
             v-bind:alt="card.image.alt"
@@ -34,11 +32,12 @@ Vue.component('card', {
         <figcaption>
             <span>{{card.image.attribution}}</span>
         </figcaption>
-        <aside v-if="state.whoVotedNames && state.whoVotedNames.length > 0" class="whoVotedNames">
-            Voted on by: <br>
-            <ul>
-                <li v-for="playerName in state.whoVotedNames">{{playerName}}</li>
-            </ul>
+        <aside v-if="state.owner" class="whoVotedNames">
+            <b>{{state.owner}}</b>'s card
+            <span v-if="state.whoVotedNames && state.whoVotedNames.length > 0">
+                <br>Voted on by:
+                <b v-for="playerName in state.whoVotedNames">{{playerName}} </b>
+            </span>
         </aside>
     </figure>
     <div class="modal" v-bind:class="showModal ? 'shownModal' : 'hiddenModal'" @click="closeModal()">
