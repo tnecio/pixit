@@ -11,4 +11,4 @@ data class Card(
         val revealed: Boolean = true
 ): Serializable
 
-fun hiddenCard(id: CardId) = Card(id, Image("/pixit.png", "Hidden card", ""), revealed = false)
+fun hiddenCard(id: CardId) = Card(id, Image("/pixit.png", "Hidden card", "", ""), revealed = false)

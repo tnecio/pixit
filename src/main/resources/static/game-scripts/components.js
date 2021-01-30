@@ -29,9 +29,7 @@ Vue.component('card', {
             v-on="card.revealed ? { click: () => enlarge() } : { }"
             v-bind:title="card.revealed ? 'Click to zoom in' : 'Card is hidden' " />
     
-        <figcaption>
-            <span>{{card.image.attribution}}</span>
-        </figcaption>
+        <figcaption><span v-html="card.image.attribution"></span></figcaption>
         <aside v-if="state.owner" class="whoVotedNames">
             <b>{{state.owner}}</b>'s card
             <span v-if="state.whoVotedNames && state.whoVotedNames.length > 0">
@@ -45,9 +43,9 @@ Vue.component('card', {
             <img v-bind:src="card.image.url" v-bind:alt="card.image.alt" />
             <figcaption>
                 <span>
-                    <span>{{card.image.attribution}}</span> <!-- TODO Anchor to source, Improve caption -->
+                    <span v-html="card.image.attribution"></span>
                     <span class="separator"> | </span>
-                    <i>{{card.image.alt}}</i>
+                    <i>{{card.image.description ? card.image.description : card.image.alt}}</i>
                 </span>
                 <button type="button" v-if="state.sendable" v-on:click="$emit('send-card', card.id)">Send ✅</button>
                 <button type="button" v-if="state.votable" v-on:click="$emit('vote-card', card.id)">Vote ✅</button>
