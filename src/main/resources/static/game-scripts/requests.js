@@ -22,8 +22,7 @@ class Requester {
     }
 
     setWord(word, chosenCardId) {
-        this.send(new GameControlRequest("set-word", {"value": word}));
-        this.send(new GameControlRequest("send-card", {"cardId": chosenCardId}));
+        this.send(new GameControlRequest("set-word", {"word" : {"value": word}, "cardId" : chosenCardId }));
     }
 
     sendCard(cardId) {

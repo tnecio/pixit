@@ -1,6 +1,7 @@
 package io.tnec.pixit.game
 
 import io.tnec.pixit.avatar.AvatarManager
+import io.tnec.pixit.card.CardId
 import io.tnec.pixit.common.Id
 import io.tnec.pixit.common.ValidationError
 import io.tnec.pixit.user.UserId
@@ -40,12 +41,17 @@ class GameManager(val gameRepository: GameRepository,
         }
     }
 
-    fun setWord(gameId: GameId, userId: Id, word: Word) = update(gameId) {
+    fun setWord(gameId: GameId, userId: Id, word: Word, cardId: CardId) = update(gameId) {
         if (userId != it.model.narrator) {
             throw ValidationError("User ${userId} is not the narrator in game ${gameId}")
         } else if (it.model.state != GameState.WAITING_FOR_WORD) {
             throw ValidationError("Game ${gameId} is not in ${GameState.WAITING_FOR_WORD} state")
+        } else if (it.model.players[userId]!!.sentCard != null) {
+            throw ValidationError("User ${userId} has already sent a card in game ${gameId}")
         }
+
+        it.model.table += avatarManager.popCard(it.model.players[userId]!!, cardId)
+        it.model.players[userId]!!.sentCard = cardId
 
         it.model.word = word
         it.model.state = it.model.state.next()
@@ -62,14 +68,7 @@ class GameManager(val gameRepository: GameRepository,
         val cardId = payload.cardId
 
         // TODO hide card until its time to reveal
-
-        // TODO use AvatarManager to deal with "it.model.players[userId]!!"
-        val cardIndex = it.model.players[userId]!!.deck.indexOfFirst { it.id == cardId }
-        if (cardIndex == -1) throw ValidationError("User ${userId} does not have card ${cardId} in game ${gameId}")
-        it.model.table += it.model.players[userId]!!.deck[cardIndex]
-
-        it.model.players[userId]!!.deck = it.model.players[userId]!!.deck.filterNot { it.id == cardId }
-        it.model.players[userId]!!.deck += avatarManager.cardManager.newCard()
+        it.model.table += avatarManager.popCard(it.model.players[userId]!!, cardId)
 
         // TODO secret sending card: obfuscate sentCard while not in state waiting to proceed / finished :)
         it.model.players[userId]!!.sentCard = cardId
@@ -111,7 +110,6 @@ class GameManager(val gameRepository: GameRepository,
         it.model.players[userId]!!.proceedRequested = true
 
         if (it.model.players.all { (_, avatar) -> avatar.proceedRequested }) {
-
             // Clear all variables
             it.model.table = emptyList()
             it.model.word = null

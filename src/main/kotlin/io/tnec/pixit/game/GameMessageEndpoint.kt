@@ -48,10 +48,10 @@ class GameController(val gameManager: GameManager) {
 
     @MessageMapping("/{gameId}/set-word")
     @SendTo("/topic/{gameId}/response")
-    fun setWord(request: Request<Word>, @DestinationVariable gameId: GameId): Message<out Any> = answer(request) {
+    fun setWord(request: Request<WordWithCardId>, @DestinationVariable gameId: GameId): Message<out Any> = answer(request) {
         println("[${Instant.now()}] Got SetWordRequest: ${request} from ${request.userId}")
 
-        gameManager.setWord(gameId, request.userId, request.payload)
+        gameManager.setWord(gameId, request.userId, request.payload.word, request.payload.cardId)
         Acknowledgment()
     }
 
@@ -84,3 +84,5 @@ class GameController(val gameManager: GameManager) {
 }
 
 data class CardIdentifier(val cardId: CardId)
+
+data class WordWithCardId(val word: Word, val cardId: CardId)
