@@ -79,7 +79,7 @@ var pixit = new Vue({
     </section>
     
     <section id="roundEnd" v-if="game.state === 'WAITING_TO_PROCEED'">
-        <button @click="requests.proceed()">Proceed</button>
+        <button @click="requests.proceed()" v-if="!game.players[userId].proceedRequested">Proceed</button>
         <span v-else>Waiting for the other players...</span>
     </section>
 

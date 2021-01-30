@@ -67,13 +67,12 @@ class GameManager(val gameRepository: GameRepository,
 
         val cardId = payload.cardId
 
-        // TODO hide card until its time to reveal
         it.model.table += avatarManager.popCard(it.model.players[userId]!!, cardId)
 
-        // TODO secret sending card: obfuscate sentCard while not in state waiting to proceed / finished :)
         it.model.players[userId]!!.sentCard = cardId
 
         if (it.model.players.all { it.value.sentCard != null }) {
+            it.model.table = it.model.table.shuffled()
             it.model.state = it.model.state.next()
         }
     }
@@ -91,7 +90,6 @@ class GameManager(val gameRepository: GameRepository,
         val cardIndex = it.model.table.indexOfFirst { it.id == cardId }
         if (cardIndex == -1) throw ValidationError("There is no card ${cardId} on the table in game ${gameId}")
 
-        // TODO secret voting: obfuscate votes while not in state waiting to proceed / finished :)))
         it.model.players[userId]!!.vote = cardId
 
         val narratorId = it.model.narrator

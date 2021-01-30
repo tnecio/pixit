@@ -21,12 +21,13 @@ Vue.component('card', {
         <img
             v-bind:src="card.image.url"
             v-bind:alt="card.image.alt"
-            v-on="state.choosable ? { click: () => $emit('choose-card', card.id) } : { click: () => enlarge() } "
-            v-bind:title="state.choosable ? 'Click to select' : 'Click to zoom in' " />
+            v-bind:class="{ revealed : card.revealed }"
+            v-on="state.choosable ? { click: () => $emit('choose-card', card.id) } : card.revealed ? { click: () => enlarge() } : { }"
+            v-bind:title="state.choosable ? 'Click to select' : card.revealed ? 'Click to zoom in' : 'Card is hidden' " />
     
         <figcaption>
             <span>{{card.image.attribution}}</span>
-            <button type="button" v-on:click="enlarge()" title="Zoom">🔎</button>
+            <button type="button" v-on:click="enlarge()" title="Zoom" v-if="card.revealed">🔎</button>
         </figcaption>
     </figure>
     <div class="modal" v-bind:class="showModal ? 'shownModal' : 'hiddenModal'" @click="closeModal()">

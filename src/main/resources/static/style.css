@@ -178,7 +178,7 @@ figure {
     margin: 1.5em auto;
 }
 
-.cardFigureNormal > img {
+.cardFigureNormal > img.revealed {
     cursor: pointer; /* zoom-in does not seem to work (?) */
 }
 

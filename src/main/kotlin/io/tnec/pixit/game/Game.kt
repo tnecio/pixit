@@ -2,6 +2,7 @@ package io.tnec.pixit.game
 
 import io.tnec.pixit.avatar.Avatar
 import io.tnec.pixit.card.Card
+import io.tnec.pixit.card.hiddenCard
 import io.tnec.pixit.common.Id
 import io.tnec.pixit.user.UserId
 import java.lang.UnsupportedOperationException
@@ -24,7 +25,21 @@ data class GameModel(
 ) {
     fun obfuscateFor(userId: UserId): GameModel = copy(
             players = players.mapValues {
-                if (it.key == userId) it.value else it.value.copy(deck = emptyList())
+                if (it.key == userId) it.value else it.value.copy(
+                        deck = emptyList(),
+                        sentCard = if (state == GameState.WAITING_FOR_CARDS || state == GameState.WAITING_FOR_VOTES
+                                && it.value.sentCard != null) {
+                            "YES"
+                        } else it.value.sentCard,
+                        vote = if (state == GameState.WAITING_FOR_VOTES && it.value.vote != null) {
+                            "YES"
+                        } else it.value.vote
+                )
+            },
+            table = if (state == GameState.WAITING_FOR_CARDS) {
+                table.map { hiddenCard(it.id) }
+            } else {
+                table
             }
     )
 }
