@@ -182,6 +182,28 @@ figure {
     cursor: pointer; /* zoom-in does not seem to work (?) */
 }
 
+.whoVotedNames, .cardOwner {
+    display: block;
+    color: antiquewhite;
+    font-size: 0.75em;
+    width: 100%;
+}
+
+.whoVotedNames {
+    margin-top: 0.5em;
+}
+
+.cardOwner {
+    text-align: center
+}
+
+.whoVotedNames ul {
+    margin: 0 auto;
+    font-weight: bold;
+    padding: 0;
+    list-style-type: none;
+}
+
 .hiddenModal {
     display: none;
 }

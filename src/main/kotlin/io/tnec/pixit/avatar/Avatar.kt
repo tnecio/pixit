@@ -10,5 +10,6 @@ data class Avatar(
         var vote: CardId? = null,
         var sentCard: CardId? = null,
         var startRequested: Boolean = false,
-        var proceedRequested: Boolean = false
+        var proceedRequested: Boolean = false,
+        var roundPointDelta: Int = 0
 )

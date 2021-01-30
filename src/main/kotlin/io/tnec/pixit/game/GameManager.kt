@@ -115,21 +115,24 @@ class GameManager(val gameRepository: GameRepository,
         // If everyone voted on narrator's card: 2 points for everyone except the narrator
         if (whoVotedForWhom.all { it.value == narratorId }) {
             model.players = model.players.mapValues {
-                if (it.key == narratorId) it.value else it.value.copy(points = it.value.points + 2)
+                if (it.key == narratorId) it.value else it.value.copy(roundPointDelta = 2)
             }
+            model.roundResult = RoundResult.ALL_VOTED_FOR_NARRATOR
             return
         }
 
         // Otherwise:
         // If someone voted on narrator's card (but not everyone): 3 points for the narrator
+        model.roundResult = RoundResult.NO_ONE_VOTED_FOR_NARRATOR
         if (whoVotedForWhom.any { it.value == narratorId }) {
-            model.players[narratorId]!!.points += 3
+            model.players[narratorId]!!.roundPointDelta = 3
+            model.roundResult = RoundResult.SOMEONE_VOTED_FOR_NARRATOR
         }
         // and additionally 1 point for each person who voted for your card if you're not the narrator
         for (playerId in model.players.keys) {
             val fooler = whoVotedForWhom[playerId] ?: continue
             if (fooler == narratorId) continue
-            model.players[fooler]!!.points += 1
+            model.players[fooler]!!.roundPointDelta += 1
         }
     }
 
@@ -143,19 +146,23 @@ class GameManager(val gameRepository: GameRepository,
         it.model.players[userId]!!.proceedRequested = true
 
         if (it.model.players.all { (_, avatar) -> avatar.proceedRequested }) {
-            // Clear all variables
+            // Clear all variables + move points delta to points
             it.model.table = emptyList()
             it.model.word = null
             it.model.players = it.model.players.mapValues { (_, avatar) ->
                 avatar.copy(
-                        vote = null, sentCard = null, proceedRequested = false
+                        points = avatar.points + avatar.roundPointDelta,
+                        vote = null, sentCard = null, proceedRequested = false, roundPointDelta = 0
                 )
             }
+            it.model.roundResult = RoundResult.IN_PROGRESS
 
+            // Change narrator
             val players = it.model.players.keys.stream().sorted().collect(toList())
             val narratorId = it.model.narrator
             val narratorIndex = players.indexOfFirst { it == narratorId }
             it.model.narrator = players[(narratorIndex + 1) % players.size]
+
             it.model.state = it.model.state.next()
         }
     }

@@ -2,7 +2,10 @@ const EXAMPLE_CARD_STATE = {
     sendable: false,
     votable: false,
     choosable: false,
-    chosen: false
+    chosen: false,
+    narrators: false,
+    whoVotedNames: [],
+    owner: null
 };
 
 Vue.component('card', {
@@ -15,27 +18,35 @@ Vue.component('card', {
     template: `
 <div>
     <figure
-        v-bind:class="{ chosenCard: state.chosen }"
+        v-bind:class="{ chosenCard: state.chosen || state.narrators }"
         class="cardFigureNormal"
     >
+        <aside v-if="state.owner" class="cardOwner">
+            <b>{{state.owner}}</b>'s card
+        </aside>
         <img
             v-bind:src="card.image.url"
             v-bind:alt="card.image.alt"
             v-bind:class="{ revealed : card.revealed }"
-            v-on="state.choosable ? { click: () => $emit('choose-card', card.id) } : card.revealed ? { click: () => enlarge() } : { }"
-            v-bind:title="state.choosable ? 'Click to select' : card.revealed ? 'Click to zoom in' : 'Card is hidden' " />
+            v-on="card.revealed ? { click: () => enlarge() } : { }"
+            v-bind:title="card.revealed ? 'Click to zoom in' : 'Card is hidden' " />
     
         <figcaption>
             <span>{{card.image.attribution}}</span>
-            <button type="button" v-on:click="enlarge()" title="Zoom" v-if="card.revealed">🔎</button>
         </figcaption>
+        <aside v-if="state.whoVotedNames && state.whoVotedNames.length > 0" class="whoVotedNames">
+            Voted on by: <br>
+            <ul>
+                <li v-for="playerName in state.whoVotedNames">{{playerName}}</li>
+            </ul>
+        </aside>
     </figure>
     <div class="modal" v-bind:class="showModal ? 'shownModal' : 'hiddenModal'" @click="closeModal()">
-        <figure @v-on:click.prevent>
+        <figure @v-on:click.prevent> <!-- TODO this click.prevent does not work as intended -->
             <img v-bind:src="card.image.url" v-bind:alt="card.image.alt" />
             <figcaption>
                 <span>
-                    <span>{{card.image.attribution}}</span> <!-- TODO Anchor to source -->
+                    <span>{{card.image.attribution}}</span> <!-- TODO Anchor to source, Improve caption -->
                     <span class="separator"> | </span>
                     <i>{{card.image.alt}}</i>
                 </span>
@@ -65,7 +76,7 @@ Vue.component('playerEntry', {
         <span title="Narrator" v-if="isNarrator"> 📜 </span>
         <span title="still thinking..." v-if="isThinking(player, isCurrent, isNarrator, gameState)"> 💭</span>
         <br>
-        {{player.points}} points
+        {{player.points}}<b v-if="player.roundPointDelta">+{{player.roundPointDelta}}</b> points
     </div>
     `,
     methods: {

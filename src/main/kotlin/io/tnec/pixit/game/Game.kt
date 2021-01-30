@@ -21,7 +21,8 @@ data class GameModel(
         var table: List<Card> = listOf(),
         var word: Word? = null,
         var state: GameState = GameState.WAITING_FOR_PLAYERS,
-        var version: Long = 1
+        var version: Long = 1,
+        var roundResult: RoundResult = RoundResult.IN_PROGRESS
 ) {
     fun obfuscateFor(userId: UserId): GameModel = copy(
             players = players.mapValues {
@@ -52,6 +53,13 @@ enum class GameState {
     WAITING_TO_PROCEED,
     FINISHED,
     CORRUPTED
+}
+
+enum class RoundResult {
+    ALL_VOTED_FOR_NARRATOR,
+    NO_ONE_VOTED_FOR_NARRATOR,
+    SOMEONE_VOTED_FOR_NARRATOR,
+    IN_PROGRESS
 }
 
 fun GameState.next(): GameState {
