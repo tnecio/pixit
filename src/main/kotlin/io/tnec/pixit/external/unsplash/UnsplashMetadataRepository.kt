@@ -37,10 +37,16 @@ class UnsplashMetadataRepository(storeFactory: StoreFactory, val unsplashClient:
     }
 
     @Scheduled(fixedRate = 900000) // 15 minutes
-    fun updateImageStore() = unsplashClient.getRandomPhotosBatch().forEach {
-        store.put(it.id, it.toImage())
-        keysRwl.write {
-            keys.add(it.id)
+    fun updateImageStore() {
+        if (keys.size > 25_000) { // Let's not increase our memory usage indefinitely
+            return
+        }
+
+        unsplashClient.getRandomPhotosBatch().forEach {
+            store.put(it.id, it.toImage())
+            keysRwl.write {
+                keys.add(it.id)
+            }
         }
     }
 }
