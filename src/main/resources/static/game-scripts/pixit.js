@@ -96,31 +96,11 @@ var pixit = new Vue({
         <span v-else>Waiting for the other players...</span>
     </section>
 
-    <section id="playersPrivateArea" v-if="gameStarted()">
-        <h2>Your deck</h2>
-
-        <div class="deck">
-            <card v-for="(card, index) in game.players[userId].deck"
-                  v-bind:key="index"
-                  v-bind:card="card"
-                  v-bind:state="{
-                      sendable: canSendCard(),
-                      votable: false,
-                      choosable: canSetWord(),
-                      chosen: card.id === interface.chosenCardId,
-                      narrators: false,
-                      whoVotedNames: null, owner: null
-                  }"
-                  @send-card="(id) => requests.sendCard(id)"
-                  @choose-card="(id) => { interface.chosenCardId = id; }"
-            >
-            </card>
-        </div>
-    </section>
-    
     <section id="table" v-if="gameStarted()">
         <form  v-on:submit.prevent="setWord()" id="phrase-set" v-if="canSetWord()">
-            <label for="wordInput"><input type="text" name="wordInput" v-model="interface.word" placeholder="Set a phrase"></label>
+            <label for="wordInput">
+                <input type="text" name="wordInput" v-model="interface.word" placeholder="Select a card and set a phrase">
+            </label>
             <button type="submit"
                 v-bind:disabled="!interface.chosenCardId"
                 v-bind:title="interface.chosenCardId ? 'Set phrase' : 'Select a card to go with the phrase' "
@@ -147,6 +127,28 @@ var pixit = new Vue({
                     owner: getOwnerOfCardOnTableName(card.id)
                 }"
                 @vote-card="(id) => requests.vote(id)"
+            >
+            </card>
+        </div>
+    </section>
+    
+        <section id="playersPrivateArea" v-if="gameStarted()">
+        <h2>Your deck</h2>
+
+        <div class="deck">
+            <card v-for="(card, index) in game.players[userId].deck"
+                  v-bind:key="index"
+                  v-bind:card="card"
+                  v-bind:state="{
+                      sendable: canSendCard(),
+                      votable: false,
+                      choosable: canSetWord(),
+                      chosen: card.id === interface.chosenCardId,
+                      narrators: false,
+                      whoVotedNames: null, owner: null
+                  }"
+                  @send-card="(id) => requests.sendCard(id)"
+                  @choose-card="(id) => { interface.chosenCardId = id; }"
             >
             </card>
         </div>

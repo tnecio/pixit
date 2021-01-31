@@ -4,4 +4,4 @@ import java.util.*
 
 typealias Id = String
 
-fun getUniqueId(): Id = UUID.randomUUID().toString()
+fun getUniqueId(): Id = UUID.randomUUID().toString().take(8)
