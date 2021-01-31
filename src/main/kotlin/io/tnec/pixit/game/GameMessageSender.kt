@@ -1,7 +1,7 @@
 package io.tnec.pixit.game
 
 import io.tnec.pixit.common.messaging.Message
-import io.tnec.pixit.user.UserId
+import io.tnec.pixit.user.SessionId
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.messaging.handler.annotation.MessageMapping
 import org.springframework.messaging.simp.SimpMessagingTemplate
@@ -18,13 +18,13 @@ import java.util.concurrent.ConcurrentMap
 class GameMessageSender(@Autowired val simpTemplate: SimpMessagingTemplate) {
     private var gameHeartbeats: ConcurrentMap<GameId, Heartbeat> = ConcurrentHashMap()
 
-    private fun usersUpdatesTopic(gameId: GameId, userId: UserId): String = "/topic/$gameId/$userId/gameUpdate"
+    private fun usersUpdatesTopic(gameId: GameId, sessionId: SessionId): String = "/topic/$gameId/$sessionId/gameUpdate"
     private fun gamesHeartbeatTopic(gameId: GameId): String = "/topic/$gameId/heartbeat"
 
-    fun notifyGameUpdate(gameModel: GameModel, gameId: GameId) {
-        for (userId in gameModel.players.keys) {
-            simpTemplate.convertAndSend(usersUpdatesTopic(gameId, userId),
-                    Message("gameUpdate", gameModel.obfuscateFor(userId))
+    fun notifyGameUpdate(game: Game, gameId: GameId) {
+        for ((sessionId, userId) in game.properties.userIds) {
+            simpTemplate.convertAndSend(usersUpdatesTopic(gameId, sessionId),
+                    Message("gameUpdate", game.model.obfuscateFor(userId))
             )
         }
     }

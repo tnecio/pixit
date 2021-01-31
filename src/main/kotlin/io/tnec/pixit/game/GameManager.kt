@@ -2,11 +2,11 @@ package io.tnec.pixit.game
 
 import io.tnec.pixit.avatar.AvatarManager
 import io.tnec.pixit.card.CardId
-import io.tnec.pixit.common.Id
 import io.tnec.pixit.common.ValidationError
+import io.tnec.pixit.common.getUniqueId
+import io.tnec.pixit.user.SessionId
 import io.tnec.pixit.user.UserId
 import org.springframework.stereotype.Component
-import java.lang.IllegalArgumentException
 import java.util.stream.Collectors.toList
 
 // TODO: way for games to have different image factories etc. via configuration each
@@ -16,18 +16,25 @@ class GameManager(val gameRepository: GameRepository,
                   val gameMessageSender: GameMessageSender,
                   val avatarManager: AvatarManager
 ) {
-    fun createGame(id: UserId): GameId {
-        val newGameModel = GameModel(narrator = id)
-        val newGame = Game(model = newGameModel, properties = GameProperties())
+    fun createGame(sessionId: SessionId, playerName: String): GameId {
+        val userId: UserId = getUniqueId()
+        val newGameProperties = GameProperties(userIds = mapOf(sessionId to userId))
+        val newGameModel = GameModel(narrator = userId, players = newPlayer(userId, playerName))
+        val newGame = Game(model = newGameModel, properties = newGameProperties)
         return gameRepository.createGame(newGame)
     }
 
-    fun addPlayer(gameId: GameId, userId: UserId, playerName: String) = update(gameId) {
-        // TODO: we need to preload rendered game page with initial value of game state
-        it.model.players = it.model.players + mapOf(userId to avatarManager.newAvatar(playerName))
+    fun addPlayer(gameId: GameId, sessionId: SessionId, playerName: String) = update(gameId) {
+        val userId: UserId = getUniqueId()
+        it.properties.userIds += mapOf(sessionId to userId)
+        it.model.players += newPlayer(userId, playerName)
     }
 
-    fun start(gameId: GameId, userId: UserId) = update(gameId) {
+    private fun newPlayer(userId: UserId, playerName: String) = mapOf(userId to avatarManager.newAvatar(playerName))
+
+    fun start(gameId: GameId, sessionId: SessionId) = update(gameId) {
+        val userId = it.getUserIdForSession(sessionId)
+        
         if (it.model.state != GameState.WAITING_FOR_PLAYERS) {
             throw ValidationError("Game ${gameId} is not in ${GameState.WAITING_FOR_PLAYERS} state")
         } else if (it.model.players[userId] == null) {
@@ -41,7 +48,9 @@ class GameManager(val gameRepository: GameRepository,
         }
     }
 
-    fun setWord(gameId: GameId, userId: Id, word: Word, cardId: CardId) = update(gameId) {
+    fun setWord(gameId: GameId, sessionId: SessionId, word: Word, cardId: CardId) = update(gameId) {
+        val userId = it.getUserIdForSession(sessionId)
+        
         if (userId != it.model.narrator) {
             throw ValidationError("User ${userId} is not the narrator in game ${gameId}")
         } else if (it.model.state != GameState.WAITING_FOR_WORD) {
@@ -57,7 +66,9 @@ class GameManager(val gameRepository: GameRepository,
         it.model.state = it.model.state.next()
     }
 
-    fun sendCard(gameId: GameId, userId: UserId, payload: CardIdentifier) = update(gameId) {
+    fun sendCard(gameId: GameId, sessionId: SessionId, payload: CardIdentifierRequest) = update(gameId) {
+        val userId = it.getUserIdForSession(sessionId)
+
         if (it.model.state != GameState.WAITING_FOR_CARDS) {
             // TODO if 'sendCard' from narrator comes before his 'setWord'? Narrator should set card together with word!
             throw ValidationError("Game ${gameId} is not in ${GameState.WAITING_FOR_CARDS} state")
@@ -77,7 +88,9 @@ class GameManager(val gameRepository: GameRepository,
         }
     }
 
-    fun vote(gameId: GameId, userId: UserId, payload: CardIdentifier) = update(gameId) {
+    fun vote(gameId: GameId, sessionId: SessionId, payload: CardIdentifierRequest) = update(gameId) {
+        val userId = it.getUserIdForSession(sessionId)
+
         if (it.model.state != GameState.WAITING_FOR_VOTES) {
             throw ValidationError("Game ${gameId} is not in ${GameState.WAITING_FOR_VOTES} state")
         } else if (it.model.players[userId]!!.vote != null) {
@@ -136,7 +149,9 @@ class GameManager(val gameRepository: GameRepository,
         }
     }
 
-    fun proceed(gameId: GameId, userId: UserId) = update(gameId) {
+    fun proceed(gameId: GameId, sessionId: SessionId) = update(gameId) {
+        val userId = it.getUserIdForSession(sessionId)
+
         if (it.model.players[userId] == null) {
             throw ValidationError("User ${userId} is not in game ${gameId}")
         } else if (it.model.state != GameState.WAITING_TO_PROCEED) {
@@ -168,7 +183,7 @@ class GameManager(val gameRepository: GameRepository,
     }
 
     fun sendState(gameId: GameId) = gameRepository.withGame(gameId) {
-        gameMessageSender.notifyGameUpdate(it.model, gameId)
+        gameMessageSender.notifyGameUpdate(it, gameId)
     }
 
     private fun update(gameId: GameId, action: (Game) -> Unit) {
@@ -176,18 +191,32 @@ class GameManager(val gameRepository: GameRepository,
             action(it) // TODO surrond with try/catch for ValidationError
             it.model.version += 1
             gameMessageSender.setHeartbeat(gameId, Heartbeat(it.model.version))
-            gameMessageSender.notifyGameUpdate(it.model, gameId)
+            gameMessageSender.notifyGameUpdate(it, gameId)
             it
         }
     }
 
-    fun userPlaysIn(userId: UserId, gameId: GameId): Boolean {
-        val game = gameRepository.getGame(gameId) ?: throw IllegalArgumentException("No such game ${gameId}")
-        return game.model.players.containsKey(userId)
+    fun getUserIdForSession(sessionId: SessionId, gameId: GameId): UserId? {
+        // TODO: consistent Nullable returns vs. exceptions
+        val game = gameRepository.getGameSafe(gameId)
+        try {
+            return game.getUserIdForSession(sessionId)
+        } catch (e: IllegalArgumentException) {
+            return null
+        }
     }
 
-    fun getGameFor(gameId: GameId, userId: UserId): GameModel {
-        val game = gameRepository.getGame(gameId) ?: throw IllegalArgumentException("No such game ${gameId}")
+    fun getGameFor(gameId: GameId, sessionId: SessionId): GameModel {
+        val game = gameRepository.getGameSafe(gameId)
+        val userId = game.getUserIdForSession(sessionId)
         return game.model.obfuscateFor(userId)
     }
+
+    private fun Game.getUserIdForSession(sessionId: SessionId): UserId {
+        return properties.userIds[sessionId]
+                ?: throw IllegalArgumentException("No player with session id ${sessionId} in the game")
+    }
+
+    private fun GameRepository.getGameSafe(gameId: GameId): Game = getGame(gameId)
+            ?: throw IllegalArgumentException("No such game ${gameId}")
 }

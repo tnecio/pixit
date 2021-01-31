@@ -12,9 +12,7 @@ class Requester {
 
     send(request) {
         console.log("Sending request " + JSON.stringify(request));
-        sendRequest(gameControlEndpoint(request.endpoint),
-            {payload: request.payload, userId: userId}
-        );
+        sendRequest(gameControlEndpoint(request.endpoint), request.payload);
     }
 
     startGame() {
@@ -22,7 +20,7 @@ class Requester {
     }
 
     setWord(word, chosenCardId) {
-        this.send(new GameControlRequest("set-word", {"word" : {"value": word}, "cardId" : chosenCardId }));
+        this.send(new GameControlRequest("set-word", {"word": {"value": word}, "cardId": chosenCardId}));
     }
 
     sendCard(cardId) {

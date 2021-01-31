@@ -2,7 +2,10 @@ package io.tnec.pixit.user
 
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.ModelAttribute
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
 import javax.servlet.http.HttpServletResponse
 import javax.servlet.http.HttpSession
 
@@ -27,7 +30,7 @@ class MainController(val userManager: UserManager) {
                 model: Model,
                 response: HttpServletResponse,
                 session: HttpSession): String {
-        if (userManager.userInGame(session.id, id)) {
+        if (userManager.getUserIdForSession(session.id, id) != null) {
             return game(id, model, session)
         }
         return "join"
@@ -48,12 +51,14 @@ class MainController(val userManager: UserManager) {
              model: Model,
              session: HttpSession): String {
 
-        if (!userManager.userInGame(session.id, id)) {
+        val userId = userManager.getUserIdForSession(session.id, id)
+        if (userId == null) {
             // Player is unknown
             return "redirect:/join/${id}"
         }
 
-        model.addAttribute("userId", session.id)
+        model.addAttribute("sessionId", session.id)
+        model.addAttribute("userId", userId)
         model.addAttribute("gameId", id)
 
         model.addAttribute("initialGame", userManager.getGameFor(session.id, id))

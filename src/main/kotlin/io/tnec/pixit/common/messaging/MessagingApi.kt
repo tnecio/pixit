@@ -20,9 +20,9 @@ data class NotFoundResponse(@JsonIgnore val e: NotFoundException) {
     val id: Id = e.id
 }
 
-fun <T : Any> respond(request: Request<out Any>, responsePayload: T): Message<T> {
+fun <T : Any> respond(request: Any, responsePayload: T): Message<T> {
     return Message(
-            type = request.payload::class.simpleName!!,
+            type = request::class.simpleName!!,
             payload = responsePayload
     )
 }

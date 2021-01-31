@@ -4,6 +4,7 @@ import io.tnec.pixit.avatar.Avatar
 import io.tnec.pixit.card.Card
 import io.tnec.pixit.card.hiddenCard
 import io.tnec.pixit.common.Id
+import io.tnec.pixit.user.SessionId
 import io.tnec.pixit.user.UserId
 import java.io.Serializable
 
@@ -11,8 +12,8 @@ data class Game(val model: GameModel, val properties: GameProperties): Serializa
 
 typealias GameId = Id
 
-// Will hold game's server-side configuration (like: imageSet)
-data class GameProperties(val placeholder: String = ""): Serializable
+// Holds game's server-side configuration
+data class GameProperties(var userIds: Map<SessionId, UserId>): Serializable
 
 // This is the part of Game that will be serialized
 data class GameModel(

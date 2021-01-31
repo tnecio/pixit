@@ -1,23 +1,18 @@
 package io.tnec.pixit.user
 
-import io.tnec.pixit.game.Game
-import io.tnec.pixit.game.GameModel
 import io.tnec.pixit.game.GameId
 import io.tnec.pixit.game.GameManager
+import io.tnec.pixit.game.GameModel
 import org.springframework.stereotype.Component
 
 @Component
 class UserManager(val gameManager: GameManager) {
-    fun createGame(id: UserId, playerName: String): GameId {
-        val gameId = gameManager.createGame(id)
-        gameManager.addPlayer(gameId, id, playerName)
-        return gameId
-    }
+    fun createGame(id: SessionId, playerName: String): GameId = gameManager.createGame(id, playerName)
 
-    fun userInGame(id: UserId, gameId: GameId): Boolean = gameManager.userPlaysIn(id, gameId)
+    fun getUserIdForSession(id: SessionId, gameId: GameId): UserId? = gameManager.getUserIdForSession(id, gameId)
 
-    fun addPlayerToGame(gameId: GameId, id: UserId, playerName: String) =
+    fun addPlayerToGame(gameId: GameId, id: SessionId, playerName: String) =
             gameManager.addPlayer(gameId, id, playerName)
 
-    fun getGameFor(userId: UserId, gameId: GameId): GameModel = gameManager.getGameFor(gameId, userId)
+    fun getGameFor(sessionId: SessionId, gameId: GameId): GameModel = gameManager.getGameFor(gameId, sessionId)
 }

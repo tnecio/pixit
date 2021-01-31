@@ -28,11 +28,11 @@ function connect() {
     stompClient.connect({}, frame => {
         setConnected(true);
         console.log('Connected: ' + frame);
-        stompClient.subscribe('/topic/' + gameId + '/response', event  => {
+        stompClient.subscribe('/topic/' + gameId + '/' + sessionId + '/response', event  => {
             console.log(currentTime() + " Received acknowledgment for game request:" + event.body); // DEBUG
             handleAcknowledgment(JSON.parse(event.body));
         });
-        stompClient.subscribe('/topic/' + gameId + '/' + userId + '/gameUpdate', event  => {
+        stompClient.subscribe('/topic/' + gameId + '/' + sessionId + '/gameUpdate', event  => {
             console.log(currentTime() + " Received new game update for current user:" + event.body); // DEBUG
             dispatchGameUpdate(JSON.parse(event.body)); // TODO this should work without heartbeats!!!
         });
@@ -59,7 +59,7 @@ function sendRequest(endpoint, request) {
 }
 
 function gameControlEndpoint(ending) {
-    return "/v1/game-control/" + gameId + "/" + ending
+    return "/v1/game-control/" + gameId + "/" + sessionId + "/" + ending
 }
 
 connect();
