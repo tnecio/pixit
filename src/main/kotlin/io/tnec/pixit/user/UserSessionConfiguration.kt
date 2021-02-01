@@ -12,12 +12,9 @@ import org.springframework.session.web.context.AbstractHttpSessionApplicationIni
 @EnableRedisHttpSession
 class UserSessionConfiguration : AbstractHttpSessionApplicationInitializer() {
     @Bean
-    fun connectionFactory(): JedisConnectionFactory = JedisConnectionFactory()
-
-    @Bean
-    fun redisTemplate(): RedisTemplate<String, Any>? {
+    fun redisTemplate(redisConnectionFactory: JedisConnectionFactory): RedisTemplate<String, Any>? {
         val template = RedisTemplate<String, Any>()
-        template.setConnectionFactory(connectionFactory())
+        template.setConnectionFactory(redisConnectionFactory)
         return template
     }
 }

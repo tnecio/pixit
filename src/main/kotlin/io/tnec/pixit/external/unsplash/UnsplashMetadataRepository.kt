@@ -20,7 +20,7 @@ class UnsplashMetadataRepository(storeFactory: StoreFactory, val unsplashClient:
 
     init {
         keysRwl.write {
-            store.forEach { id, image ->
+            store.forEach { id, _ ->
                 keys.add(id)
             }
         }
