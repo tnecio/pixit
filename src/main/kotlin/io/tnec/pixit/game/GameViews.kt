@@ -1,4 +1,4 @@
-package io.tnec.pixit.user
+package io.tnec.pixit.game
 
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
@@ -9,10 +9,8 @@ import org.springframework.web.bind.annotation.PostMapping
 import javax.servlet.http.HttpServletResponse
 import javax.servlet.http.HttpSession
 
-data class NewUser(val playerName: String)
-
 @Controller
-class MainController(val userManager: UserManager) {
+class MainController(val gameManager: GameManager) {
     // GetMapping("/") is static
 
     @PostMapping("/start")
@@ -20,7 +18,7 @@ class MainController(val userManager: UserManager) {
               model: Model,
               response: HttpServletResponse,
               session: HttpSession) {
-        val id = userManager.createGame(session.id, newUser.playerName)
+        val id = gameManager.createGame(session.id, newUser)
         response.sendRedirect("game/${id}")
     }
 
@@ -30,7 +28,7 @@ class MainController(val userManager: UserManager) {
                 model: Model,
                 response: HttpServletResponse,
                 session: HttpSession): String {
-        if (userManager.getUserIdForSession(session.id, id) != null) {
+        if (gameManager.getUserIdForSession(session.id, id) != null) {
             return game(id, model, session)
         }
         return "join"
@@ -42,7 +40,7 @@ class MainController(val userManager: UserManager) {
                  model: Model,
                  response: HttpServletResponse,
                  session: HttpSession) {
-        userManager.addPlayerToGame(id, session.id, newUser.playerName)
+        gameManager.addPlayer(id, session.id, newUser)
         response.sendRedirect("/game/${id}")
     }
 
@@ -51,7 +49,7 @@ class MainController(val userManager: UserManager) {
              model: Model,
              session: HttpSession): String {
 
-        val userId = userManager.getUserIdForSession(session.id, id)
+        val userId = gameManager.getUserIdForSession(session.id, id)
         if (userId == null) {
             // Player is unknown
             return "redirect:/join/${id}"
@@ -60,8 +58,9 @@ class MainController(val userManager: UserManager) {
         model.addAttribute("sessionId", session.id)
         model.addAttribute("userId", userId)
         model.addAttribute("gameId", id)
+        model.addAttribute("lang", gameManager.getUserPreferences(id, userId).lang)
 
-        model.addAttribute("initialGame", userManager.getGameFor(session.id, id))
+        model.addAttribute("initialGame", gameManager.getGameFor(id, userId))
 
         return "game"
     }

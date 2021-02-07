@@ -81,7 +81,7 @@ main {
     flex-basis: 25%;
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-evenly;
+    justify-content: flex-start;
     margin: auto;
 }
 
@@ -104,17 +104,10 @@ main {
 #game-state {
     display: block;
     text-align: center;
-    flex-grow: 1;
-    flex-basis: 30%;
+    flex-grow: 2;
+    flex-basis: 55%;
     margin: auto;
     min-width: min(20em, 80vw);
-}
-
-#game-control {
-    flex-grow: 1;
-    flex-basis: 25%;
-    text-align: center;
-    padding: 0.5em 0;
 }
 
 #game-control > button {

@@ -1,0 +1,41 @@
+const t = {
+  "waiting_for_players": "Share the link to this page with your friends to invite them to the game. You need at least three players, but four or more is recommended.",
+  "press_start_to_begin": "Once you're ready and the team is complete, press Start. When all players do so the game will begin",
+  "waiting_for_narrator": "Waiting for the narrator to set the phrase",
+  "choose_card_and_set_phrase": "Choose a picture and then write a phrase to help them distinguish your picture from that of the other players.",
+  "do_set_phrase": "Write down, what would make you think about this picture? But don't make it too obvious!",
+  "do_send_card": "Think which picture, given the phrase, will other players mistake for the narrator's?",
+  "waiting_for_cards": "Waiting for all players to choose a picture",
+  "do_vote": "Try to guess which of these pictures was selected by the narrator",
+  "waiting_for_votes": "Waiting for all players to cast their vote",
+  "waiting_to_proceed": "All players must press 'Proceed' to begin next round!",
+  "finished": "Game is over!",
+  "corrupted": "Sorry but this game instance is corrupted. No further play is possible",
+  "all_voted_for_narrator": "All players voted for the narrator's card. +2 points for everyone except narrator",
+  "no_one_voted_for_narrator": "No one voted for the narrator's card. +1 point for everyone whose card got voted on for each vote",
+  "someone_voted_for_narrator": "+3 points for the narrator, +1 point for everyone whose card got voted on for each vote",
+  "in_progress": "Round is in progress...",
+  "waiting_for_others": "Waiting for other players...",
+  "start": "Start",
+  "proceed": "Proceed",
+  "select_card": "Select a card and set phrase",
+  "set_phrase": "Set phrase",
+  "phrase": "Phrase:",
+  "set": "Set",
+  "your_deck": "Your deck",
+
+  "click_to_zoom_in": "Click to zoom in",
+  "card_is_hidden": "Card hidden",
+  "narrators_card": "Narrator's card",
+  "xyzs_card_fmt": function(xyz) { return `<b>${xyz}</b>'s card`; },
+  "voted_on_by": "Voted on by:",
+  "send": "Send",
+  "vote": "Vote",
+  "select": "Select",
+
+  "points_fmt": function(x) {
+    if (x == 1) { return "point"; } else { return "points"; }
+  },
+  "narrator": "Narrator",
+  "still_thinking": "still thinking..."
+};

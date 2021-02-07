@@ -1,4 +1,4 @@
-package io.tnec.pixit.user
+package io.tnec.pixit.game
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration

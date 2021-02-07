@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import io.tnec.pixit.common.Id
 import io.tnec.pixit.common.NotFoundException
 import io.tnec.pixit.common.ValidationError
-import io.tnec.pixit.user.UserId
+import io.tnec.pixit.game.UserId
 
 data class Request<T>(val payload: T, val userId: UserId)
 

@@ -4,8 +4,6 @@ import io.tnec.pixit.avatar.AvatarManager
 import io.tnec.pixit.card.CardId
 import io.tnec.pixit.common.ValidationError
 import io.tnec.pixit.common.getUniqueId
-import io.tnec.pixit.user.SessionId
-import io.tnec.pixit.user.UserId
 import org.springframework.stereotype.Component
 import java.util.stream.Collectors.toList
 
@@ -16,25 +14,32 @@ class GameManager(val gameRepository: GameRepository,
                   val gameMessageSender: GameMessageSender,
                   val avatarManager: AvatarManager
 ) {
-    fun createGame(sessionId: SessionId, playerName: String): GameId {
+    fun createGame(sessionId: SessionId, newUser: NewUser): GameId {
         val userId: UserId = getUniqueId()
-        val newGameProperties = GameProperties(userIds = mapOf(sessionId to userId))
-        val newGameModel = GameModel(narrator = userId, players = newPlayer(userId, playerName))
+        val newGameProperties = GameProperties(
+                users = mapOf(sessionId to userId), userPreferences = newUserPreferences(userId, newUser)
+        )
+        val newGameModel = GameModel(narrator = userId, players = newPlayer(userId, newUser))
         val newGame = Game(model = newGameModel, properties = newGameProperties)
         return gameRepository.createGame(newGame)
     }
 
-    fun addPlayer(gameId: GameId, sessionId: SessionId, playerName: String) = update(gameId) {
+    fun addPlayer(gameId: GameId, sessionId: SessionId, newUser: NewUser) = update(gameId) {
         val userId: UserId = getUniqueId()
-        it.properties.userIds += mapOf(sessionId to userId)
-        it.model.players += newPlayer(userId, playerName)
+        it.properties.users += mapOf(sessionId to userId)
+        it.properties.userPreferences += newUserPreferences(userId, newUser)
+        it.model.players += newPlayer(userId, newUser)
     }
 
-    private fun newPlayer(userId: UserId, playerName: String) = mapOf(userId to avatarManager.newAvatar(playerName))
+    private fun newUserPreferences(userId: UserId, newUser: NewUser) = mapOf(userId to UserPreferences(
+            lang = newUser.langSelect
+    ))
+
+    private fun newPlayer(userId: UserId, newUser: NewUser) = mapOf(userId to avatarManager.newAvatar(newUser.playerName))
 
     fun start(gameId: GameId, sessionId: SessionId) = update(gameId) {
         val userId = it.getUserIdForSession(sessionId)
-        
+
         if (it.model.state != GameState.WAITING_FOR_PLAYERS) {
             throw ValidationError("Game ${gameId} is not in ${GameState.WAITING_FOR_PLAYERS} state")
         } else if (it.model.players[userId] == null) {
@@ -50,7 +55,7 @@ class GameManager(val gameRepository: GameRepository,
 
     fun setWord(gameId: GameId, sessionId: SessionId, word: Word, cardId: CardId) = update(gameId) {
         val userId = it.getUserIdForSession(sessionId)
-        
+
         if (userId != it.model.narrator) {
             throw ValidationError("User ${userId} is not the narrator in game ${gameId}")
         } else if (it.model.state != GameState.WAITING_FOR_WORD) {
@@ -206,17 +211,21 @@ class GameManager(val gameRepository: GameRepository,
         }
     }
 
-    fun getGameFor(gameId: GameId, sessionId: SessionId): GameModel {
+    fun getGameFor(gameId: GameId, userId: UserId): GameModel {
         val game = gameRepository.getGameSafe(gameId)
-        val userId = game.getUserIdForSession(sessionId)
         return game.model.obfuscateFor(userId)
     }
 
     private fun Game.getUserIdForSession(sessionId: SessionId): UserId {
-        return properties.userIds[sessionId]
+        return properties.users[sessionId]
                 ?: throw IllegalArgumentException("No player with session id ${sessionId} in the game")
     }
 
     private fun GameRepository.getGameSafe(gameId: GameId): Game = getGame(gameId)
             ?: throw IllegalArgumentException("No such game ${gameId}")
+
+    fun getUserPreferences(gameId: GameId, userId: UserId): UserPreferences {
+        return gameRepository.getGameSafe(gameId).properties.userPreferences[userId]
+                ?: throw IllegalArgumentException("No player with id ${userId} in the game")
+    }
 }

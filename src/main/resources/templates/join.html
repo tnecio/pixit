@@ -1,13 +1,19 @@
 <!DOCTYPE HTML>
-<html lang="pl" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head th:insert="fragments/head :: headFragment (pageTitle='PiXiT Join Game')"></head>
 
 <body>
 <header th:replace="fragments/header :: copy"></header>
 
 <form action="#" method="post">
-    <label>Imię:<input type="text" name="playerName"></label>
-    <button type="submit">Dołącz do gry</button>
+    <label>Name: <input type="text" name="playerName"></label>
+    <label for="langSelect">Choose language:
+        <select id="langSelect" name="langSelect">
+            <option value="en" selected>English</option>
+            <option value="pl">Polski</option>
+        </select>
+    </label>
+    <button type="submit">Join the game</button>
 </form>
 
 <footer th:replace="fragments/footer :: copy"></footer>

@@ -1,37 +1,11 @@
-/*
- * Definition of the Vue app representing the current game
- */
-
-const GAME_STATES_DESCRIPTIONS = {
-    "WAITING_FOR_PLAYERS": "All players must press 'Start' to begin!",
-    "WAITING_FOR_WORD": "Waiting for the narrator to set the phrase",
-    "WAITING_FOR_CARDS": "Waiting for all players to choose a card",
-    "WAITING_FOR_VOTES": "Waiting for all players to cast their vote",
-    "WAITING_TO_PROCEED": "All players must press 'Proceed' to begin next round!",
-    "FINISHED": "Game is over!",
-    "CORRUPTED": "Sorry but this game instance is corrupted. No further play is possible"
-};
-
-const ROUND_RESULTS_DESCRIPTIONS = {
-    "ALL_VOTED_FOR_NARRATOR": "All players voted for the narrator's card. +2 points for everyone except narrator",
-    "NO_ONE_VOTED_FOR_NARRATOR": "No one voted for the narrator's card. +1 point for everyone whose card got voted on for each vote",
-    "SOMEONE_VOTED_FOR_NARRATOR": "+3 points for the narrator, +1 point for everyone whose card got voted on for each vote",
-    "IN_PROGRESS": "Round is in progress..."
-};
-
 var pixit = new Vue({
     el: "#pixit",
 
     created() {
-        // TODO preload game values
         this.userId = userId;
         this.requests = new Requester(userId);
-        this.GAME_STATES_DESCRIPTIONS = GAME_STATES_DESCRIPTIONS; // TODO proper i18n
-        this.ROUND_RESULTS_DESCRIPTIONS = ROUND_RESULTS_DESCRIPTIONS;
-
-        this.console = console; // TODO remove once we get rid of TODOs
-
         this.game = initialGame;
+        this.t = t;
     },
 
     data: {
@@ -77,23 +51,20 @@ var pixit = new Vue({
                 v-bind:gameState="game.state">
             </playerEntry>
         </aside>
-        <div id="game-state">
-            <span v-if="game.state === 'WAITING_TO_PROCEED'">{{ROUND_RESULTS_DESCRIPTIONS[game.roundResult]}}<br></span>
-            {{GAME_STATES_DESCRIPTIONS[game.state]}}
-        </div> <!-- TODO proper 18n, discoverability etc. -->
-        <nav id="game-control">
-            <button @click="requests.leave()" class="danger">Leave</button>
-        </nav>
+        <div id="game-state" v-html="gamePhaseGuide()">
+        </div>
     </section>
     
     <section id="preStart" v-if="!gameStarted()">
-        <button @click="requests.startGame()" v-if="!game.players[userId].startRequested">Start</button>
-        <span v-else>Waiting for the other players...</span>
+        <button @click="requests.startGame()" v-bind:disabled="game.players[userId].startRequested">
+            {{ game.players[userId].startRequested ? t.waiting_for_others : t.start }}
+        </button>
     </section>
     
     <section id="roundEnd" v-if="game.state === 'WAITING_TO_PROCEED'">
-        <button @click="requests.proceed()" v-if="!game.players[userId].proceedRequested">Proceed</button>
-        <span v-else>Waiting for the other players...</span>
+        <button @click="requests.proceed()" v-bind:disabled="game.players[userId].proceedRequested">
+            {{ game.players[userId].proceedRequested ? t.waiting_for_others : t.proceed }}
+        </button>
     </section>
 
     <section id="table" v-if="gameStarted()">
@@ -103,14 +74,14 @@ var pixit = new Vue({
             </label>
             <button type="submit"
                 v-bind:disabled="!interface.chosenCardId"
-                v-bind:title="interface.chosenCardId ? 'Set phrase' : 'Select a card to go with the phrase' "
+                v-bind:title="interface.chosenCardId ? t.set_phrase : t.select_card "
             >
-                Set
+                {{t.set}}
             </button>
         </form>
         <header id="phrase" v-else>
-            <span v-if="game.word">Phrase:</span>
-            <span v-else>Waiting for the narrator...</span>
+            <span v-if="game.word">{{t.phrase}}</span>
+            <span v-else>{{t.waiting_for_narrator}}...</span>
             <h2 v-if="shouldDisplayWord()">
                 {{game.word.value}}
             </h2>
@@ -133,7 +104,7 @@ var pixit = new Vue({
     </section>
     
         <section id="playersPrivateArea" v-if="gameStarted()">
-        <h2>Your deck</h2>
+        <h2>{{t.your_deck}}</h2>
 
         <div class="deck">
             <card v-for="(card, index) in game.players[userId].deck"
@@ -166,13 +137,13 @@ var pixit = new Vue({
 
                 this.game = newGame;
             } else {
-                this.console.log("Out of order game update " + newGame.version + " < " + this.game.version);
+                console.log("Out of order game update " + newGame.version + " < " + this.game.version);
             }
         },
         updateIfVersionIsNewer: function (version) {
             if (version > this.game.version) {
                 this.requests.requestGameState();
-                this.console.log("Updating game due to version mismatch between heartbeat and local: " + version + " > " + this.game.version);
+                console.log("Updating game due to version mismatch between heartbeat and local: " + version + " > " + this.game.version);
             }
         },
 
@@ -216,6 +187,53 @@ var pixit = new Vue({
             if (this.game.state !== 'WAITING_TO_PROCEED') { return null; }
             for (let player in this.game.players) {
                 if (this.game.players[player].sentCard === cardId) { return this.game.players[player].name; }
+            }
+        },
+
+        /* USER GUIDE */
+        gamePhaseGuide() {
+            if (this.game.state === 'WAITING_FOR_PLAYERS') {
+                if (Object.keys(this.game.players).length) {
+                    return t.waiting_for_players;
+                } else {
+                    return t.press_start_to_begin;
+                }
+            } else if (this.game.state === 'WAITING_FOR_WORD') {
+                if (this.game.narrator === userId) {
+                    if (this.interface.chosenCardId) {
+                        return t.do_set_phrase;
+                    }
+                    return t.choose_card_and_set_phrase;
+                } else {
+                    return t.waiting_for_narrator;
+                }
+            } else if (this.game.state === 'WAITING_FOR_CARDS') {
+                if (this.game.players[userId].sentCard) {
+                    return t.waiting_for_cards;
+                } else {
+                    return t.do_send_card;
+                }
+            } else if (this.game.state === 'WAITING_FOR_VOTES') {
+                if (this.game.players[userId].vote) {
+                    return t.waiting_for_votes;
+                }
+                return t.do_vote;
+            } else if (this.game.state === 'WAITING_TO_PROCEED') {
+                let res;
+                if (this.game.roundResult === 'ALL_VOTED_FOR_NARRATOR') {
+                    res = t.all_voted_for_narrator;
+                } else if (this.game.roundResult === 'NO_ONE_VOTED_FOR_NARRATOR') {
+                    res = t.no_one_voted_for_narrator;
+                } else if (this.game.roundResult === 'SOMEONE_VOTED_FOR_NARRATOR') {
+                    res = t.someone_voted_for_narrator;
+                } else {
+                    return t.corrupted;
+                }
+                return t.waiting_to_proceed + "<br><b>" + res + "</b>"
+            } else if (this.game.state === 'FINISHED') {
+                return t.finished;
+            } else {
+                return t.corrupted;
             }
         }
     }

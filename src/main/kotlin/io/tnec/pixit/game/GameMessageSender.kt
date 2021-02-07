@@ -1,7 +1,6 @@
 package io.tnec.pixit.game
 
 import io.tnec.pixit.common.messaging.Message
-import io.tnec.pixit.user.SessionId
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.messaging.handler.annotation.MessageMapping
 import org.springframework.messaging.simp.SimpMessagingTemplate
@@ -22,7 +21,7 @@ class GameMessageSender(@Autowired val simpTemplate: SimpMessagingTemplate) {
     private fun gamesHeartbeatTopic(gameId: GameId): String = "/topic/$gameId/heartbeat"
 
     fun notifyGameUpdate(game: Game, gameId: GameId) {
-        for ((sessionId, userId) in game.properties.userIds) {
+        for ((sessionId, userId) in game.properties.users) {
             simpTemplate.convertAndSend(usersUpdatesTopic(gameId, sessionId),
                     Message("gameUpdate", game.model.obfuscateFor(userId))
             )

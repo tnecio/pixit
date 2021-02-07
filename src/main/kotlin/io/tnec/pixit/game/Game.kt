@@ -4,16 +4,18 @@ import io.tnec.pixit.avatar.Avatar
 import io.tnec.pixit.card.Card
 import io.tnec.pixit.card.hiddenCard
 import io.tnec.pixit.common.Id
-import io.tnec.pixit.user.SessionId
-import io.tnec.pixit.user.UserId
 import java.io.Serializable
 
-data class Game(val model: GameModel, val properties: GameProperties): Serializable
+data class Game(val model: GameModel, val properties: GameProperties) : Serializable
 
 typealias GameId = Id
 
 // Holds game's server-side configuration
-data class GameProperties(var userIds: Map<SessionId, UserId>): Serializable
+data class GameProperties(
+        var users: Map<SessionId, UserId>, var userPreferences: Map<UserId, UserPreferences>
+) : Serializable
+
+data class UserPreferences(var lang: String) : Serializable
 
 // This is the part of Game that will be serialized
 data class GameModel(
@@ -24,7 +26,7 @@ data class GameModel(
         var state: GameState = GameState.WAITING_FOR_PLAYERS,
         var version: Long = 1,
         var roundResult: RoundResult = RoundResult.IN_PROGRESS
-): Serializable {
+) : Serializable {
     fun obfuscateFor(userId: UserId): GameModel = copy(
             players = players.mapValues {
                 if (it.key == userId) it.value else it.value.copy(
@@ -75,4 +77,4 @@ fun GameState.next(): GameState {
     }
 }
 
-data class Word(val value: String): Serializable
+data class Word(val value: String) : Serializable

@@ -4,7 +4,6 @@ import io.tnec.pixit.card.CardId
 import io.tnec.pixit.common.NotFoundException
 import io.tnec.pixit.common.ValidationError
 import io.tnec.pixit.common.messaging.*
-import io.tnec.pixit.user.SessionId
 import org.springframework.messaging.handler.annotation.DestinationVariable
 import org.springframework.messaging.handler.annotation.MessageMapping
 import org.springframework.messaging.handler.annotation.SendTo
