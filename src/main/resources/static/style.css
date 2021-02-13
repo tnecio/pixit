@@ -244,6 +244,12 @@ figure {
 
 img {
     width: 100%;
+
+    /* Styling for alt descriptions */
+    color: antiquewhite;
+    font-size: 0.8em;
+    font-family: monospace;
+    text-decoration: dotted underline;
 }
 
 figcaption {

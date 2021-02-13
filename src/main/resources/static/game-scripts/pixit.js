@@ -70,11 +70,12 @@ var pixit = new Vue({
     <section id="table" v-if="gameStarted()">
         <form  v-on:submit.prevent="setWord()" id="phrase-set" v-if="canSetWord()">
             <label for="wordInput">
-                <input type="text" name="wordInput" v-model="interface.word" placeholder="Select a card and set a phrase">
+                <input type="text" name="wordInput" v-model="interface.word" 
+                v-bind:placeholder="t.select_card">
             </label>
             <button type="submit"
                 v-bind:disabled="!interface.chosenCardId"
-                v-bind:title="interface.chosenCardId ? t.set_phrase : t.select_card "
+                v-bind:title="interface.chosenCardId ? t.set_phrase : t.select_card"
             >
                 {{t.set}}
             </button>
