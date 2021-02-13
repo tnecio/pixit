@@ -4,11 +4,14 @@ import io.tnec.pixit.card.CardId
 import io.tnec.pixit.common.NotFoundException
 import io.tnec.pixit.common.ValidationError
 import io.tnec.pixit.common.messaging.*
+import mu.KotlinLogging
 import org.springframework.messaging.handler.annotation.DestinationVariable
 import org.springframework.messaging.handler.annotation.MessageMapping
 import org.springframework.messaging.handler.annotation.SendTo
 import org.springframework.stereotype.Controller
 import java.time.Instant
+
+private val log = KotlinLogging.logger { }
 
 @Controller
 @MessageMapping("/v1/game-control")
@@ -29,7 +32,7 @@ class GameController(val gameManager: GameManager) {
     fun sendState(request: EmptyRequest,
                   @DestinationVariable gameId: GameId,
                   @DestinationVariable sessionId: SessionId) = answer(request) {
-        println("[${Instant.now()}] Got sendState request: ${request} from ${sessionId}")
+        log.debug { "[${Instant.now()}] Got sendState request: ${request} from ${sessionId}" }
 
         gameManager.sendState(gameId)
     }
@@ -39,7 +42,7 @@ class GameController(val gameManager: GameManager) {
     fun start(request: EmptyRequest,
               @DestinationVariable gameId: GameId,
               @DestinationVariable sessionId: SessionId) = answer(request) {
-        println("[${Instant.now()}] Got startGame request: ${request} from ${sessionId}")
+        log.debug { "[${Instant.now()}] Got startGame request: ${request} from ${sessionId}" }
 
         gameManager.start(gameId, sessionId)
     }
@@ -49,7 +52,7 @@ class GameController(val gameManager: GameManager) {
     fun setWord(request: WordWithCardIdRequest,
                 @DestinationVariable gameId: GameId,
                 @DestinationVariable sessionId: SessionId): Message<out Any> = answer(request) {
-        println("[${Instant.now()}] Got SetWordRequest: ${request} from ${sessionId}")
+        log.debug { "[${Instant.now()}] Got SetWordRequest: ${request} from ${sessionId}" }
 
         gameManager.setWord(gameId, sessionId, request.word, request.cardId)
     }
@@ -59,7 +62,7 @@ class GameController(val gameManager: GameManager) {
     fun sendCard(request: CardIdentifierRequest,
                  @DestinationVariable gameId: GameId,
                  @DestinationVariable sessionId: SessionId): Message<out Any> = answer(request) {
-        println("[${Instant.now()}] Got SendCardRequest: ${request} from ${sessionId}")
+        log.debug { "[${Instant.now()}] Got SendCardRequest: ${request} from ${sessionId}" }
 
         gameManager.sendCard(gameId, sessionId, request)
     }
@@ -69,7 +72,7 @@ class GameController(val gameManager: GameManager) {
     fun vote(request: CardIdentifierRequest,
              @DestinationVariable gameId: GameId,
              @DestinationVariable sessionId: SessionId): Message<out Any> = answer(request) {
-        println("[${Instant.now()}] Got VoteRequest: ${request} from ${sessionId}")
+        log.debug { "[${Instant.now()}] Got VoteRequest: ${request} from ${sessionId}" }
 
         gameManager.vote(gameId, sessionId, request)
     }
@@ -79,7 +82,7 @@ class GameController(val gameManager: GameManager) {
     fun proceed(request: EmptyRequest,
                 @DestinationVariable gameId: GameId,
                 @DestinationVariable sessionId: SessionId) = answer(request) {
-        println("[${Instant.now()}] Got proceed request: ${request} from ${sessionId}")
+        log.debug { "[${Instant.now()}] Got proceed request: ${request} from ${sessionId}" }
 
         gameManager.proceed(gameId, sessionId)
     }

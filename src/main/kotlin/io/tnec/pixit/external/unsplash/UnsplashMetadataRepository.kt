@@ -4,12 +4,16 @@ import io.tnec.pixit.card.Image
 import io.tnec.pixit.card.ImageId
 import io.tnec.pixit.common.storage.Store
 import io.tnec.pixit.common.storage.StoreFactory
+import mu.KotlinLogging
 import org.springframework.scheduling.annotation.EnableScheduling
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
+import org.springframework.web.client.ResourceAccessException
 import java.util.concurrent.locks.ReentrantReadWriteLock
 import kotlin.concurrent.read
 import kotlin.concurrent.write
+
+private val log = KotlinLogging.logger { }
 
 @Component
 @EnableScheduling
@@ -39,14 +43,20 @@ class UnsplashMetadataRepository(storeFactory: StoreFactory, val unsplashClient:
     @Scheduled(fixedRate = 900000) // 15 minutes
     fun updateImageStore() {
         if (keys.size > 25_000) { // Let's not increase our memory usage indefinitely
+            log.info { "Repository size is ${keys.size}, skipping update" }
             return
         }
 
-        unsplashClient.getRandomPhotosBatch().forEach {
-            store.put(it.id, it.toImage())
-            keysRwl.write {
-                keys.add(it.id)
+        log.info { "Repository size is ${keys.size}, downloading metadata..." }
+        try {
+            unsplashClient.getRandomPhotosBatch().forEach {
+                store.put(it.id, it.toImage())
+                keysRwl.write {
+                    keys.add(it.id)
+                }
             }
+        } catch (e: ResourceAccessException) {
+            log.warn { "Failed to connect with Unsplash: $e" }
         }
     }
 }

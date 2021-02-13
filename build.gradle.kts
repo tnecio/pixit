@@ -28,11 +28,11 @@ dependencies {
 	implementation("org.webjars:webjars-locator-core")
 	implementation("org.webjars:sockjs-client:1.0.2")
 	implementation("org.webjars:stomp-websocket:2.3.3")
-	implementation("org.webjars:bootstrap:3.3.7")
 	implementation("org.webjars:jquery:3.1.1-1")
 	implementation("org.apache.commons:commons-pool2")
 	implementation("redis.clients:jedis")
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
+	implementation("io.github.microutils:kotlin-logging:1.12.0")
 
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 

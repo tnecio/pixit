@@ -1,6 +1,7 @@
 package io.tnec.pixit.game
 
 import io.tnec.pixit.common.messaging.Message
+import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.messaging.handler.annotation.MessageMapping
 import org.springframework.messaging.simp.SimpMessagingTemplate
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Controller
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentMap
 
+private val log = KotlinLogging.logger { }
 
 @Controller
 @EnableScheduling
@@ -22,6 +24,8 @@ class GameMessageSender(@Autowired val simpTemplate: SimpMessagingTemplate) {
 
     fun notifyGameUpdate(game: Game, gameId: GameId) {
         for ((sessionId, userId) in game.properties.users) {
+            log.debug { "Notifying game update (gameId=$gameId, sessionId=$sessionId)" }
+
             simpTemplate.convertAndSend(usersUpdatesTopic(gameId, sessionId),
                     Message("gameUpdate", game.model.obfuscateFor(userId))
             )

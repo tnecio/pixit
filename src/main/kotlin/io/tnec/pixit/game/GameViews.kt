@@ -1,5 +1,6 @@
 package io.tnec.pixit.game
 
+import mu.KotlinLogging
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
@@ -9,15 +10,19 @@ import org.springframework.web.bind.annotation.PostMapping
 import javax.servlet.http.HttpServletResponse
 import javax.servlet.http.HttpSession
 
+private val log = KotlinLogging.logger {}
+
 @Controller
 class MainController(val gameManager: GameManager) {
     // GetMapping("/") is static
 
-    @PostMapping("/start")
+    @PostMapping("/start") // pixit.tnec.io/start
     fun start(@ModelAttribute newUser: NewUser,
               model: Model,
               response: HttpServletResponse,
               session: HttpSession) {
+        log.info { "/start visited by $newUser" }
+
         val id = gameManager.createGame(session.id, newUser)
         response.sendRedirect("game/${id}")
     }
@@ -28,6 +33,8 @@ class MainController(val gameManager: GameManager) {
                 model: Model,
                 response: HttpServletResponse,
                 session: HttpSession): String {
+        log.info { "/join/$id GET (sessionId=${session.id})" }
+
         if (gameManager.getUserIdForSession(session.id, id) != null) {
             return game(id, model, session)
         }
@@ -40,6 +47,8 @@ class MainController(val gameManager: GameManager) {
                  model: Model,
                  response: HttpServletResponse,
                  session: HttpSession) {
+        log.info { "/join/$id POST by $newUser (sessionId=${session.id})" }
+
         gameManager.addPlayer(id, session.id, newUser)
         response.sendRedirect("/game/${id}")
     }
@@ -48,6 +57,7 @@ class MainController(val gameManager: GameManager) {
     fun game(@PathVariable id: String,
              model: Model,
              session: HttpSession): String {
+        log.info { "/game/$id GET (sessionId=${session.id})" }
 
         val userId = gameManager.getUserIdForSession(session.id, id)
         if (userId == null) {

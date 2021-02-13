@@ -5,6 +5,7 @@ import io.tnec.pixit.common.NotFoundException
 import io.tnec.pixit.common.getUniqueId
 import io.tnec.pixit.common.storage.Store
 import io.tnec.pixit.common.storage.StoreFactory
+import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import java.util.concurrent.ConcurrentHashMap
@@ -12,6 +13,8 @@ import java.util.concurrent.ConcurrentMap
 import java.util.concurrent.locks.ReentrantReadWriteLock
 import kotlin.concurrent.read
 import kotlin.concurrent.write
+
+private val log = KotlinLogging.logger { }
 
 /**
  * This class is thread-safe
@@ -22,13 +25,19 @@ class GameRepository(storeFactory: StoreFactory, gameRepositoryProperties: GameR
     private val rwls: ConcurrentMap<Id, ReentrantReadWriteLock> = ConcurrentHashMap()
 
     init {
+        var i = 0
         store.forEach { id, game ->
             rwls[id] = ReentrantReadWriteLock()
+            log.debug { "Loading game (gameId=$id) from storage" }
+            i++
         }
+        log.info { "Loaded $i games from storage" }
     }
 
     fun createGame(game: Game): GameId {
         val id = getUniqueId()
+        log.debug { "Creating game (gameId=$id)" }
+
         val rwl = ReentrantReadWriteLock()
         rwls[id] = rwl
         rwl.write {
@@ -38,6 +47,7 @@ class GameRepository(storeFactory: StoreFactory, gameRepositoryProperties: GameR
     }
 
     fun getGame(id: GameId): Game? {
+        log.debug { "Getting game (gameId=$id)" }
         val rwl = rwls[id] ?: return null
         rwl.read {
             return store.get(id)
@@ -45,6 +55,7 @@ class GameRepository(storeFactory: StoreFactory, gameRepositoryProperties: GameR
     }
 
     fun updateGame(id: GameId, action: (Game) -> Game) {
+        log.debug { "Updating game (gameId=$id)" }
         val rwl = rwls[id] ?: throw NotFoundException(id)
         rwl.write {
             val game = store.get(id) ?: throw IllegalStateException("No game for rwl ${id}")
@@ -62,6 +73,7 @@ class GameRepository(storeFactory: StoreFactory, gameRepositoryProperties: GameR
     }
 
     fun dropGame(id: GameId) {
+        log.debug { "Dropping game (gameId=$id)" }
         val rwl = rwls[id] ?: throw NotFoundException(id)
         rwl.write {
             store.drop(id)
