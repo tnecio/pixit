@@ -15,7 +15,8 @@ Vue.component('card', {
     },
     data: function () {
         return {
-            showModal: false
+            showModal: false,
+            word: null
         };
     },
     template: `
@@ -40,8 +41,20 @@ Vue.component('card', {
         </aside>
     </figure>
     <div class="modal" v-bind:class="showModal ? 'shownModal' : 'hiddenModal'" @click="closeModal()">
-        <figure @v-on:click.prevent> <!-- TODO this click.prevent does not work as intended -->
+        <figure>
             <img v-bind:src="card.image.url" v-bind:alt="card.image.alt" />
+            <form v-if="state.choosable" id="phrase-set" v-on:submit.prevent="closeModal(); $emit('set-word', card.id, word)" @click.stop>
+                <label for="wordInput">
+                    <input type="text" name="wordInput" v-model="word" 
+                    v-bind:placeholder="t.set_phrase">
+                </label>
+                <button type="submit"
+                    v-bind:disabled="!word"
+                    v-bind:title="t.select"
+                >
+                    {{t.select}}
+                </button>
+            </form>
             <figcaption>
                 <span>
                     <span v-html="card.image.attribution"></span>
@@ -50,7 +63,6 @@ Vue.component('card', {
                 </span>
                 <button type="button" v-if="state.sendable" v-on:click="$emit('send-card', card.id)">{{t.send}} ✅</button>
                 <button type="button" v-if="state.votable" v-on:click="$emit('vote-card', card.id)">{{t.vote}} ✅</button>
-                <button type="button" v-if="state.choosable" v-on:click="$emit('choose-card', card.id)">{{t.select}} ✅</button>
             </figcaption>
         </figure>
     </div>

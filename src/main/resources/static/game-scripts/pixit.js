@@ -32,11 +32,6 @@ var pixit = new Vue({
             roundResult: "IN_PROGRESS"
         },
 
-        interface: {
-            word: null,
-            chosenCardId: null
-        },
-
         connected: true
     },
 
@@ -73,25 +68,10 @@ var pixit = new Vue({
         </button>
     </section>
 
-    <section id="table" v-if="gameStarted()">
-        <form  v-on:submit.prevent="setWord()" id="phrase-set" v-if="canSetWord()">
-            <label for="wordInput">
-                <input type="text" name="wordInput" v-model="interface.word" 
-                v-bind:placeholder="t.select_card">
-            </label>
-            <button type="submit"
-                v-bind:disabled="!interface.chosenCardId"
-                v-bind:title="interface.chosenCardId ? t.set_phrase : t.select_card"
-            >
-                {{t.set}}
-            </button>
-        </form>
-        <header id="phrase" v-else>
+    <section id="table" v-if="shouldDisplayTable()">
+        <header id="phrase" v-if="shouldDisplayWord()">
             <span v-if="game.word">{{t.phrase}}</span>
-            <span v-else>{{t.waiting_for_narrator}}...</span>
-            <h2 v-if="shouldDisplayWord()">
-                {{game.word.value}}
-            </h2>
+            <h2>{{game.word.value}}</h2>
         </header>
         <div class="deck">
             <card
@@ -121,12 +101,12 @@ var pixit = new Vue({
                       sendable: canSendCard(),
                       votable: false,
                       choosable: canSetWord(),
-                      chosen: card.id === interface.chosenCardId,
+                      chosen: false,
                       narrators: false,
                       whoVotedNames: null, owner: null
                   }"
                   @send-card="(id) => requests.sendCard(id)"
-                  @choose-card="(id) => { interface.chosenCardId = id; }"
+                  @set-word="(id, word) => requests.setWord(id, word)"
             >
             </card>
         </div>
@@ -138,10 +118,6 @@ var pixit = new Vue({
         /* MODEL UPDATE */
         update: function (newGame) {
             if (newGame.version > this.game.version) {
-                if (newGame.state === 'WAITING_FOR_WORD' && this.game.state !== 'WAITING_FOR_WORD') {
-                    this.interface.word = null;
-                }
-
                 this.game = newGame;
             } else {
                 console.log("Out of order game update " + newGame.version + " < " + this.game.version);
@@ -168,17 +144,11 @@ var pixit = new Vue({
         canSendCard() {
             return this.game.state === "WAITING_FOR_CARDS" && this.game.players[userId].sentCard === null;
         },
+        shouldDisplayTable() {
+            return this.gameStarted();
+        },
         shouldDisplayWord() {
             return this.game.state !== 'WAITING_FOR_WORD' && this.game.state !== 'WAITING_FOR_PLAYERS' && this.game.word;
-        },
-
-        /* ACTIONS */
-        setWord() {
-            if (this.interface.chosenCardId !== null) {
-                this.requests.setWord(this.interface.word, this.interface.chosenCardId);
-            } else {
-                // TODO an aesthetic warning
-            }
         },
 
         /* WAITING_TO_PROCEED screen functions */
@@ -223,9 +193,6 @@ var pixit = new Vue({
                 }
             } else if (this.game.state === 'WAITING_FOR_WORD') {
                 if (this.game.narrator === userId) {
-                    if (this.interface.chosenCardId) {
-                        return t.do_set_phrase;
-                    }
                     return t.choose_card_and_set_phrase;
                 } else {
                     return t.waiting_for_narrator;
