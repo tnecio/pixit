@@ -11,10 +11,12 @@ const t = {
   "waiting_to_proceed": "All players must press 'Proceed' to begin next round!",
   "finished": "Game is over!",
   "corrupted": "Sorry but this game instance is corrupted. No further play is possible",
+
   "all_voted_for_narrator": "All players voted for the narrator's card. +2 points for everyone except narrator",
-  "no_one_voted_for_narrator": "No one voted for the narrator's card. +1 point for everyone whose card got voted on for each vote",
-  "someone_voted_for_narrator": "+3 points for the narrator, +1 point for everyone whose card got voted on for each vote",
+  "no_one_voted_for_narrator": "No one voted for the narrator's card. +1 point per vote for everyone whose card got voted on",
+  "someone_voted_for_narrator": "+3 points for the narrator, +1 point each for those who guessed the narrator's card correctly, +1 point per votefor everyone whose card got voted on",
   "in_progress": "Round is in progress...",
+
   "waiting_for_others": "Waiting for other players...",
   "start": "Start",
   "proceed": "Proceed",

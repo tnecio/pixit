@@ -11,10 +11,12 @@ const t = {
   "waiting_to_proceed": "Wszyscy gracze muszą wcisnąć 'Dalej' by przejść do następnej rundy",
   "finished": "Koniec gry!",
   "corrupted": "Niestety, dane tej gry są nieprawidłowe. Dalsza rozgrywka jest niemożliwa.",
+
   "all_voted_for_narrator": "Wszyscy odgadli obrazek narratora. +2 punkty dla wszystkich poza narratorem",
-  "no_one_voted_for_narrator": "Nikt nie odgadł obrazka narratora. +1 punkt za każdy głos dla każdego na czyj obrazek zagłosowano",
-  "someone_voted_for_narrator": "+3 punkty dla narratora, +1 punkt za każdy głos dla każdego na czyj obrazek zagłosowano",
+  "no_one_voted_for_narrator": "Nikt nie odgadł obrazka narratora. +po jednym punkcie na każdy głos dla każdego na czyj obrazek zagłosowano",
+  "someone_voted_for_narrator": "+3 punkty dla narratora, +1 dla każdego kto odgadł kartę narratora, +po jednym punkcie na głos dla każdego na czyj obrazek zagłosowano",
   "in_progress": "Runda w trakcie...",
+
   "waiting_for_others": "Oczekiwanie na pozostałych graczy...",
   "start": "Start",
   "proceed": "Dalej",
