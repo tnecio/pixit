@@ -5,9 +5,12 @@ import io.tnec.pixit.common.NotFoundException
 import io.tnec.pixit.common.ValidationError
 import io.tnec.pixit.common.messaging.*
 import mu.KotlinLogging
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.messaging.handler.annotation.DestinationVariable
 import org.springframework.messaging.handler.annotation.MessageMapping
 import org.springframework.messaging.handler.annotation.SendTo
+import org.springframework.messaging.simp.SimpMessagingTemplate
+import org.springframework.scheduling.annotation.EnableScheduling
 import org.springframework.stereotype.Controller
 import java.time.Instant
 
@@ -94,3 +97,19 @@ class EmptyRequest
 data class CardIdentifierRequest(val cardId: CardId)
 
 data class WordWithCardIdRequest(val word: Word, val cardId: CardId)
+
+@Controller
+@EnableScheduling
+class GameMessageSender(@Autowired val simpTemplate: SimpMessagingTemplate) {
+    private fun usersUpdatesTopic(gameId: GameId, sessionId: SessionId): String = "/topic/$gameId/$sessionId/gameUpdate"
+
+    fun notifyGameUpdate(game: Game, gameId: GameId) {
+        for ((sessionId, userId) in game.properties.sessions) {
+            log.debug { "Sending an update (gameId=$gameId, userId=$userId, sessionId=$sessionId)" }
+
+            simpTemplate.convertAndSend(usersUpdatesTopic(gameId, sessionId),
+                    Message("gameUpdate", game.model.obfuscateFor(userId))
+            )
+        }
+    }
+}

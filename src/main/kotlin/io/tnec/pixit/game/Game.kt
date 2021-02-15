@@ -5,6 +5,7 @@ import io.tnec.pixit.card.Card
 import io.tnec.pixit.card.hiddenCard
 import io.tnec.pixit.common.Id
 import java.io.Serializable
+import java.time.Instant
 
 data class Game(val model: GameModel, val properties: GameProperties) : Serializable
 
@@ -12,10 +13,10 @@ typealias GameId = Id
 
 // Holds game's server-side configuration
 data class GameProperties(
-        var users: Map<SessionId, UserId>, var userPreferences: Map<UserId, UserPreferences>
+        var sessions: Map<SessionId, UserId>, var users: Map<UserId, UserModel>
 ) : Serializable
 
-data class UserPreferences(var lang: String) : Serializable
+data class UserModel(var lang: String, var lastHeartbeat: Instant) : Serializable
 
 // This is the part of Game that will be serialized
 data class GameModel(

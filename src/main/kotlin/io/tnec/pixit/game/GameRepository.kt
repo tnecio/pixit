@@ -58,17 +58,17 @@ class GameRepository(storeFactory: StoreFactory, gameRepositoryProperties: GameR
         log.debug { "Updating game (gameId=$id)" }
         val rwl = rwls[id] ?: throw NotFoundException(id)
         rwl.write {
-            val game = store.get(id) ?: throw IllegalStateException("No game for rwl ${id}")
+            val game = store.get(id) ?: throw NotFoundException(id) // Game could be dropped just before calling `read`
             val newGame = action(game)
             store.put(id, newGame)
         }
     }
 
-    fun withGame(id: GameId, action: (Game) -> Unit) {
+    fun <T>withGame(id: GameId, action: (Game) -> T): T {
         val rwl = rwls[id] ?: throw NotFoundException(id)
         rwl.read {
-            val game = store.get(id) ?: throw IllegalStateException("No game for rwl ${id}")
-            action(game)
+            val game = store.get(id) ?: throw NotFoundException(id) // Game could be dropped just before calling `read`
+            return action(game)
         }
     }
 
@@ -78,6 +78,15 @@ class GameRepository(storeFactory: StoreFactory, gameRepositoryProperties: GameR
         rwl.write {
             store.drop(id)
             rwls.remove(id)
+        }
+    }
+
+    fun forEach(action: (GameId, Game) -> Unit) {
+        for ((gameId, rwl) in rwls) {
+            rwl.read {
+                val game = store.get(gameId) ?: return@read
+                action(gameId, game)
+            }
         }
     }
 }

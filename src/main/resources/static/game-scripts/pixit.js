@@ -35,16 +35,22 @@ var pixit = new Vue({
         interface: {
             word: null,
             chosenCardId: null
-        }
+        },
+
+        connected: true
     },
 
     template: `
 <main>
+    <aside id="errors" v-if="!connected">
+        {{t.connection_lost}}
+    </aside>
+
     <section id="game-info">
-        <aside id="game-players">
+        <aside id="game-players"> <!-- TODO in the order of playing! -->
             <playerEntry
                 v-for="(player, k) in game.players"
-                v-bind:key="player.points"
+                v-bind:key="k"
                 v-bind:player="player"
                 v-bind:isCurrent="k == userId"
                 v-bind:isNarrator="k == game.narrator"
@@ -189,6 +195,20 @@ var pixit = new Vue({
             for (let player in this.game.players) {
                 if (this.game.players[player].sentCard === cardId) { return this.game.players[player].name; }
             }
+        },
+
+        /* CONNECTION ISSUES */
+        connectionLost() {
+            this.connected = false;
+        },
+        startConnecting() {
+            this.connected = "connecting"; // TODO use one type for this.connected
+        },
+        connectionUp() {
+            this.connected = true;
+        },
+        isDisconnected() {
+            return (this.connected === false);
         },
 
         /* USER GUIDE */

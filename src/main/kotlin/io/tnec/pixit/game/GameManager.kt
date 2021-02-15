@@ -6,6 +6,7 @@ import io.tnec.pixit.common.ValidationError
 import io.tnec.pixit.common.getUniqueId
 import mu.KotlinLogging
 import org.springframework.stereotype.Component
+import java.time.Instant
 import java.util.stream.Collectors.toList
 
 // TODO: way for games to have different image factories etc. via configuration each
@@ -19,32 +20,32 @@ class GameManager(val gameRepository: GameRepository,
 ) {
     fun createGame(sessionId: SessionId, newUser: NewUser): GameId {
         log.info { "createGame by $newUser (sessionId=${sessionId})" }
-        
+
         val userId: UserId = getUniqueId()
         val newGameProperties = GameProperties(
-                users = mapOf(sessionId to userId), userPreferences = newUserPreferences(userId, newUser)
+                sessions = mapOf(sessionId to userId), users = newUserPreferences(userId, newUser)
         )
         val newGameModel = GameModel(narrator = userId, players = newPlayer(userId, newUser))
         val newGame = Game(model = newGameModel, properties = newGameProperties)
         return gameRepository.createGame(newGame)
     }
 
-    fun addPlayer(gameId: GameId, sessionId: SessionId, newUser: NewUser) = update(gameId) {
+    fun addPlayer(gameId: GameId, sessionId: SessionId, newUser: NewUser) = updateAndNotify(gameId) {
         log.info { "addPlayer $newUser (gameId=$gameId, sessionId=$sessionId)" }
-        
+
         val userId: UserId = getUniqueId()
-        it.properties.users += mapOf(sessionId to userId)
-        it.properties.userPreferences += newUserPreferences(userId, newUser)
+        it.properties.sessions += mapOf(sessionId to userId)
+        it.properties.users += newUserPreferences(userId, newUser)
         it.model.players += newPlayer(userId, newUser)
     }
 
-    private fun newUserPreferences(userId: UserId, newUser: NewUser) = mapOf(userId to UserPreferences(
-            lang = newUser.langSelect
+    private fun newUserPreferences(userId: UserId, newUser: NewUser) = mapOf(userId to UserModel(
+            lang = newUser.langSelect, lastHeartbeat = Instant.now()
     ))
 
     private fun newPlayer(userId: UserId, newUser: NewUser) = mapOf(userId to avatarManager.newAvatar(newUser.playerName))
 
-    fun start(gameId: GameId, sessionId: SessionId) = update(gameId) {
+    fun start(gameId: GameId, sessionId: SessionId) = updateAndNotify(gameId) {
         val userId = it.getUserIdForSession(sessionId)
 
         if (it.model.state != GameState.WAITING_FOR_PLAYERS) {
@@ -58,12 +59,12 @@ class GameManager(val gameRepository: GameRepository,
 
         if (it.model.players.all { (_, avatar) -> avatar.startRequested }) {
             log.info { "Starting game (gameId=$gameId)" }
-            
+
             it.model.state = it.model.state.next()
         }
     }
 
-    fun setWord(gameId: GameId, sessionId: SessionId, word: Word, cardId: CardId) = update(gameId) {
+    fun setWord(gameId: GameId, sessionId: SessionId, word: Word, cardId: CardId) = updateAndNotify(gameId) {
         val userId = it.getUserIdForSession(sessionId)
 
         if (userId != it.model.narrator) {
@@ -82,7 +83,7 @@ class GameManager(val gameRepository: GameRepository,
         it.model.state = it.model.state.next()
     }
 
-    fun sendCard(gameId: GameId, sessionId: SessionId, payload: CardIdentifierRequest) = update(gameId) {
+    fun sendCard(gameId: GameId, sessionId: SessionId, payload: CardIdentifierRequest) = updateAndNotify(gameId) {
         val userId = it.getUserIdForSession(sessionId)
 
         if (it.model.state != GameState.WAITING_FOR_CARDS) {
@@ -105,7 +106,7 @@ class GameManager(val gameRepository: GameRepository,
         }
     }
 
-    fun vote(gameId: GameId, sessionId: SessionId, payload: CardIdentifierRequest) = update(gameId) {
+    fun vote(gameId: GameId, sessionId: SessionId, payload: CardIdentifierRequest) = updateAndNotify(gameId) {
         val userId = it.getUserIdForSession(sessionId)
 
         if (it.model.state != GameState.WAITING_FOR_VOTES) {
@@ -168,7 +169,7 @@ class GameManager(val gameRepository: GameRepository,
         }
     }
 
-    fun proceed(gameId: GameId, sessionId: SessionId) = update(gameId) {
+    fun proceed(gameId: GameId, sessionId: SessionId) = updateAndNotify(gameId) {
         val userId = it.getUserIdForSession(sessionId)
 
         if (it.model.players[userId] == null) {
@@ -205,16 +206,38 @@ class GameManager(val gameRepository: GameRepository,
         }
     }
 
+    fun updateHeartbeatFor(gameId: GameId, sessionId: SessionId, version: Long) = gameRepository.updateGame(gameId) {
+        val userId = it.getUserIdForSession(sessionId)
+        it.properties.users[userId]!!.lastHeartbeat = Instant.now()
+        if (version < it.model.version) {
+            log.debug("Missed game update (version=$version, actual=${it.model.version}), resending...")
+            gameMessageSender.notifyGameUpdate(it, gameId)
+        }
+        it
+    }
+
+    fun removePlayer(gameId: GameId, userId: UserId) {
+        updateAndNotify(gameId) {
+            it.properties.sessions = it.properties.sessions.filterNot { it.value == userId }
+            it.properties.users = it.properties.users.filterNot { it.key == userId }
+            it.model.players = it.model.players.filterNot { it.key == userId }
+        }
+
+        val game = gameRepository.getGameSafe(gameId)
+        if (game.model.players.size == 0) {
+            gameRepository.dropGame(gameId)
+        }
+    }
+
     fun sendState(gameId: GameId) = gameRepository.withGame(gameId) {
         log.info { "sendState (gameId=$gameId)" }
         gameMessageSender.notifyGameUpdate(it, gameId)
     }
 
-    private fun update(gameId: GameId, action: (Game) -> Unit) {
+    private fun updateAndNotify(gameId: GameId, action: (Game) -> Unit) {
         gameRepository.updateGame(gameId) {
             action(it) // TODO surrond with try/catch for ValidationError
             it.model.version += 1
-            gameMessageSender.setHeartbeat(gameId, Heartbeat(it.model.version))
             gameMessageSender.notifyGameUpdate(it, gameId)
             it
         }
@@ -226,7 +249,7 @@ class GameManager(val gameRepository: GameRepository,
         val game = gameRepository.getGameSafe(gameId)
         try {
             return game.getUserIdForSession(sessionId)
-        } catch (e: IllegalArgumentException) {
+        } catch (e: ValidationError) {
             return null
         }
     }
@@ -238,17 +261,17 @@ class GameManager(val gameRepository: GameRepository,
     }
 
     private fun Game.getUserIdForSession(sessionId: SessionId): UserId {
-        return properties.users[sessionId]
-                ?: throw IllegalArgumentException("No player with session id ${sessionId} in the game")
+        return properties.sessions[sessionId]
+                ?: throw ValidationError("No player with session id ${sessionId} in the game")
     }
 
     private fun GameRepository.getGameSafe(gameId: GameId): Game = getGame(gameId)
-            ?: throw IllegalArgumentException("No such game ${gameId}")
+            ?: throw ValidationError("No such game ${gameId}")
 
-    fun getUserPreferences(gameId: GameId, userId: UserId): UserPreferences {
+    fun getUserPreferences(gameId: GameId, userId: UserId): UserModel {
         log.debug { "getUserPreferences (gameId=$gameId, userId=$userId)" }
 
-        return gameRepository.getGameSafe(gameId).properties.userPreferences[userId]
+        return gameRepository.getGameSafe(gameId).properties.users[userId]
                 ?: throw IllegalArgumentException("No player with id ${userId} in the game")
     }
 }

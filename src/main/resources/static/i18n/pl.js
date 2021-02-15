@@ -23,6 +23,7 @@ const t = {
   "phrase": "Hasło:",
   "set": "Ustaw",
   "your_deck": "Twoja talia",
+  "connection_lost": "Utracono połączenie z serwerem, próba ponownego łączenia...",
 
   "click_to_zoom_in": "Kliknij by przybliżyć",
   "card_is_hidden": "Obraz zasłonięty",

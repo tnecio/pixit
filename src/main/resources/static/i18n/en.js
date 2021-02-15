@@ -23,6 +23,7 @@ const t = {
   "phrase": "Phrase:",
   "set": "Set",
   "your_deck": "Your deck",
+  "connection_lost" : "Connection to server lost. Trying to reconnect...",
 
   "click_to_zoom_in": "Click to zoom in",
   "card_is_hidden": "Card hidden",

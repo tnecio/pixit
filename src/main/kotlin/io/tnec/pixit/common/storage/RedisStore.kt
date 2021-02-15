@@ -1,9 +1,13 @@
 package io.tnec.pixit.common.storage
 
 import io.tnec.pixit.common.Id
+import mu.KotlinLogging
 import org.springframework.data.redis.core.RedisTemplate
+import org.springframework.data.redis.serializer.SerializationException
 import java.io.Serializable
 import java.time.Duration
+
+private val log = KotlinLogging.logger { }
 
 class RedisStoreFactory(val redisTemplate: RedisTemplate<String, Any>) : StoreFactory {
     // It'd be better to just have 'Store' instead of 'StoreFactory', no? TODO
@@ -34,7 +38,11 @@ class RedisStore<T : Serializable>(
     override fun forEach(action: (Id, T) -> Unit) {
         val keys = redisTemplate.keys(prefix + "*")
         keys.forEach {
-            action(it!!.removePrefix(prefix), redisTemplate.boundValueOps(it).get()!! as T)
+            try {
+                action(it!!.removePrefix(prefix), redisTemplate.boundValueOps(it).get()!! as T)
+            } catch (e: SerializationException) {
+                log.error { e }
+            }
         }
     }
 }
