@@ -1,4 +1,5 @@
 const t = {
+  "copy_to_clipboard": "Skopiuj",
   "waiting_for_players": "Udostępnij link do tej strony znajomym by zaprosić ich do gry. Do rozpoczęcia potrzeba co najmniej trzech, a najlepiej czterech-pięciu graczy.",
   "press_start_to_begin": "Jeżeli jesteś gotowy i zebrali się wszyscy gracze, wciśnij start. Gra rozpocznie się gdy wszyscy gracze wcisną start.",
   "waiting_for_narrator": "Oczekiwanie aż narrator ustawi hasło",

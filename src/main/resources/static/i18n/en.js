@@ -1,4 +1,5 @@
 const t = {
+  "copy_to_clipboard": "Copy",
   "waiting_for_players": "Share the link to this page with your friends to invite them to the game. You need at least three players, but four or more is recommended.",
   "press_start_to_begin": "Once you're ready and the team is complete, press Start. When all players do so the game will begin",
   "waiting_for_narrator": "Waiting for the narrator to set the phrase",

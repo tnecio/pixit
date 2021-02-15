@@ -42,7 +42,7 @@ var pixit = new Vue({
 
     template: `
 <main>
-    <aside id="errors" v-if="!connected">
+    <aside id="errors" v-if="isDisconnected()">
         {{t.connection_lost}}
     </aside>
 
@@ -208,16 +208,18 @@ var pixit = new Vue({
             this.connected = true;
         },
         isDisconnected() {
-            return (this.connected === false);
+            return (this.connected !== true);
         },
 
         /* USER GUIDE */
         gamePhaseGuide() {
             if (this.game.state === 'WAITING_FOR_PLAYERS') {
+                const button = `<button type="button" onclick="navigator.clipboard.writeText(location)">`
+                    + t.copy_to_clipboard + `</button><br>`;
                 if (Object.keys(this.game.players).length) {
-                    return t.waiting_for_players;
+                    return button + t.waiting_for_players;
                 } else {
-                    return t.press_start_to_begin;
+                    return button + t.press_start_to_begin;
                 }
             } else if (this.game.state === 'WAITING_FOR_WORD') {
                 if (this.game.narrator === userId) {
@@ -235,7 +237,7 @@ var pixit = new Vue({
                     return t.do_send_card;
                 }
             } else if (this.game.state === 'WAITING_FOR_VOTES') {
-                if (this.game.players[userId].vote) {
+                if (this.game.narrator === userId || this.game.players[userId].vote) {
                     return t.waiting_for_votes;
                 }
                 return t.do_vote;
