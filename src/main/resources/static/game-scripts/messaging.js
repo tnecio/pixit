@@ -25,6 +25,9 @@ function connect() {
             stompClient.subscribe('/topic/' + gameId + '/heartbeat', event => {
                 handleHeartbeat(JSON.parse(event.body));
             });
+            stompClient.subscribe('/topic/' + gameId + '/event', event => {
+                handleGameEvent(JSON.parse(event.body));
+            });
             pixit.connectionUp();
             console.log("connectionUp");
         },
@@ -91,6 +94,11 @@ class Requester {
 
 function handleAcknowledgment(event) {
     console.log("Received acknowledgment: " + JSON.stringify(event))
+}
+
+function handleGameEvent(event) {
+    const message = t[event.payload];
+    pixit.displayMessage(message);
 }
 
 

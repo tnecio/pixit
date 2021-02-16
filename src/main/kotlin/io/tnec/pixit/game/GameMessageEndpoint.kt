@@ -112,4 +112,8 @@ class GameMessageSender(@Autowired val simpTemplate: SimpMessagingTemplate) {
             )
         }
     }
+
+    fun notifyOneOffEvent(gameId: GameId, event: GameEvent) {
+        simpTemplate.convertAndSend("/topic/$gameId/event", Message("event", event))
+    }
 }

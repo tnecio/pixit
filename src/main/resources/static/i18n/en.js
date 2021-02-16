@@ -41,5 +41,7 @@ const t = {
     if (x == 1) { return "point"; } else { return "points"; }
   },
   "narrator": "Narrator",
-  "still_thinking": "still thinking..."
+  "still_thinking": "still thinking...",
+
+  "NARRATOR_LOST_ROUND_REPLAY": "Narrator left the game. Replaying the round with a new narrator"
 };

@@ -32,7 +32,9 @@ var pixit = new Vue({
             roundResult: "IN_PROGRESS"
         },
 
-        connected: true
+        connected: true,
+
+        popups: []
     },
 
     template: `
@@ -40,6 +42,12 @@ var pixit = new Vue({
     <aside id="errors" v-if="isDisconnected()">
         {{t.connection_lost}}
     </aside>
+    
+    <div class="popups" v-if="popups.length > 0">
+        <aside v-for="popup in popups">
+            {{popup.message}}
+        </aside>
+    </div>
 
     <section id="game-info">
         <aside id="game-players"> <!-- TODO in the order of playing! -->
@@ -179,6 +187,18 @@ var pixit = new Vue({
         },
         isDisconnected() {
             return (this.connected !== true);
+        },
+
+        /* POP-UPS */
+        displayMessage(msg) {
+            const t = new Date();
+            this.popups.push({
+                message: msg,
+                ts: t
+            });
+            setTimeout(() => {
+                this.popups = this.popups.filter((x) => x.ts !== t);
+            }, 7500);
         },
 
         /* USER GUIDE */

@@ -49,5 +49,7 @@ const t = {
     }
   },
   "narrator": "Narrator",
-  "still_thinking": "wciąż myśli..."
+  "still_thinking": "wciąż myśli...",
+
+  "NARRATOR_LOST_ROUND_REPLAY": "Narrator opuścił grę. Runda zostaje powtórzona z nowym narratorem"
 };

@@ -201,13 +201,7 @@ class GameManager(val gameRepository: GameRepository,
                 )
             }
             it.model.roundResult = RoundResult.IN_PROGRESS
-
-            // Change narrator
-            val players = it.model.players.keys.stream().sorted().collect(toList())
-            val narratorId = it.model.narrator
-            val narratorIndex = players.indexOfFirst { it == narratorId }
-            it.model.narrator = players[(narratorIndex + 1) % players.size]
-
+            it.model.narrator = nextNarrator(it)
             it.model.state = it.model.state.next()
         }
     }
@@ -224,6 +218,13 @@ class GameManager(val gameRepository: GameRepository,
 
     fun removePlayer(gameId: GameId, userId: UserId) {
         updateAndNotify(gameId) {
+            if (it.model.narrator == userId) {
+                it.model.narrator = nextNarrator(it)
+                it.model.table = emptyList()
+                it.model.word = null
+                it.model.state = GameState.WAITING_FOR_WORD
+                gameMessageSender.notifyOneOffEvent(gameId, GameEvent.NARRATOR_LOST_ROUND_REPLAY)
+            }
             it.properties.sessions = it.properties.sessions.filterNot { it.value == userId }
             it.properties.users = it.properties.users.filterNot { it.key == userId }
             it.model.players = it.model.players.filterNot { it.key == userId }
@@ -233,6 +234,12 @@ class GameManager(val gameRepository: GameRepository,
         if (game.model.players.size == 0) {
             gameRepository.dropGame(gameId)
         }
+    }
+
+    private fun nextNarrator(game: Game): UserId {
+        val players = game.model.players.keys.stream().sorted().collect(toList())
+        val narratorIndex = players.indexOfFirst { it == game.model.narrator }
+        return players[(narratorIndex + 1) % players.size]
     }
 
     fun sendState(gameId: GameId) = gameRepository.withGame(gameId) {
