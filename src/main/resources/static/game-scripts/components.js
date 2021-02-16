@@ -40,7 +40,7 @@ Vue.component('card', {
             </span>
         </aside>
     </figure>
-    <div class="modal" v-bind:class="showModal ? 'shownModal' : 'hiddenModal'" @click="closeModal()">
+    <div class="modal" v-bind:class="showModal ? 'shownModal' : 'hiddenModal'" onclick="history.back()">
         <figure>
             <img v-bind:src="card.image.url" v-bind:alt="card.image.alt" />
             <form v-if="state.choosable" id="phrase-set" v-on:submit.prevent="closeModal(); $emit('set-word', card.id, word)" @click.stop>
@@ -68,11 +68,20 @@ Vue.component('card', {
     </div>
 </div>`,
     methods: {
+        handleHashchange: function (e) {
+            this.showModal = window.location.hash === "#modal" + this.card.id;
+        },
+
         enlarge: function () {
             this.showModal = true;
+
+            window.location.hash = "#modal" + this.card.id;
+            window.addEventListener('hashchange', this.handleHashchange);
         },
 
         closeModal: function () {
+            window.removeEventListener('hashchange', this.handleHashchange);
+
             this.showModal = false;
         }
     }

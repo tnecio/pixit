@@ -39,7 +39,7 @@ data class GetPhotoResponse(
         val user: UserDescription,
         val id: ImageId
 ) {
-    fun getAttribution() = "Photo by <a href='${user.getUnsplashHtmlLink()}?utm_source=pixit&utm_medium=referral'>${user.getDisplayName()}</a> on <a href='https://unsplash.com/?utm_source=pixit&utm_medium=referral'>Unsplash</a>"
+    fun getAttribution() = "Photo by <a target='_blank' href='${user.getUnsplashHtmlLink()}?utm_source=pixit&utm_medium=referral'>${user.getDisplayName()}</a> on <a href='https://unsplash.com/?utm_source=pixit&utm_medium=referral'>Unsplash</a>"
 
     fun toImage() = Image(
             url = urls.regular,
