@@ -55,7 +55,7 @@ class GameRepository(storeFactory: StoreFactory, gameRepositoryProperties: GameR
     }
 
     fun updateGame(id: GameId, action: (Game) -> Game) {
-        log.debug { "Updating game (gameId=$id)" }
+        log.trace { "Updating game (gameId=$id)" }
         val rwl = rwls[id] ?: throw NotFoundException(id)
         rwl.write {
             val game = store.get(id) ?: throw NotFoundException(id) // Game could be dropped just before calling `read`

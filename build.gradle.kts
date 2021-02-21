@@ -33,6 +33,7 @@ dependencies {
 	implementation("redis.clients:jedis")
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
 	implementation("io.github.microutils:kotlin-logging:1.12.0")
+	implementation("ch.qos.logback:logback-classic:1.1.7")
 
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 

@@ -21,7 +21,7 @@ class HeartbeatController(val gameRepository: GameRepository, val gameManager: G
                          @DestinationVariable gameId: GameId,
                          @DestinationVariable sessionId: SessionId) {
         gameManager.updateHeartbeatFor(gameId, sessionId, request.version)
-        log.debug("Received heartbeat (gameId=$gameId, sessionId=$sessionId)")
+        log.trace("Received heartbeat (gameId=$gameId, sessionId=$sessionId)")
     }
 
     @Scheduled(initialDelay = 30000, fixedDelay = 10000)
