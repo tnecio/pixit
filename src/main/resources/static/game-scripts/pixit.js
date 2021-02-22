@@ -32,7 +32,7 @@ var pixit = new Vue({
             roundResult: "IN_PROGRESS"
         },
 
-        connected: true,
+        connected: false,
 
         popups: []
     },

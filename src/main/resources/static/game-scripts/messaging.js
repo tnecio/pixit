@@ -7,7 +7,7 @@ function tryConnectIfDisconnected() {
     console.log("tryConnectIfDisconnected");
     if (pixit.isDisconnected()) {
         pixit.startConnecting();
-        console.log("disconnected, retrying connecton");
+        console.log("disconnected, retrying connection");
         connect();
     }
 }
@@ -28,6 +28,8 @@ function connect() {
             stompClient.subscribe('/topic/' + gameId + '/event', event => {
                 handleGameEvent(JSON.parse(event.body));
             });
+            // TODO deduplicate code
+            sendRequest(gameControlEndpoint("send-state"), {});
             pixit.connectionUp();
             console.log("connectionUp");
         },
