@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component
 @Component
 class AvatarManager(val cardManager: CardManager) {
     fun newAvatar(playerName: String): Avatar =
-            Avatar(playerName, IntRange(0, 9).map{ cardManager.newCard() })
+            Avatar(playerName, IntRange(0, 6).map{ cardManager.newCard() })
 
     fun popCard(avatar: Avatar, cardId: CardId): Card {
         val cardIndex = avatar.deck.indexOfFirst { it.id == cardId }
