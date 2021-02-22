@@ -1,15 +1,24 @@
 const t = {
-  "copy_to_clipboard": "Skopiuj",
+  "copy_to_clipboard": "Skopiuj link",
   "waiting_for_players": "Udostępnij link do tej strony znajomym by zaprosić ich do gry. Do rozpoczęcia potrzeba co najmniej trzech, a najlepiej czterech-pięciu graczy.",
   "press_start_to_begin": "Jeżeli jesteś gotowy i zebrali się wszyscy gracze, wciśnij start. Gra rozpocznie się gdy wszyscy gracze wcisną start.",
   "waiting_for_narrator": "Oczekiwanie aż narrator ustawi hasło",
-  "choose_card_and_set_phrase": "Wybierz kartę i hasło które umożliwi pozostałym graczom odgadnięcie twojego obrazka",
-  "do_set_phrase": "Wybierz hasło które umożliwi pozostałym graczom odgadnięcie twojego obrazka. Pamiętaj, że nie może być zbyt oczywiste!",
-  "do_send_card": "Wybierz obrazek pasujący do hasła",
-  "waiting_for_cards": "Oczekiwanie aż wszyscy pozostali gracze wyślą swój obrazek na stół",
-  "do_vote": "Spróbuj odgadnąć który z obrazków na stole należy do narratora?",
-  "waiting_for_votes": "Oczekiwanie aż wszyscy gracze oddają swój głos",
-  "waiting_to_proceed": "Wszyscy gracze muszą wcisnąć 'Dalej' by przejść do następnej rundy",
+  "choose_card_and_set_phrase": "Wybierz kartę i hasło, które niektórzy gracze skojarzą z tą kartą",
+  "do_send_card_fmt": function (phrase) {
+    return `Wybierz zdjęcie które pasuje do hasła: <br>${phrase}`
+  },
+  "waiting_for_cards_fmt": function(phrase) {
+    return `Oczekiwanie aż wszyscy pozostali gracze wybiorą karty które kojarzą im się z: <br>${phrase}`;
+  },
+  "do_vote_fmt": function(phrase) {
+    return `Zagłosuj na kartę która kojarzy się z: <br>${phrase}`;
+  },
+  "waiting_for_votes_fmt": function (phrase) {
+    return `Oczekiwanie, aż zagłosują wszyscy gracze. <br>Hasło: ${phrase}`;
+  },
+  "waiting_to_proceed_fmt": function (phrase) {
+    return `Oczekiwanie aż wszyscy gracze nacisną przycisk "Dalej". <br>Hasło: ${phrase}`;
+  },
   "finished": "Koniec gry!",
   "corrupted": "Niestety, dane tej gry są nieprawidłowe. Dalsza rozgrywka jest niemożliwa.",
 

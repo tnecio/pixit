@@ -11,9 +11,9 @@ var pixit = new Vue({
     data: {
         game: {
             state: "WAITING_FOR_PLAYERS",
-            word: {
-                value: null
-            },
+            word: null, /* {
+                value: string
+            }*/
             table: [],
             players: {
                 [userId]: {
@@ -49,56 +49,66 @@ var pixit = new Vue({
         </aside>
     </div>
 
-    <section id="game-info">
-        <aside id="game-players"> <!-- TODO in the order of playing! -->
-            <playerEntry
-                v-for="(player, k) in game.players"
-                v-bind:key="k"
-                v-bind:player="player"
-                v-bind:isCurrent="k == userId"
-                v-bind:isNarrator="k == game.narrator"
-                v-bind:gameState="game.state">
-            </playerEntry>
-        </aside>
-        <div id="game-state" v-html="gamePhaseGuide()">
-        </div>
-    </section>
-    
-    <section id="preStart" v-if="!gameStarted()">
-        <button @click="requests.startGame()" v-bind:disabled="game.players[userId].startRequested">
-            {{ game.players[userId].startRequested ? t.waiting_for_others : t.start }}
-        </button>
-    </section>
-    
-    <section id="roundEnd" v-if="game.state === 'WAITING_TO_PROCEED'">
-        <button @click="requests.proceed()" v-bind:disabled="game.players[userId].proceedRequested">
-            {{ game.players[userId].proceedRequested ? t.waiting_for_others : t.proceed }}
-        </button>
-    </section>
-
-    <section id="table" v-if="shouldDisplayTable()">
-        <header id="phrase" v-if="shouldDisplayWord()">
-            <span v-if="game.word">{{t.phrase}}</span>
-            <h2>{{game.word.value}}</h2>
+    <section id="common-area">
+        <header id="game-info">
+            <h1><a href="/">PiXiT!</a></h1>
+            <aside id="game-players"> <!-- TODO in the order of playing! -->
+                <playerEntry
+                    v-for="(player, k) in game.players"
+                    v-bind:key="k"
+                    v-bind:player="player"
+                    v-bind:isCurrent="k == userId"
+                    v-bind:isNarrator="k == game.narrator"
+                    v-bind:gameState="game.state">
+                </playerEntry>
+            </aside>
+            <span v-if="isRoundEnd()"><br><b v-html="roundEndSummary()"></b></span>
         </header>
-        <div class="deck">
-            <card
-                v-for="(card, index) in game.table"
-                v-bind:key="index"
-                v-bind:card="card"
-                v-bind:state="{
-                    sendable: false, votable: canVote(card.id), choosable: false, chosen: false,
-                    narrators: game.state === 'WAITING_TO_PROCEED' && game.players[game.narrator].sentCard === card.id,
-                    whoVotedNames: getWhoVotedNames(card.id),
-                    owner: getOwnerOfCardOnTableName(card.id)
-                }"
-                @vote-card="(id) => requests.vote(id)"
-            >
-            </card>
+    
+        <div id="table">
+            <section id="game-guide">
+                <span id="game-state" v-html="gamePhaseGuide()"></span>
+            </section>
+            
+            <div id="pre-start" v-if="!gameStarted()">
+                <button 
+                    @click="requests.startGame()"
+                    v-bind:disabled="game.players[userId].startRequested"
+                    class="actionButton"
+                >
+                    {{ game.players[userId].startRequested ? t.waiting_for_others : t.start }}
+                </button>
+            </div>
+            
+            <div id="round-end" v-if="isRoundEnd()">
+                <button
+                    @click="requests.proceed()"
+                    v-bind:disabled="game.players[userId].proceedRequested"
+                    class="actionButton"
+                >
+                    {{ game.players[userId].proceedRequested ? t.waiting_for_others : t.proceed }}
+                </button>
+            </div>
+    
+            <div class="deck" v-if="shouldDisplayTable()">
+                <card
+                    v-for="(card, index) in game.table"
+                    v-bind:key="index"
+                    v-bind:card="card"
+                    v-bind:state="{
+                        sendable: false, votable: canVote(card.id), choosable: false, chosen: false,
+                        narrators: game.state === 'WAITING_TO_PROCEED' && game.players[game.narrator].sentCard === card.id,
+                        whoVotedNames: getWhoVotedNames(card.id),
+                        owner: getOwnerOfCardOnTableName(card.id)
+                    }"
+                    @vote-card="(id) => requests.vote(id)"
+                >
+                </card>
+            </div>
         </div>
     </section>
     
-        <section id="playersPrivateArea" v-if="gameStarted()">
+    <section id="players-private-area" v-if="gameStarted()">
         <h2>{{t.your_deck}}</h2>
 
         <div class="deck">
@@ -153,10 +163,13 @@ var pixit = new Vue({
             return this.game.state === "WAITING_FOR_CARDS" && this.game.players[userId].sentCard === null;
         },
         shouldDisplayTable() {
-            return this.gameStarted();
+            return this.gameStarted() && this.game.state !== "WAITING_FOR_WORD";
         },
         shouldDisplayWord() {
             return this.game.state !== 'WAITING_FOR_WORD' && this.game.state !== 'WAITING_FOR_PLAYERS' && this.game.word;
+        },
+        isRoundEnd() {
+            return this.game.state === 'WAITING_TO_PROCEED';
         },
 
         /* WAITING_TO_PROCEED screen functions */
@@ -203,13 +216,17 @@ var pixit = new Vue({
 
         /* USER GUIDE */
         gamePhaseGuide() {
+            const phrase = this.game.word ? `<span class="phrase">${this.game.word.value}</span>` : null;
+
             if (this.game.state === 'WAITING_FOR_PLAYERS') {
-                const button = `<button type="button" onclick="navigator.clipboard.writeText(location)">`
+                const button = `<button class="copyLinkButton" type="button"
+                    onclick="navigator.clipboard.writeText(location)">`
                     + t.copy_to_clipboard + `</button><br>`;
-                if (Object.keys(this.game.players).length) {
-                    return button + t.waiting_for_players;
+                const numberOfPlayersInTheGame = Object.keys(this.game.players).length;
+                if (numberOfPlayersInTheGame < 3) {
+                    return t.waiting_for_players + button;
                 } else {
-                    return button + t.press_start_to_begin;
+                    return t.press_start_to_begin + button;
                 }
             } else if (this.game.state === 'WAITING_FOR_WORD') {
                 if (this.game.narrator === userId) {
@@ -219,31 +236,34 @@ var pixit = new Vue({
                 }
             } else if (this.game.state === 'WAITING_FOR_CARDS') {
                 if (this.game.players[userId].sentCard) {
-                    return t.waiting_for_cards;
+                    return t.waiting_for_cards_fmt(phrase);
                 } else {
-                    return t.do_send_card;
+                    return t.do_send_card_fmt(phrase);
                 }
             } else if (this.game.state === 'WAITING_FOR_VOTES') {
                 if (this.game.narrator === userId || this.game.players[userId].vote) {
-                    return t.waiting_for_votes;
+                    return t.waiting_for_votes_fmt(phrase);
                 }
-                return t.do_vote;
+                return t.do_vote_fmt(phrase);
             } else if (this.game.state === 'WAITING_TO_PROCEED') {
-                let res;
-                if (this.game.roundResult === 'ALL_VOTED_FOR_NARRATOR') {
-                    res = t.all_voted_for_narrator;
-                } else if (this.game.roundResult === 'NO_ONE_VOTED_FOR_NARRATOR') {
-                    res = t.no_one_voted_for_narrator;
-                } else if (this.game.roundResult === 'SOMEONE_VOTED_FOR_NARRATOR') {
-                    res = t.someone_voted_for_narrator;
-                } else {
-                    return t.corrupted;
-                }
-                return t.waiting_to_proceed + "<br><b>" + res + "</b>"
+                return t.waiting_to_proceed_fmt(phrase);
             } else if (this.game.state === 'FINISHED') {
                 return t.finished;
             } else {
                 return t.corrupted;
+            }
+        },
+
+        /* ROUND END SUMMARY */
+        roundEndSummary() {
+            if (this.game.roundResult === 'ALL_VOTED_FOR_NARRATOR') {
+                return t.all_voted_for_narrator;
+            } else if (this.game.roundResult === 'NO_ONE_VOTED_FOR_NARRATOR') {
+                return t.no_one_voted_for_narrator;
+            } else if (this.game.roundResult === 'SOMEONE_VOTED_FOR_NARRATOR') {
+                return t.someone_voted_for_narrator;
+            } else {
+                return "";
             }
         }
     }

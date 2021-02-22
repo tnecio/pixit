@@ -32,6 +32,9 @@ Vue.component('card', {
             v-bind:class="{ revealed : card.revealed }"
             v-on="card.revealed ? { click: () => enlarge() } : { }"
             v-bind:title="card.revealed ? t.click_to_zoom_in : t.card_is_hidden " />
+        <figcaption v-if="card.image.attribution">
+            <span v-html="card.image.attribution"></span>
+        </figcaption>
         <aside v-if="state.owner" class="whoVotedNames">
             <span v-html="t.xyzs_card_fmt(state.owner)"></span>
             <span v-if="state.whoVotedNames && state.whoVotedNames.length > 0">

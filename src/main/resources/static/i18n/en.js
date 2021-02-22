@@ -1,15 +1,24 @@
 const t = {
-  "copy_to_clipboard": "Copy",
+  "copy_to_clipboard": "Copy link",
   "waiting_for_players": "Share the link to this page with your friends to invite them to the game. You need at least three players, but four or more is recommended.",
   "press_start_to_begin": "Once you're ready and the team is complete, press Start. When all players do so the game will begin",
   "waiting_for_narrator": "Waiting for the narrator to set the phrase",
   "choose_card_and_set_phrase": "Choose a picture and then write a phrase to help them distinguish your picture from that of the other players.",
-  "do_set_phrase": "Write down, what would make you think about this picture? But don't make it too obvious!",
-  "do_send_card": "Think which picture, given the phrase, will other players mistake for the narrator's?",
-  "waiting_for_cards": "Waiting for all players to choose a picture",
-  "do_vote": "Try to guess which of these pictures was selected by the narrator",
-  "waiting_for_votes": "Waiting for all players to cast their vote",
-  "waiting_to_proceed": "All players must press 'Proceed' to begin next round!",
+  "do_send_card_fmt": function (phrase) {
+    return `Select a picture that makes you think of: <br>${phrase}`
+  },
+  "waiting_for_cards_fmt": function(phrase) {
+    return `Waiting for all players to choose a picture for phrase: <br>${phrase}`;
+  },
+  "do_vote_fmt": function(phrase) {
+    return `Try to guess which of these pictures made the narrator think of: <br>${phrase}`;
+  },
+  "waiting_for_votes_fmt": function (phrase) {
+    return `Waiting for all players to cast their vote. Phrase: <br>${phrase}`;
+  },
+  "waiting_to_proceed_fmt": function (phrase) {
+    return `All players must press 'Proceed' to begin next round! Phrase: <br>${phrase}`;
+  },
   "finished": "Game is over!",
   "corrupted": "Sorry but this game instance is corrupted. No further play is possible",
 

@@ -1,0 +1,26 @@
+body {
+    max-width: max(75%, 1024px);
+}
+
+@media (max-width: 800px) {
+    body > header > nav > a {
+        font-size: 0.75em;
+        display: block;
+        line-height: 2em;
+    }
+
+    body > header > nav {
+        margin: auto 0;
+    }
+
+    body > header .separator {
+        display: none;
+    }
+}
+
+body > header {
+    padding-left: 1em;
+    padding-right: 1em;
+    display: flex;
+    justify-content: space-between;
+}

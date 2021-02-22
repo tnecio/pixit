@@ -1,6 +1,9 @@
 <!DOCTYPE HTML>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:insert="fragments/head :: headFragment (pageTitle='PiXiT!')"></head>
+<head>
+    <th:block th:insert="fragments/head :: headFragment (pageTitle='PiXiT! – Start')"></th:block>
+    <link rel="stylesheet" href="/non-game.css">
+</head>
 
 <body>
 <header th:replace="fragments/header :: copy"></header>

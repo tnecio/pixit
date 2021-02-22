@@ -1,0 +1,281 @@
+/* * * ERRORS SECTION * * */
+
+#errors {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, 0);
+    background-color: lavenderblush;
+    color: darkred;
+    border: 1px solid darkred;
+    border-radius: 5px;
+    opacity: 80%;
+    padding: 0.5em 1.5em;
+    width: min(25em, 80%);
+    text-align: center;
+}
+
+
+/* * * POP-UPS SECTION * * */
+.popups {
+    position: absolute;
+    left: 0;
+    top: 0;
+    margin: 1em;
+}
+
+.popups aside {
+    background-color: lavenderblush;
+    color: darkblue;
+    border: 1px solid darkblue;
+    border-radius: 5px;
+    opacity: 80%;
+    padding: 0.5em 1.5em;
+    width: min(20em, 60vw);
+    text-align: center;
+    margin-top: 1em;
+}
+
+/* * * COMMON AREA SECTION * * */
+
+#common-area {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    padding: 1em;
+    box-sizing: border-box;
+}
+
+/* * GAME INFO SECTION * */
+
+#game-info {
+    flex-basis: 20%;
+    flex-grow: 1;
+}
+
+#game-info > * {
+    padding: 0.25em;
+}
+
+#game-info h1 {
+    font-family: Chilanka, sans-serif;
+    font-size: 3em;
+    margin-top: 0;
+    margin-bottom: 0.5em;
+}
+
+#game-players {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    margin: auto;
+}
+
+.playerEntry {
+    display: block;
+    font-size: 0.9em;
+    background-color: white;
+    border: 1px solid darkgray;
+    margin: 0.5em;
+    padding: 0.5em;
+    min-width: 7.5em;
+    width: max-content;
+    height: min-content;
+}
+
+.currentPlayerEntry {
+    background-color: antiquewhite;
+}
+
+/* * TABLE SECTION * */
+
+#table {
+    min-width: min(90vw, 500px);
+    flex-basis: 70%;
+    flex-grow: 1;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+#game-guide {
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+#pre-start, #round-end {
+    width: 100%;
+    text-align: center;
+}
+
+.actionButton, .copyLinkButton {
+    display: block;
+    margin: 1em auto;
+    font-size: 2em;
+}
+
+.phrase {
+    font-weight: bold;
+    font-size: 1.5em;
+    font-family: Chilanka, sans-serif;
+}
+
+#table .deck {
+    background-color: white;
+    border: 1px solid darkgray;
+    width: 100%;
+}
+
+/* * * PLAYER'S PRIVATE AREA SECTION * * */
+
+#players-private-area {
+    flex-basis: 45%;
+    flex-grow: 1;
+    background-color: antiquewhite;
+    border: 1px solid darkgray;
+}
+
+#players-private-area > h2 {
+    width: 100%;
+    text-align: center;
+}
+
+/* * * CARDS SECTION * * */
+
+.deck {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    padding-left: 1em;
+    padding-right: 1em;
+}
+
+figure {
+    padding: 0.5em;
+    background-color: black;
+    height: min-content;
+}
+
+.cardFigureNormal {
+    width: 150px;
+    max-height: 500px;
+    margin: 1.5em auto;
+    display: table;
+}
+
+.cardFigureNormal > img.revealed {
+    cursor: pointer; /* zoom-in does not seem to work (?) */
+    display: table-row;
+    height: 225px;
+    object-fit: contain;
+}
+
+.cardFigureNormal > figcaption {
+    display: block;
+    height: 3.2em;
+    overflow: auto;
+    color: lightgray;
+}
+
+.whoVotedNames, .cardOwner {
+    display: block;
+    color: antiquewhite;
+    font-size: 0.75em;
+    width: 100%;
+}
+
+.whoVotedNames {
+    margin-top: 0.5em;
+}
+
+.cardOwner {
+    text-align: center
+}
+
+.whoVotedNames ul {
+    margin: 0 auto;
+    font-weight: bold;
+    padding: 0;
+    list-style-type: none;
+}
+
+.hiddenModal {
+    display: none;
+}
+
+.shownModal {
+    display: block;
+}
+
+.modal {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    z-index: 1;
+    background-color: rgba(0, 0, 0, 0.75);
+}
+
+.modal > figure {
+    margin: auto;
+    border: 1px solid darkgray;
+    width: min-content;
+    height: min-content;
+}
+
+.modal > figure > img {
+    margin: auto;
+    border: 1px solid darkgray;
+    max-width: 75vw;
+    max-height: 90vh;
+    width: auto;
+    height: auto;
+}
+
+.modal button {
+    text-decoration: underline;
+}
+
+.chosenCard {
+    border: 0.5em orange solid;
+}
+
+img {
+    width: 100%;
+
+    /* Styling for alt descriptions */
+    color: antiquewhite;
+    font-size: 0.8em;
+    font-family: monospace;
+    text-decoration: dotted underline;
+}
+
+figcaption {
+    color: white;
+    font-size: 0.75em;
+    display: flex;
+    justify-content: space-between;
+}
+
+figcaption a {
+    color: white;
+    text-decoration: underline;
+}
+
+.cardFigureNormal figcaption > button {
+    border: none;
+    background-color: transparent;
+    color: white;
+    font-family: inherit;
+    padding: 0;
+    cursor: pointer;
+}
+
+.modal figcaption > button {
+    font-size: 1.25em;
+}
