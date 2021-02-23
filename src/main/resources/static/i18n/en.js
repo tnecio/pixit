@@ -35,6 +35,7 @@ const t = {
   "phrase": "Phrase:",
   "set": "Set",
   "your_deck": "Your deck",
+  "players": "Players",
   "connection_lost" : "Connection to server lost. Trying to reconnect...",
 
   "click_to_zoom_in": "Click to zoom in",

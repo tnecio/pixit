@@ -39,7 +39,7 @@ Vue.component('card', {
             <span v-html="t.xyzs_card_fmt(state.owner)"></span>
             <span v-if="state.whoVotedNames && state.whoVotedNames.length > 0">
                 <br>{{t.voted_on_by}}
-                <b v-for="playerName in state.whoVotedNames">{{playerName}}</b>
+                <b v-for="playerName in state.whoVotedNames"><br>{{playerName}}</b>
             </span>
         </aside>
     </figure>
