@@ -30,6 +30,23 @@ class GameController(val gameManager: GameManager) {
         }
     }
 
+    @MessageMapping("/{gameId}/{sessionId}/connected")
+    @SendTo("/topic/{gameId}/{sessionId}/response")
+    fun connected(request: EmptyRequest,
+                  @DestinationVariable gameId: GameId,
+                  @DestinationVariable sessionId: SessionId) = answer(request) {
+        log.debug { "[${Instant.now()}] Got connected: ${request} from ${sessionId}" }
+
+        try {
+            // Re-add player if he was removed before
+            gameManager.readdPlayer(gameId, sessionId)
+        } catch (e: ValidationError) {
+            log.debug { e }
+        }
+
+        gameManager.sendState(gameId)
+    }
+
     @MessageMapping("/{gameId}/{sessionId}/send-state")
     @SendTo("/topic/{gameId}/{sessionId}/response")
     fun sendState(request: EmptyRequest,

@@ -28,8 +28,7 @@ function connect() {
             stompClient.subscribe('/topic/' + gameId + '/event', event => {
                 handleGameEvent(JSON.parse(event.body));
             });
-            // TODO deduplicate code
-            sendRequest(gameControlEndpoint("send-state"), {});
+            sendRequest(gameControlEndpoint("connected"), {});
             pixit.connectionUp();
             console.log("connectionUp");
         },

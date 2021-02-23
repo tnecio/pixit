@@ -13,7 +13,9 @@ typealias GameId = Id
 
 // Holds game's server-side configuration
 data class GameProperties(
-        var sessions: Map<SessionId, UserId>, var users: Map<UserId, UserModel>
+        var sessions: Map<SessionId, UserId>,
+        var users: Map<UserId, UserModel>,
+        var removedPlayers: MutableMap<UserId, Avatar> = HashMap()
 ) : Serializable
 
 data class UserModel(var lang: String, var lastHeartbeat: Instant) : Serializable

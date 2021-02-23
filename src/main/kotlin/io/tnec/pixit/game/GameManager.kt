@@ -226,8 +226,8 @@ class GameManager(val gameRepository: GameRepository,
                 it.model.state = GameState.WAITING_FOR_WORD
                 gameMessageSender.notifyOneOffEvent(gameId, GameEvent.NARRATOR_LOST_ROUND_REPLAY)
             }
-            it.properties.sessions = it.properties.sessions.filterNot { it.value == userId }
-            it.properties.users = it.properties.users.filterNot { it.key == userId }
+            it.properties.removedPlayers[userId] = it.model.players[userId] ?:
+                    throw ValidationError("No player $userId in game $gameId")
             it.model.players = it.model.players.filterNot { it.key == userId }
         }
 
@@ -235,6 +235,17 @@ class GameManager(val gameRepository: GameRepository,
         if (game.model.players.size == 0) {
             gameRepository.dropGame(gameId)
         }
+    }
+
+
+    fun readdPlayer(gameId: GameId, sessionId: SessionId) = updateAndNotify(gameId) {
+        log.info { "readdPlayer (gameId=$gameId, sessionId=$sessionId)" }
+
+        val userId = it.properties.sessions[sessionId] ?:
+                throw ValidationError("Player with sessionId=$sessionId did not play in the game $gameId")
+        val removedPlayer = it.properties.removedPlayers.remove(userId) ?:
+            throw ValidationError("Player $userId did was not removed from the game $gameId")
+        it.model.players += mapOf(userId to removedPlayer)
     }
 
     private fun nextNarrator(game: Game): UserId {
