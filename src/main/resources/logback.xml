@@ -1,8 +1,8 @@
 <configuration>
     <appender name="roll-by-time" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>target/logs/pixit.log</file>
+        <file>logs/pixit.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>target/logs/pixit.%d.log.zip</fileNamePattern>
+            <fileNamePattern>logs/pixit.%d.log.zip</fileNamePattern>
             <maxHistory>100</maxHistory>
             <totalSizeCap>4096MB</totalSizeCap>
         </rollingPolicy>
