@@ -1,5 +1,6 @@
 package io.tnec.pixit.game
 
+import io.tnec.pixit.avatar.Avatar
 import io.tnec.pixit.avatar.AvatarManager
 import io.tnec.pixit.card.CardId
 import io.tnec.pixit.common.ValidationError
@@ -272,6 +273,9 @@ class GameManager(val gameRepository: GameRepository,
         val game = gameRepository.getGameSafe(gameId)
         return game.model.obfuscateFor(userId)
     }
+
+    fun getPlayers(gameId: GameId): Collection<Avatar> =
+            gameRepository.getGameSafe(gameId).model.players.values
 
     private fun Game.getUserIdForSession(sessionId: SessionId): UserId {
         return properties.sessions[sessionId]

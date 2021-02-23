@@ -38,6 +38,10 @@ class MainController(val gameManager: GameManager) {
         if (gameManager.getUserIdForSession(session.id, id) != null) {
             return game(id, model, session)
         }
+
+        val playerNames = gameManager.getPlayers(id).map { it.name }.toList()
+        model.addAttribute("playerNames", playerNames)
+
         return "join"
     }
 

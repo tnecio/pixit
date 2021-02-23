@@ -6,18 +6,48 @@
 </head>
 
 <body>
-<header th:replace="fragments/header :: copy"></header>
+<header>
+<h1><a href="/">P<span style="font-size:1.2em;">i</span>X<span style="font-size:1.2em;">i</span>T!</a></h1>
+</header>
 
-<form action="#" method="post">
-    <label>Name: <input type="text" name="playerName"></label>
-    <label for="langSelect">Choose language:
-        <select id="langSelect" name="langSelect">
-            <option value="en" selected>English</option>
-            <option value="pl">Polski</option>
-        </select>
-    </label>
-    <button type="submit">Join the game</button>
+<form class="mainForm" action="#" method="post">
+    <span class="invitation">
+        <th:block th:switch="${#lists.size(playerNames)}">
+            <span th:case="1">
+                Player
+                <span th:each="pn, iterStat : ${playerNames}"
+                      th:text="${pn}"
+                      class="playerName">
+                </span>
+                invites you to the game!
+            </span>
+            <span th:case="2">
+                Players
+                <span th:each="pn, iterStat : ${playerNames}"
+                      th:text="!${iterStat.last} ? ${pn} + ' and ': ${pn}"
+                      class="playerName">
+                </span>
+                invite you to the game!
+            </span>
+            <span th:case="*">
+                Players:
+                <span th:each="pn, iterStat : ${playerNames}"
+                      th:text="!${iterStat.last} ? ${pn} + ', ': ' and ' + ${pn}"
+                      class="playerName">
+                </span>
+                invite you to the game!
+            </span>
+        </th:block>
+    </span>
+    <input type="text" id="playerName" name="playerName" placeholder="Your name">
+    <select id="langSelect" name="langSelect">
+        <option value="en" selected>🇬🇧</option>
+        <option value="pl">🇵🇱</option>
+    </select>
+    <button type="submit" value="Submit">Join</button>
 </form>
+
+<aside th:replace="fragments/description :: copy"></aside>
 
 <footer th:replace="fragments/footer :: copy"></footer>
 </body>

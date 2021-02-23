@@ -2,25 +2,40 @@ body {
     max-width: max(75%, 1024px);
 }
 
-@media (max-width: 800px) {
-    body > header > nav > a {
-        font-size: 0.75em;
-        display: block;
-        line-height: 2em;
-    }
-
-    body > header > nav {
-        margin: auto 0;
-    }
-
-    body > header .separator {
-        display: none;
-    }
+body > header {
+    text-align: center;
+    width: 100%;
 }
 
-body > header {
-    padding-left: 1em;
-    padding-right: 1em;
+h1 {
+    font-size: 4em;
+    margin: 0.25em auto;
+}
+
+.mainForm {
+    background-color: antiquewhite;
+    border: 1px solid darkgray;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 1em;
+    text-align: center;
+    font-size: 1.3em;
+
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.mainForm > * {
+    font-size: 1.3em;
+    margin: 0.3em 0.1em;
+}
+
+#playerName {
+    width: min(20em, 90%);
+    font-size: 1.5em;
+}
+
+.invitation .playerName {
+    font-weight: bold;
 }

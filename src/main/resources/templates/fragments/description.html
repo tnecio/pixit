@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+
+<aside id="gameDescription" th:fragment="copy">
+    <hr>
+    <h3>What is PiXiT?</h3>
+    PiXiT is an online game inspired by a board game called
+    <a href="https://www.libellud.com/dixit/?lang=en">Dixit<sup>TM</sup></a>.
+    In PiXiT instead of using painted cards with dream-like imagery, users play with artistic photographs
+    (kindly provided by <a href="https://unsplash.com/">Unsplash</a>).
+    Please note that the authors of PiXiT are in no way affiliated with Libellud, the owner of the Dixit trademark.
+
+    <h3>Rules</h3>
+    <ul>
+        <li><b>Starting the game.</b>
+            Once you have created the game, a unique link will be generated. Share it with all
+            the people you'd like to invite to the game. You need at least 3 people to play,
+            although the more the better. Once all the players have gathered and pressed "Start"
+            the first round of the game will begin.
+        </li>
+        <li><b>Game screen.</b>
+            <i>Here be image</i>. The top left corner display status of all the players in the game.
+            Your entry is highlighted. Top right corner displays instructions that will guide you throughout the game,
+            and also acts like a game table. Cards and phrases that will appear there are visible to all the players.
+            On the bottom you see your cards. Only you can see them.
+        </li>
+        <li><b>Narrator 📜 .</b>
+            At the beginning of the round, one of the players will automatically become a narrator.
+            This is indicated by a 📜 scroll emoji next to their name.
+            Narrator's job is to select one of their cards and write down a phrase
+            – a hint to the card's content. They can do this by clicking one of the cards to enlarge it,
+            then by writing down their phrase in the input box below the image and hitting "Select".
+        </li>
+        <li><b>Card selection.</b>
+            Once the narrator has chosen their card, it will appear in the top right corner, face down.
+            Each of the players must now select one of the cards to try fool others into thinking that
+            their card is the one that the narrator associated with the phrase.
+            <i>For example:</i> <i>Here be example with pictures</i>
+        </li>
+        <li><b>Voting.</b>
+            Once all the players have sent their card to the table, voting begins. Each of the players,
+            except the narrator, try to guess which of the cards on the table was selected by the narrator.
+            You cannot vote on your own card. Voting ends when all the players have cast their vote.
+        </li>
+        <li><b>Points.</b>
+            After voting, the points are distributed as follows:
+            <ul>
+                <li>If everyone guessed the narrator's card: 2 points for everyone except the narrator.
+                    (Therefore, the narrator should not make their hint too obvious).</li>
+                <li>Otherwise, everyone whose card got voted on gets 1 point per each vote;</li>
+                <li>everyone who guessed the narrator's card gets an additional 1 point;</li>
+                <li>and the narrator gets 3 points if anyone voted on their card.</li>
+            </ul>
+        </li>
+    </ul>
+</aside>
+
+</body>
+
+</html>

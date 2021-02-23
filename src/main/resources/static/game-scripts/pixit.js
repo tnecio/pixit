@@ -51,8 +51,9 @@ var pixit = new Vue({
 
     <section id="common-area">
         <header id="game-info">
-            <h1><a href="/">PiXiT!</a></h1>
+            <h1><a href="/">P<span style="font-size:1.2em;">i</span>X<span style="font-size:1.2em;">i</span>T!</a></h1>
             <aside id="game-players"> <!-- TODO in the order of playing! -->
+                <h2 class="playersHeader">Players:</h2> <br>
                 <playerEntry
                     v-for="(player, k) in game.players"
                     v-bind:key="k"

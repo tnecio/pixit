@@ -59,10 +59,16 @@
 }
 
 #game-info h1 {
-    font-family: Chilanka, sans-serif;
     font-size: 3em;
     margin-top: 0;
-    margin-bottom: 0.5em;
+    margin-bottom: 0;
+}
+
+#game-info h2 {
+    font-weight: normal;
+    width: 100%;
+    margin: 0 auto;
+    font-size: 1em;
 }
 
 #game-players {
@@ -111,16 +117,22 @@
     text-align: center;
 }
 
-.actionButton, .copyLinkButton {
+.actionButton {
     display: block;
     margin: 1em auto;
     font-size: 2em;
 }
 
+.copyLinkButton {
+    display: block;
+    margin: 0.5em auto;
+    font-size: 1.25em;
+}
+
 .phrase {
     font-weight: bold;
     font-size: 1.5em;
-    font-family: Chilanka, sans-serif;
+    font-family: "McLaren", "Chilanka", sans-serif;
 }
 
 #table .deck {
@@ -232,7 +244,7 @@ figure {
     margin: auto;
     border: 1px solid darkgray;
     max-width: 75vw;
-    max-height: 90vh;
+    max-height: 85vh;
     width: auto;
     height: auto;
 }

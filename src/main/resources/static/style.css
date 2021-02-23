@@ -1,3 +1,23 @@
+/* * * FONTS * * */
+
+@font-face {
+    font-family: 'McLaren';
+    src: local('McLaren Regular'), local('McLaren-Regular'),
+    url('/fonts/McLaren-Regular.woff2') format('woff2'), url('https://pixit.tnec.io/fonts/McLaren-Regular.woff2') format('woff2'), url('http://tnec.io/fonts/McLaren-Regular.woff2') format('woff2');
+    font-weight: 600;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Chilanka';
+    src: local('Chilanka Regular'), local('Chilanka-Regular'),
+    url('/fonts/Chilanka-Regular.woff2') format('woff2'), url('https://pixit.tnec.io/fonts/Chilanka-Regular.woff2') format('woff2'), url('http://tnec.io/fonts/McLaren-Regular.woff2') format('woff2');
+    font-weight: 600;
+    font-style: normal;
+}
+
+/* * * BODY * * */
+
 body {
     margin: auto;
     background: #f2f2f2;
@@ -14,15 +34,13 @@ a {
     text-decoration: none;
 }
 
+
 h1 a {
     border-bottom: 0;
     color: inherit;
     text-decoration: none;
     margin-bottom: 0;
-}
-
-h3 {
-    margin: 0 auto;
+    font-family: "Chilanka", "McLaren", sans-serif;
 }
 
 .separator {
@@ -31,8 +49,12 @@ h3 {
 
 /* * * FOOTER * * */
 
-footer {
+#gameDescription {
     margin: 5em 1em 0 1em;
+}
+
+footer {
+    margin: 1em 1em 0 1em;
 }
 
 hr {

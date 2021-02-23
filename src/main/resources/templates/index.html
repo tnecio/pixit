@@ -6,19 +6,20 @@
 </head>
 
 <body>
-<header th:replace="fragments/header :: copy"></header>
+<header>
+<h1><a href="/">P<span style="font-size:1.2em;">i</span>X<span style="font-size:1.2em;">i</span>T!</a></h1>
+</header>
 
-
-<form action="/start" method="post">
-    <label for="playerName">Name: <input type="text" id="playerName" name="playerName"></label>
-    <label for="langSelect">Choose language:
-        <select id="langSelect" name="langSelect">
-            <option value="en" selected>English</option>
-            <option value="pl">Polski</option>
-        </select>
-    </label>
+<form class="mainForm" action="/start" method="post">
+    <input type="text" id="playerName" name="playerName" placeholder="Your name">
+    <select id="langSelect" name="langSelect">
+        <option value="en" selected>🇬🇧</option>
+        <option value="pl">🇵🇱</option>
+    </select>
     <button type="submit" value="Submit">Create a game</button>
 </form>
+
+<aside th:replace="fragments/description :: copy"></aside>
 
 <footer th:replace="fragments/footer :: copy"></footer>
 </body>
