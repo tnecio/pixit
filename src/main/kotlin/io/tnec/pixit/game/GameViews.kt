@@ -72,7 +72,6 @@ class MainController(val gameManager: GameManager) {
         model.addAttribute("sessionId", session.id)
         model.addAttribute("userId", userId)
         model.addAttribute("gameId", id)
-        model.addAttribute("lang", gameManager.getUserPreferences(id, userId).lang)
 
         model.addAttribute("initialGame", gameManager.getGameFor(id, userId))
 

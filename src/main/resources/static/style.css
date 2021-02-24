@@ -47,6 +47,13 @@ h1 a {
     color: gray;
 }
 
+.langSelectForm {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 0.5em;
+}
+
 /* * * FOOTER * * */
 
 #gameDescription {

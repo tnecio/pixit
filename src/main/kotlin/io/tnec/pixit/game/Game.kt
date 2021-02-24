@@ -18,7 +18,7 @@ data class GameProperties(
         var removedPlayers: MutableMap<UserId, Avatar> = HashMap()
 ) : Serializable
 
-data class UserModel(var lang: String, var lastHeartbeat: Instant) : Serializable
+data class UserModel(var lastHeartbeat: Instant) : Serializable
 
 // This is the part of Game that will be serialized
 data class GameModel(

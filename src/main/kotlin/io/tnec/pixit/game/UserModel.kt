@@ -6,4 +6,4 @@ typealias UserId = Id
 
 typealias SessionId = Id
 
-data class NewUser(val playerName: String, val langSelect: String)
+data class NewUser(val playerName: String)

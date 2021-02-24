@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+
+<aside id="gameDescription" th:fragment="copy">
+    <hr>
+    <h3>Czym jest PiXiT?</h3>
+    PiXiT to gra online zainspirowana grą planszową o nazwie
+    <a href="https://www.libellud.com/dixit/?lang=en">Dixit<sup>TM</sup></a>.
+    W PiXiT zamiast malowanych kart z obrazami jak ze snu, użytkownicy grają za pomocą artystycznych zdjęć
+    (dzięki uprzejmości <a href="https://unsplash.com/">Unsplash</a>).
+    Autorzy PiXiTa nie są w żaden sposób powiązani z firmą Libellud, właścicielem znaku towarowego Dixit.
+
+    <h3>Zasady</h3>
+    <ul>
+        <li><b>Rozpoczęcie gry.</b>
+            Po stworzeniu gry, zostanie wygenerowany unikalny link. Podziel się nim ze wszystkimi
+            osobami, które chciałbyś zaprosić do gry. Potrzebujesz co najmniej 3 osób,
+            chociaż im więcej tym lepiej. Gdy wszyscy gracze się zbiorą i wcisną "Start"
+            rozpocznie się pierwsza runda.
+        </li>
+        <li><b>Ekran gry.</b>
+            W lewym górnym rogu wyświetlany jest status wszystkich graczy.
+            Twój wpis jest podświetlony. W obszare po prawej u góry wyświetlane są instrukcje, które poprowadzą Cię przez całą grę,
+            a także służy jako stół do gry. Karty i wyrażenia, które się tam pojawią, są widoczne dla wszystkich graczy.
+            Na dole widzisz swoje karty. Tylko ty możesz je zobaczyć.
+        </li>
+        <li><b>Narrator 📜.</b>
+            Na początku rundy jeden z graczy automatycznie staje się narratorem.
+            Jest to oznaczone emoji 📜 "scroll" obok jego imienia.
+            Zadaniem narratora jest wybranie jednej ze swoich kart i zapisanie na niej hasła
+            - podpowiedź co do treści karty. Może to zrobić klikając na jedną z kart, aby ją powiększyć,
+            następnie wpisując frazę w pole poniżej obrazka i naciskając "Wybierz".
+        </li>
+        <li><b>Wybór karty.</b>
+            Gdy narrator wybierze swoją kartę, pojawi się ona w prawym górnym rogu, zakryta.
+            Każdy z graczy musi teraz wybrać jedną z kart, aby spróbować oszukać innych, że
+            ich karta jest tą, którą narrator skojarzył z danym wyrażeniem.
+            <i>Na przykład:</i> <i>Tutaj są przykłady z obrazkami</i>.
+        </li>
+        <li><b>Głosowanie.</b>
+            Gdy wszyscy gracze wyślą już swoje karty na stół, rozpoczyna się głosowanie. Każdy z graczy,
+            oprócz narratora, próbuje odgadnąć, która z kart na stole została wybrana przez narratora.
+            Nie można głosować na swoją własną kartę. Głosowanie kończy się, gdy wszyscy gracze oddadzą swój głos.
+        </li>
+        <li><b>Punkty.</b>
+            Po głosowaniu, punkty są rozdzielane w następujący sposób:
+            <ul>
+                <li>Jeśli wszyscy odgadli kartę narratora: 2 punkty dla wszystkich oprócz narratora.
+                    (Dlatego narrator nie powinien podać zbyt łatwego hasła).</li>
+                <li>W przeciwnym razie, każdy, na kogo kartę oddano głos, otrzymuje 1 punkt za każdy głos;</li>
+                <li>każdy kto odgadł kartę narratora dostaje dodatkowy 1 punkt;</li>
+                <li>natomiast narrator dostaje 3 punkty, jeśli ktoś zagłosował na jego kartę.</li>
+            </ul>.
+        </li>
+</aside>
+
+</body>
+
+</html>

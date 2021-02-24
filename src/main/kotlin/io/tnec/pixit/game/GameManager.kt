@@ -41,7 +41,7 @@ class GameManager(val gameRepository: GameRepository,
     }
 
     private fun newUserPreferences(userId: UserId, newUser: NewUser) = mapOf(userId to UserModel(
-            lang = newUser.langSelect, lastHeartbeat = Instant.now()
+            lastHeartbeat = Instant.now()
     ))
 
     private fun newPlayer(userId: UserId, newUser: NewUser) = mapOf(userId to avatarManager.newAvatar(newUser.playerName))
@@ -295,11 +295,4 @@ class GameManager(val gameRepository: GameRepository,
 
     private fun GameRepository.getGameSafe(gameId: GameId): Game = getGame(gameId)
             ?: throw ValidationError("No such game ${gameId}")
-
-    fun getUserPreferences(gameId: GameId, userId: UserId): UserModel {
-        log.debug { "getUserPreferences (gameId=$gameId, userId=$userId)" }
-
-        return gameRepository.getGameSafe(gameId).properties.users[userId]
-                ?: throw IllegalArgumentException("No player with id ${userId} in the game")
-    }
 }

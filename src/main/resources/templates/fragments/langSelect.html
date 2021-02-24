@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+
+<form class="langSelectForm" action="#" method="get" th:fragment="copy">
+    <select id="langSelect" name="lang" onchange="this.form.submit()">
+        <option value="en" th:selected="${lang == 'en'}">🇬🇧 English</option> <!-- TODO selected = lang !!! -->
+        <option value="pl" th:selected="${lang == 'pl'}">🇵🇱 polski</option>
+    </select>
+</form>
+
+</body>
+
+</html>

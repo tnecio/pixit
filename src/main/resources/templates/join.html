@@ -1,11 +1,15 @@
 <!DOCTYPE HTML>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      th:with="lang=${#locale.language}" th:lang="${lang}">
 <head>
     <th:block th:insert="fragments/head :: headFragment (pageTitle='PiXiT! – Join')"></th:block>
     <link rel="stylesheet" href="/non-game.css">
 </head>
 
 <body>
+
+<form th:replace="fragments/langSelect :: copy"></form>
+
 <header>
 <h1><a href="/">P<span style="font-size:1.2em;">i</span>X<span style="font-size:1.2em;">i</span>T!</a></h1>
 </header>
@@ -14,40 +18,36 @@
     <span class="invitation">
         <th:block th:switch="${#lists.size(playerNames)}">
             <span th:case="1">
-                Player
+                <span th:text="#{player}"></span>
                 <span th:each="pn, iterStat : ${playerNames}"
                       th:text="${pn}"
                       class="playerName">
                 </span>
-                invites you to the game!
+                <span th:text="#{invites_you_to_the_game}"></span>
             </span>
             <span th:case="2">
-                Players
+                <span th:text="#{players}"></span>
                 <span th:each="pn, iterStat : ${playerNames}"
-                      th:text="!${iterStat.last} ? ${pn} + ' and ': ${pn}"
+                      th:text="!${iterStat.last} ? ${pn} + ' ' + #{shortAnd} + ' ' : ${pn}"
                       class="playerName">
                 </span>
-                invite you to the game!
+                <span th:text="#{invite_you_to_the_game}"></span>
             </span>
             <span th:case="*">
-                Players:
+                <span th:text="#{players}"></span>:
                 <span th:each="pn, iterStat : ${playerNames}"
-                      th:text="!${iterStat.last} ? ${pn} + ', ': ' and ' + ${pn}"
+                      th:text="!${iterStat.last} ? ${pn} + ', ': ' ' + #{longAnd} + ' ' + ${pn}"
                       class="playerName">
                 </span>
-                invite you to the game!
+                <span th:text="#{invite_you_to_the_game}"></span>
             </span>
         </th:block>
     </span>
-    <input type="text" id="playerName" name="playerName" placeholder="Your name">
-    <select id="langSelect" name="langSelect">
-        <option value="en" selected>🇬🇧</option>
-        <option value="pl">🇵🇱</option>
-    </select>
-    <button type="submit" value="Submit">Join</button>
+    <input type="text" id="playerName" name="playerName" th:placeholder="#{yourName}">
+    <button type="submit" value="Submit" th:text="#{joinGame}"></button>
 </form>
 
-<aside th:replace="fragments/description :: copy"></aside>
+<aside th:replace="~{|fragments/i18n/${lang}/description| :: copy}"></aside>
 
 <footer th:replace="fragments/footer :: copy"></footer>
 </body>

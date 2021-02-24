@@ -1,6 +1,8 @@
 <!DOCTYPE HTML>
-<html th:lang="${lang}" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      th:with="lang=${#locale.language}" th:lang="${lang}">
 <head>
+    <script th:replace="~{|fragments/i18n/${lang}/pixit-js| :: copy}"></script>
     <script th:inline="javascript">
         /*<![CDATA[*/
 
@@ -16,12 +18,15 @@
     <link rel="stylesheet" href="/game.css">
 </head>
 <body>
+
+<form th:replace="fragments/langSelect :: copy"></form>
+
 <main id="pixit">
 
 </main>
 
 
-<aside th:replace="fragments/description :: copy"></aside>
+<aside th:replace="~{|fragments/i18n/${lang}/description| :: copy}"></aside>
 
 <footer th:replace="fragments/footer :: copy"></footer>
 

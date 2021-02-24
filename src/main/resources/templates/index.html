@@ -1,5 +1,6 @@
 <!DOCTYPE HTML>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      th:with="lang=${#locale.language}" th:lang="${lang}">
 <head>
     <th:block th:insert="fragments/head :: headFragment (pageTitle='PiXiT! – Start')"></th:block>
     <link rel="stylesheet" href="/non-game.css">
@@ -10,16 +11,14 @@
 <h1><a href="/">P<span style="font-size:1.2em;">i</span>X<span style="font-size:1.2em;">i</span>T!</a></h1>
 </header>
 
+<form th:replace="fragments/langSelect :: copy"></form>
+
 <form class="mainForm" action="/start" method="post">
-    <input type="text" id="playerName" name="playerName" placeholder="Your name">
-    <select id="langSelect" name="langSelect">
-        <option value="en" selected>🇬🇧</option>
-        <option value="pl">🇵🇱</option>
-    </select>
-    <button type="submit" value="Submit">Create a game</button>
+    <input type="text" id="playerName" name="playerName" th:placeholder="#{yourName}">
+    <button type="submit" value="Submit" th:text="#{createGame}"></button>
 </form>
 
-<aside th:replace="fragments/description :: copy"></aside>
+<aside th:replace="~{|fragments/i18n/${lang}/description| :: copy}"></aside>
 
 <footer th:replace="fragments/footer :: copy"></footer>
 </body>
