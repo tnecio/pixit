@@ -1,9 +1,0 @@
-{
-  "WAITING_FOR_PLAYERS" : "Press Start to launch the game!",
-  "WAITING_FOR_WORD" : "Waiting for the narrator",
-  "WAITING_FOR_CARDS" : "Waiting for all players to send their cards",
-  "WAITING_FOR_VOTES" : "Waiting for all players to cast their votes",
-  "WAITING_TO_PROCEED" : "Waiting for game admin to proceed to the next round",
-  "FINISHED" : "This game has ended",
-  "CORRUPTED" : "This game's data got corrupted. Further play is not possible"
-}
