@@ -227,8 +227,8 @@ class GameManager(val gameRepository: GameRepository,
                 it.model.state = GameState.WAITING_FOR_WORD
                 gameMessageSender.notifyOneOffEvent(gameId, GameEvent.NARRATOR_LOST_ROUND_REPLAY)
             }
-            it.properties.removedPlayers[userId] = it.model.players[userId] ?:
-                    throw ValidationError("No player $userId in game $gameId")
+            it.properties.removedPlayers[userId] = it.model.players[userId]
+                    ?: throw ValidationError("No player $userId in game $gameId")
             it.model.players = it.model.players.filterNot { it.key == userId }
         }
 
@@ -242,10 +242,10 @@ class GameManager(val gameRepository: GameRepository,
     fun readdPlayer(gameId: GameId, sessionId: SessionId) = updateAndNotify(gameId) {
         log.info { "readdPlayer (gameId=$gameId, sessionId=$sessionId)" }
 
-        val userId = it.properties.sessions[sessionId] ?:
-                throw ValidationError("Player with sessionId=$sessionId did not play in the game $gameId")
-        val removedPlayer = it.properties.removedPlayers.remove(userId) ?:
-            throw ValidationError("Player $userId did was not removed from the game $gameId")
+        val userId = it.properties.sessions[sessionId]
+                ?: throw ValidationError("Player with sessionId=$sessionId did not play in the game $gameId")
+        val removedPlayer = it.properties.removedPlayers.remove(userId)
+                ?: throw ValidationError("Player $userId did was not removed from the game $gameId")
         it.model.players += mapOf(userId to removedPlayer)
     }
 
@@ -263,7 +263,13 @@ class GameManager(val gameRepository: GameRepository,
 
     private fun updateAndNotify(gameId: GameId, action: (Game) -> Unit) {
         gameRepository.updateGame(gameId) {
-            action(it) // TODO surrond with try/catch for ValidationError
+            try {
+                action(it)
+            } catch (e: ValidationError) {
+                // Don't log the stacktrace, just take a note, and exit early
+                log.warn { "Validation error: ${e.message}" }
+                return@updateGame it
+            }
             it.model.version += 1
             gameMessageSender.notifyGameUpdate(it, gameId)
             it
