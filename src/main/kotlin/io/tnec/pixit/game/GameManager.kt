@@ -3,6 +3,7 @@ package io.tnec.pixit.game
 import io.tnec.pixit.avatar.Avatar
 import io.tnec.pixit.avatar.AvatarManager
 import io.tnec.pixit.card.CardId
+import io.tnec.pixit.common.NotFoundException
 import io.tnec.pixit.common.ValidationError
 import io.tnec.pixit.common.getUniqueId
 import mu.KotlinLogging
@@ -252,6 +253,7 @@ class GameManager(val gameRepository: GameRepository,
         val players = game.model.players.keys.stream().sorted().collect(toList())
         val narratorIndex = players.indexOfFirst { it == game.model.narrator }
         return players[(narratorIndex + 1) % players.size]
+        // TODO ArithmeticError when narrator was last person in the game
     }
 
     fun sendState(gameId: GameId) = gameRepository.withGame(gameId) {
@@ -294,5 +296,5 @@ class GameManager(val gameRepository: GameRepository,
     }
 
     private fun GameRepository.getGameSafe(gameId: GameId): Game = getGame(gameId)
-            ?: throw ValidationError("No such game ${gameId}")
+            ?: throw NotFoundException("No such game ${gameId}")
 }
