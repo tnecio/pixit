@@ -159,21 +159,24 @@ class GameManager(val gameRepository: GameRepository,
         }
 
         // If everyone voted on narrator's card: 2 points for everyone except the narrator
-        if (whoVotedForWhom.all { it.value == narratorId }) {
+        // The same, if no one voted
+        model.roundResult = when {
+            (whoVotedForWhom.all { it.value == narratorId }) -> RoundResult.ALL_VOTED_FOR_NARRATOR
+            (whoVotedForWhom.all { it.value != narratorId }) -> RoundResult.NO_ONE_VOTED_FOR_NARRATOR
+            else -> RoundResult.SOMEONE_VOTED_FOR_NARRATOR
+        }
+
+        if (model.roundResult != RoundResult.SOMEONE_VOTED_FOR_NARRATOR) {
             model.players = model.players.mapValues {
                 if (it.key == narratorId) it.value else it.value.copy(roundPointDelta = 2)
             }
-            model.roundResult = RoundResult.ALL_VOTED_FOR_NARRATOR
             return
         }
 
         // Otherwise:
-        // If someone voted on narrator's card (but not everyone): 3 points for the narrator
-        model.roundResult = RoundResult.NO_ONE_VOTED_FOR_NARRATOR
-        if (whoVotedForWhom.any { it.value == narratorId }) {
-            model.players[narratorId]!!.roundPointDelta = 3
-            model.roundResult = RoundResult.SOMEONE_VOTED_FOR_NARRATOR
-        }
+        // 3 points for the narrator
+        model.players[narratorId]!!.roundPointDelta = 3
+
         // and additionally 1 point for each person who voted for your card if you're not the narrator
         for (playerId in model.players.keys) {
             val fooler = whoVotedForWhom[playerId] ?: continue

@@ -51,7 +51,7 @@ Vue.component('card', {
             <img v-bind:src="card.image.url" v-bind:alt="card.image.alt" />
             <form v-if="state.choosable" id="phrase-set" v-on:submit.prevent="closeModal(); $emit('set-word', card.id, word)" @click.stop>
                 <label for="wordInput">
-                    <input type="text" name="wordInput" v-model="word" 
+                    <input type="text" name="wordInput" autocomplete="off" v-model="word" 
                     v-bind:placeholder="t.set_phrase">
                 </label>
                 <button type="submit"
