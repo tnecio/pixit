@@ -34,7 +34,7 @@ data class GameModel(
             players = players.mapValues {
                 if (it.key == userId) it.value else it.value.copy(
                         deck = emptyList(),
-                        sentCard = if (state == GameState.WAITING_FOR_CARDS || state == GameState.WAITING_FOR_VOTES
+                        sentCard = if ((state == GameState.WAITING_FOR_CARDS || state == GameState.WAITING_FOR_VOTES)
                                 && it.value.sentCard != null) {
                             "YES"
                         } else it.value.sentCard,

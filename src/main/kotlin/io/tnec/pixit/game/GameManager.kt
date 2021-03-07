@@ -25,7 +25,7 @@ class GameManager(val gameRepository: GameRepository,
 
         val userId: UserId = getUniqueId()
         val newGameProperties = GameProperties(
-                sessions = mapOf(sessionId to userId), users = newUserPreferences(userId, newUser)
+                sessions = mapOf(sessionId to userId), users = newUserPreferences(userId)
         )
         val newGameModel = GameModel(narrator = userId, players = newPlayer(userId, newUser))
         val newGame = Game(model = newGameModel, properties = newGameProperties)
@@ -37,11 +37,11 @@ class GameManager(val gameRepository: GameRepository,
 
         val userId: UserId = getUniqueId()
         it.properties.sessions += mapOf(sessionId to userId)
-        it.properties.users += newUserPreferences(userId, newUser)
+        it.properties.users += newUserPreferences(userId)
         it.model.players += newPlayer(userId, newUser)
     }
 
-    private fun newUserPreferences(userId: UserId, newUser: NewUser) = mapOf(userId to UserModel(
+    private fun newUserPreferences(userId: UserId) = mapOf(userId to UserModel(
             lastHeartbeat = Instant.now()
     ))
 
@@ -59,6 +59,10 @@ class GameManager(val gameRepository: GameRepository,
 
         it.model.players[userId]!!.startRequested = true
 
+        checkForAllStartsPressed(it, gameId)
+    }
+
+    private fun checkForAllStartsPressed(it: Game, gameId: GameId) {
         if (it.model.players.all { (_, avatar) -> avatar.startRequested }) {
             log.info { "Starting game (gameId=$gameId)" }
 
@@ -101,6 +105,10 @@ class GameManager(val gameRepository: GameRepository,
 
         it.model.players[userId]!!.sentCard = cardId
 
+        checkForAllCardsSent(it, gameId)
+    }
+
+    private fun checkForAllCardsSent(it: Game, gameId: GameId) {
         if (it.model.players.all { it.value.sentCard != null }) {
             log.info { "All cards sent (gameId=$gameId)" }
             it.model.table = it.model.table.shuffled()
@@ -126,8 +134,11 @@ class GameManager(val gameRepository: GameRepository,
 
         it.model.players[userId]!!.vote = cardId
 
-        val narratorId = it.model.narrator
-        if (it.model.players.all { (id, avatar) -> avatar.vote != null || id == narratorId }) {
+        checkForAllVotesCast(it, gameId)
+    }
+
+    private fun checkForAllVotesCast(it: Game, gameId: GameId) {
+        if (it.model.players.all { (id, avatar) -> avatar.vote != null || id == it.model.narrator }) {
             log.info { "All players voted (gameId=$gameId)" }
             countPoints(it.model)
             it.model.state = it.model.state.next()
@@ -189,6 +200,10 @@ class GameManager(val gameRepository: GameRepository,
 
         it.model.players[userId]!!.proceedRequested = true
 
+        checkForAllProceedsRequested(it, gameId)
+    }
+
+    private fun checkForAllProceedsRequested(it: Game, gameId: GameId) {
         if (it.model.players.all { (_, avatar) -> avatar.proceedRequested }) {
             log.info { "Proceeding to the next round (gameId=$gameId)" }
             log.debug { "Game state at round-end (gameId=$gameId): ${it.model}" }
@@ -220,7 +235,7 @@ class GameManager(val gameRepository: GameRepository,
 
     fun removePlayer(gameId: GameId, userId: UserId) {
         updateAndNotify(gameId) {
-            if (it.model.narrator == userId) {
+            if (it.model.narrator == userId && it.model.state != GameState.WAITING_TO_PROCEED) {
                 it.model.narrator = nextNarrator(it)
                 it.model.table = emptyList()
                 it.model.word = null
@@ -230,6 +245,15 @@ class GameManager(val gameRepository: GameRepository,
             it.properties.removedPlayers[userId] = it.model.players[userId]
                     ?: throw ValidationError("No player $userId in game $gameId")
             it.model.players = it.model.players.filterNot { it.key == userId }
+
+            when (it.model.state) {
+                (GameState.WAITING_FOR_PLAYERS) -> checkForAllStartsPressed(it, gameId)
+                (GameState.WAITING_FOR_WORD) -> Unit
+                (GameState.WAITING_FOR_CARDS) -> checkForAllCardsSent(it, gameId)
+                (GameState.WAITING_FOR_VOTES) -> checkForAllVotesCast(it, gameId)
+                (GameState.WAITING_TO_PROCEED) -> checkForAllProceedsRequested(it, gameId)
+                else -> Unit
+            }
         }
 
         val game = gameRepository.getGameSafe(gameId)
@@ -237,7 +261,6 @@ class GameManager(val gameRepository: GameRepository,
             gameRepository.dropGame(gameId)
         }
     }
-
 
     fun readdPlayer(gameId: GameId, sessionId: SessionId) = updateAndNotify(gameId) {
         log.info { "readdPlayer (gameId=$gameId, sessionId=$sessionId)" }
