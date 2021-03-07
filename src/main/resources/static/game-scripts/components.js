@@ -96,9 +96,12 @@ Vue.component('playerEntry', {
         this.t = t;
     },
     template: `
-    <div class="playerEntry" v-bind:class="{ currentPlayerEntry: isCurrent }">
-        <b>{{player.name}}</b>
-        <span v-bind:title="t.narrator" v-if="isNarrator"> 📜 </span>
+    <div
+        class="playerEntry"
+        v-bind:class="{ narratorPlayerEntry: isNarrator }"
+    >
+        <b v-bind:title="player.name + (isNarrator ? ' (' + t.narrator + ')' : '')">{{player.name}}</b> 
+        <span v-if="isCurrent">({{t.you}})</span>
         <span v-bind:title="t.still_thinking" v-if="isThinking(player, isCurrent, isNarrator, gameState)"> 💭</span>
         <br>
         {{player.points}}

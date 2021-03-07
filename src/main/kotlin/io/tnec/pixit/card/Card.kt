@@ -11,4 +11,9 @@ data class Card(
         val revealed: Boolean = true
 ): Serializable
 
-fun hiddenCard(id: CardId) = Card(id, Image("/pixit.png", "Hidden card", "", ""), revealed = false)
+fun hiddenCard(id: CardId) = Card(
+        // TODO true cardId should not be recoverable on the client from hidden card id
+        id + "_hidden",
+        Image("/pixit.png", "Hidden card", "", ""),
+        revealed = false
+)

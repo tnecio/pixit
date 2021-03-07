@@ -90,8 +90,8 @@
     height: min-content;
 }
 
-.currentPlayerEntry {
-    background-color: antiquewhite;
+.narratorPlayerEntry {
+    background-color: orange;
 }
 
 /* * TABLE SECTION * */
@@ -100,8 +100,14 @@
     min-width: min(90vw, 500px);
     flex-basis: 70%;
     flex-grow: 1;
+
     display: flex;
     flex-wrap: wrap;
+    align-content: center;
+
+    background-color: white;
+    border: 1px solid darkgray;
+    padding: 0.5em;
 }
 
 #game-guide {
@@ -118,16 +124,9 @@
     text-align: center;
 }
 
-.actionButton {
-    display: block;
-    margin: 1em auto;
+.actionButton, .copyLinkButton {
+    margin: 0.5em 0.5em;
     font-size: 2em;
-}
-
-.copyLinkButton {
-    display: block;
-    margin: 0.5em auto;
-    font-size: 1.25em;
 }
 
 .phrase {
@@ -137,9 +136,13 @@
 }
 
 #table .deck {
-    background-color: white;
-    border: 1px solid darkgray;
     width: 100%;
+}
+
+#shufflingArea {
+    font-size: 1.3em;
+    width: 100%;
+    padding: 3em 0;
 }
 
 /* * * PLAYER'S PRIVATE AREA SECTION * * */
@@ -291,4 +294,37 @@ figcaption a {
 
 .modal figcaption > button {
     font-size: 1.25em;
+}
+
+/* * * ANIMATION * * */
+.cardmove-enter-active {
+    transition-timing-function: ease-out;
+    transition: opacity 1.5s, transform 1.5s;
+}
+
+.cardmove-leave-active {
+    transition-timing-function: ease-in;
+    transition: opacity 0.5s, transform 0.5s;
+}
+
+.cardmove-enter {
+    opacity: 0;
+    transform: translateY(2em);
+}
+
+.cardmove-leave-to {
+    opacity: 0;
+    transform: translateY(-2em);
+}
+
+.cardmove-move {
+    transition: transform 1s;
+}
+
+.shufflingmove-enter-active, .shufflingmove-leave-active {
+    transition: opacity 1s;
+}
+
+.shufflingmove-enter, .shufflingmove-leaveto {
+    opacity: 0;
 }

@@ -32,6 +32,8 @@ var pixit = new Vue({
             roundResult: "IN_PROGRESS"
         },
 
+        shuffling: false,
+
         connected: false,
 
         popups: []
@@ -72,6 +74,13 @@ var pixit = new Vue({
             </section>
             
             <div id="pre-start" v-if="!gameStarted()">
+                <button
+                    class="copyLinkButton"
+                    type="button"
+                    onclick="navigator.clipboard.writeText(location)"
+                >
+                    {{t.copy_to_clipboard}}
+                </button>
                 <button 
                     @click="requests.startGame()"
                     v-bind:disabled="game.players[userId].startRequested"
@@ -91,10 +100,11 @@ var pixit = new Vue({
                 </button>
             </div>
     
-            <div class="deck" v-if="shouldDisplayTable()">
+            <transition name="shufflingmove" mode="out-in">
+            <transition-group v-if="!shuffling" tag="div" class="deck" name="cardmove" key="deck">
                 <card
                     v-for="(card, index) in game.table"
-                    v-bind:key="index"
+                    v-bind:key="card.id"
                     v-bind:card="card"
                     v-bind:state="{
                         sendable: false, votable: canVote(card.id), choosable: false, chosen: false,
@@ -105,16 +115,20 @@ var pixit = new Vue({
                     @vote-card="(id) => requests.vote(id)"
                 >
                 </card>
+            </transition-group>
+            <div v-else class="deck" id="shufflingArea" key="shufflingArea">
+                {{t.shuffling}}
             </div>
+            </transition>
         </div>
     </section>
     
     <section id="players-private-area" v-if="gameStarted()">
         <h2>{{t.your_deck}}</h2>
 
-        <div class="deck">
+        <transition-group tag="div" class="deck" name="cardmove">
             <card v-for="(card, index) in game.players[userId].deck"
-                  v-bind:key="index"
+                  v-bind:key="card.id"
                   v-bind:card="card"
                   v-bind:state="{
                       sendable: canSendCard(),
@@ -128,7 +142,7 @@ var pixit = new Vue({
                   @set-word="(id, word) => requests.setWord(id, word)"
             >
             </card>
-        </div>
+        </transition-group>
     </section>
 </main>
     `,
@@ -137,6 +151,11 @@ var pixit = new Vue({
         /* MODEL UPDATE */
         update: function (newGame) {
             if (newGame.version > this.game.version) {
+                if (this.game.state === "WAITING_FOR_CARDS" && newGame.state === "WAITING_FOR_VOTES") {
+                    this.shuffling = true;
+                    setTimeout(() => { this.shuffling = false; }, 3000);
+                }
+
                 this.game = newGame;
             } else {
                 console.log("Out of order game update " + newGame.version + " < " + this.game.version);
@@ -220,14 +239,11 @@ var pixit = new Vue({
             const phrase = this.game.word ? `<span class="phrase">${this.game.word.value}</span>` : null;
 
             if (this.game.state === 'WAITING_FOR_PLAYERS') {
-                const button = `<button class="copyLinkButton" type="button"
-                    onclick="navigator.clipboard.writeText(location)">`
-                    + t.copy_to_clipboard + `</button><br>`;
                 const numberOfPlayersInTheGame = Object.keys(this.game.players).length;
                 if (numberOfPlayersInTheGame < 3) {
-                    return t.waiting_for_players + button;
+                    return t.waiting_for_players;
                 } else {
-                    return t.press_start_to_begin + button;
+                    return t.press_start_to_begin;
                 }
             } else if (this.game.state === 'WAITING_FOR_WORD') {
                 if (this.game.narrator === userId) {
