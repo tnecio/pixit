@@ -218,7 +218,7 @@ class GameManager(val gameRepository: GameRepository,
                 )
             }
             it.model.roundResult = RoundResult.IN_PROGRESS
-            it.model.narrator = nextNarrator(it)
+            it.model.narrator = nextNarrator(it) ?: it.model.narrator
             it.model.state = it.model.state.next()
         }
     }
@@ -236,7 +236,7 @@ class GameManager(val gameRepository: GameRepository,
     fun removePlayer(gameId: GameId, userId: UserId) {
         updateAndNotify(gameId) {
             if (it.model.narrator == userId && it.model.state != GameState.WAITING_TO_PROCEED) {
-                it.model.narrator = nextNarrator(it)
+                it.model.narrator = nextNarrator(it) ?: it.model.narrator
                 it.model.table = emptyList()
                 it.model.word = null
                 it.model.state = GameState.WAITING_FOR_WORD
@@ -246,18 +246,22 @@ class GameManager(val gameRepository: GameRepository,
                     ?: throw ValidationError("No player $userId in game $gameId")
             it.model.players = it.model.players.filterNot { it.key == userId }
 
-            when (it.model.state) {
-                (GameState.WAITING_FOR_PLAYERS) -> checkForAllStartsPressed(it, gameId)
-                (GameState.WAITING_FOR_WORD) -> Unit
-                (GameState.WAITING_FOR_CARDS) -> checkForAllCardsSent(it, gameId)
-                (GameState.WAITING_FOR_VOTES) -> checkForAllVotesCast(it, gameId)
-                (GameState.WAITING_TO_PROCEED) -> checkForAllProceedsRequested(it, gameId)
-                else -> Unit
+            if (it.model.players.size == 0) {
+                it.model.state = GameState.FINISHED
+            } else {
+                when (it.model.state) {
+                    (GameState.WAITING_FOR_PLAYERS) -> checkForAllStartsPressed(it, gameId)
+                    (GameState.WAITING_FOR_WORD) -> Unit
+                    (GameState.WAITING_FOR_CARDS) -> checkForAllCardsSent(it, gameId)
+                    (GameState.WAITING_FOR_VOTES) -> checkForAllVotesCast(it, gameId)
+                    (GameState.WAITING_TO_PROCEED) -> checkForAllProceedsRequested(it, gameId)
+                    else -> Unit
+                }
             }
         }
 
         val game = gameRepository.getGameSafe(gameId)
-        if (game.model.players.size == 0) {
+        if (game.model.state == GameState.FINISHED) {
             gameRepository.dropGame(gameId)
         }
     }
@@ -272,11 +276,14 @@ class GameManager(val gameRepository: GameRepository,
         it.model.players += mapOf(userId to removedPlayer)
     }
 
-    private fun nextNarrator(game: Game): UserId {
+    private fun nextNarrator(game: Game): UserId? {
         val players = game.model.players.keys.stream().sorted().collect(toList())
+        if (players.size == 0) {
+            return null
+        }
+
         val narratorIndex = players.indexOfFirst { it == game.model.narrator }
         return players[(narratorIndex + 1) % players.size]
-        // TODO ArithmeticError when narrator was last person in the game
     }
 
     fun sendState(gameId: GameId) = gameRepository.withGame(gameId) {
