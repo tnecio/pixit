@@ -44,6 +44,12 @@ var pixit = new Vue({
         popups: []
     },
 
+    computed: {
+        playerIdsSorted: function () {
+            return Object.keys(this.game.players).sort();
+        }
+    },
+
     template: `
 <main>
     <aside id="errors" v-if="isDisconnected()">
@@ -59,12 +65,12 @@ var pixit = new Vue({
     <section id="common-area">
         <header id="game-info">
             <h1><a href="/">P<span style="font-size:1.2em;">i</span>X<span style="font-size:1.2em;">i</span>T!</a></h1>
-            <aside id="game-players"> <!-- TODO in the order of playing! -->
+            <aside id="game-players">
                 <h2 class="playersHeader">{{t.players}}:</h2>
                 <playerEntry
-                    v-for="(player, k) in game.players"
+                    v-for="k in playerIdsSorted"
                     v-bind:key="k"
-                    v-bind:player="player"
+                    v-bind:player="game.players[k]"
                     v-bind:isCurrent="k == userId"
                     v-bind:isNarrator="k == game.narrator"
                     v-bind:gameState="game.state">
