@@ -27,13 +27,61 @@ body {
     line-height: 1.5;
 }
 
+/* * * BETTER DEFAULTS * * */
+
+figure {
+    padding: 0.5em;
+    background-color: black;
+    color: white;
+    max-width: 90%;
+}
+
+img {
+    width: 100%;
+
+    /* Styling for alt descriptions */
+    color: antiquewhite;
+    font-size: 0.8em;
+    font-family: monospace;
+    text-decoration: dotted underline;
+}
+
+figcaption {
+    color: white;
+    font-size: 0.75em;
+    display: flex;
+    justify-content: space-between;
+}
+
+figcaption a {
+    color: white;
+    text-decoration: underline;
+}
+
+li {
+    margin: 1em 0;
+}
+
+.mobileOnly {
+    display: none;
+}
+
+@media screen and (max-width: 600px) {
+    .desktopOnly {
+        display: none;
+    }
+
+    .mobileOnly {
+        display: unset;
+    }
+}
+
 /* * * HEADER * * */
 
 a {
     color: #181144;
     text-decoration: none;
 }
-
 
 h1 a {
     border-bottom: 0;
@@ -54,11 +102,23 @@ h1 a {
     margin: 0.5em;
 }
 
-/* * * FOOTER * * */
-
+/* * * GAME DESCRIPTION * * */
 #gameDescription {
-    margin: 5em 1em 0 1em;
+    margin: 5em auto;
+    max-width: max(75%, 1024px);
+    padding: 0 1em;
 }
+
+#gameDescription > ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+#gameDescription figure {
+    max-width: min(75%, 800px);
+}
+
+/* * * FOOTER * * */
 
 footer {
     margin: 1em 1em 0 1em;

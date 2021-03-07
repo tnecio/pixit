@@ -32,6 +32,11 @@ var pixit = new Vue({
             roundResult: "IN_PROGRESS"
         },
 
+        myCards: {
+            lastVote: null,
+            lastSent: null
+        },
+
         shuffling: false,
 
         connected: false,
@@ -110,9 +115,10 @@ var pixit = new Vue({
                         sendable: false, votable: canVote(card.id), choosable: false, chosen: false,
                         narrators: game.state === 'WAITING_TO_PROCEED' && game.players[game.narrator].sentCard === card.id,
                         whoVotedNames: getWhoVotedNames(card.id),
-                        owner: getOwnerOfCardOnTableName(card.id)
+                        owner: getOwnerOfCardOnTableName(card.id),
+                        sentByPlayer: myCards.lastSent === card.id, votedByPlayer: myCards.lastVote === card.id
                     }"
-                    @vote-card="(id) => requests.vote(id)"
+                    @vote-card="(id) => { requests.vote(id); myCards.lastVote = id; }"
                 >
                 </card>
             </transition-group>
@@ -136,9 +142,9 @@ var pixit = new Vue({
                       choosable: canSetWord(),
                       chosen: false,
                       narrators: false,
-                      whoVotedNames: null, owner: null
+                      whoVotedNames: null, owner: null, sentByPlayer: false, votedByPlayer: false
                   }"
-                  @send-card="(id) => requests.sendCard(id)"
+                  @send-card="(id) => { requests.sendCard(id); myCards.lastSent = id; }"
                   @set-word="(id, word) => requests.setWord(id, word)"
             >
             </card>

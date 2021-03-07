@@ -5,7 +5,9 @@ const EXAMPLE_CARD_STATE = {
     chosen: false,
     narrators: false,
     whoVotedNames: [],
-    owner: null
+    owner: null,
+    sentByPlayer: false,
+    votedByPlayer: false
 };
 
 Vue.component('card', {
@@ -35,12 +37,13 @@ Vue.component('card', {
         <figcaption v-if="card.image.attribution">
             <span v-html="card.image.attribution"></span>
         </figcaption>
-        <aside v-if="state.owner" class="whoVotedNames">
-            <span v-html="t.xyzs_card_fmt(state.owner)"></span>
+        <aside v-if="state.owner || state.votedByPlayer" class="whoVotedNames">
+            <span v-if="state.owner" v-html="t.xyzs_card_fmt(state.owner)"></span>
             <span v-if="state.whoVotedNames && state.whoVotedNames.length > 0">
                 <br>{{t.voted_on_by}}
                 <b v-for="playerName in state.whoVotedNames"><br>{{playerName}}</b>
             </span>
+            <span v-if="state.votedByPlayer && !state.owner">{{t.you_voted_for_this_card}}</span>
         </aside>
     </figure>
     <div class="modal" v-bind:class="showModal ? 'shownModal' : 'hiddenModal'" onclick="history.back()">
@@ -66,6 +69,7 @@ Vue.component('card', {
                 </span>
                 <button type="button" v-if="state.sendable" v-on:click="$emit('send-card', card.id)">{{t.send}} ✅</button>
                 <button type="button" v-if="state.votable" v-on:click="$emit('vote-card', card.id)">{{t.vote}} ✅</button>
+                <button type="button" v-if="state.sentByPlayer" disabled>{{t.this_is_your_card}} ✅</button>
             </figcaption>
         </figure>
     </div>
