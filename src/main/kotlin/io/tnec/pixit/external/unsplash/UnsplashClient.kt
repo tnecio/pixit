@@ -24,7 +24,7 @@ data class PhotoUrls(
 data class UserDescription(
         val name: String?,
         val username: String,
-        val portfolio_url: String?,
+        @JsonProperty("portfolio_url") val portfolioUrl: String?,
         val bio: String?,
         val links: Map<String, String>
 ) {
@@ -36,14 +36,16 @@ data class UserDescription(
 data class GetPhotoResponse(
         val urls: PhotoUrls,
         @JsonProperty("alt_description") val alt: String?,
+        val description: String?,
         val user: UserDescription,
+        val width: Int, val height: Int,
         val id: ImageId
 ) {
     fun getAttribution() = "Photo by <a target='_blank' href='${user.getUnsplashHtmlLink()}?utm_source=pixit&utm_medium=referral'>${user.getDisplayName()}</a> on <a href='https://unsplash.com/?utm_source=pixit&utm_medium=referral'>Unsplash</a>"
 
     fun toImage() = Image(
             url = urls.regular,
-            alt = alt ?: "Missing alt description",
+            alt = description ?: (alt ?: "Missing description"),
             attribution = getAttribution()
     )
 }
