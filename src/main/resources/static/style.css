@@ -3,7 +3,7 @@
 @font-face {
     font-family: 'McLaren';
     src: local('McLaren Regular'), local('McLaren-Regular'),
-    url('/fonts/McLaren-Regular.woff2') format('woff2'), url('https://pixit.tnec.io/fonts/McLaren-Regular.woff2') format('woff2'), url('http://tnec.io/fonts/McLaren-Regular.woff2') format('woff2');
+    url('/fonts/McLaren-Regular.woff2') format('woff2'), url('https://pixit.fun/fonts/McLaren-Regular.woff2') format('woff2');
     font-weight: 600;
     font-style: normal;
 }
@@ -11,7 +11,7 @@
 @font-face {
     font-family: 'Chilanka';
     src: local('Chilanka Regular'), local('Chilanka-Regular'),
-    url('/fonts/Chilanka-Regular.woff2') format('woff2'), url('https://pixit.tnec.io/fonts/Chilanka-Regular.woff2') format('woff2'), url('http://tnec.io/fonts/McLaren-Regular.woff2') format('woff2');
+    url('/fonts/Chilanka-Regular.woff2') format('woff2'), url('https://pixit.fun/fonts/Chilanka-Regular.woff2') format('woff2');
     font-weight: 600;
     font-style: normal;
 }

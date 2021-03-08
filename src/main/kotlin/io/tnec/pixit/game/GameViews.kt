@@ -16,7 +16,7 @@ private val log = KotlinLogging.logger {}
 class MainController(val gameManager: GameManager) {
     // GetMapping("/") is static
 
-    @PostMapping("/start") // pixit.tnec.io/start
+    @PostMapping("/start")
     fun start(@ModelAttribute newUser: NewUser,
               model: Model,
               response: HttpServletResponse,
