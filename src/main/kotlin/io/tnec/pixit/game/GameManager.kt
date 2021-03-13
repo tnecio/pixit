@@ -183,10 +183,10 @@ class GameManager(val gameRepository: GameRepository,
             if (fooler == narratorId) continue
             model.players[fooler]!!.roundPointDelta += 1
         }
-        // and additionally 1 point for everyone who guessed narrator's card correctly
+        // and additionally 3 points for everyone who guessed narrator's card correctly
         for ((playerId, votedFor) in whoVotedForWhom) {
             if (votedFor == narratorId) {
-                model.players[playerId]!!.roundPointDelta += 1
+                model.players[playerId]!!.roundPointDelta += 3
             }
         }
     }
