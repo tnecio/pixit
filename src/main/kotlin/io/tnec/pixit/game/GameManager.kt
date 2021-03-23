@@ -25,7 +25,10 @@ class GameManager(val gameRepository: GameRepository,
 
         val userId: UserId = getUniqueId()
         val newGameProperties = GameProperties(
-                sessions = mapOf(sessionId to userId), users = newUserPreferences(userId)
+                sessions = mapOf(sessionId to userId),
+                users = newUserPreferences(userId),
+                accessType = GameAccessType.PRIVATE,
+                timeCreated = clock.instant()
         )
         val newGameModel = GameModel(narrator = userId, players = newPlayer(userId, newUser))
         val newGame = Game(model = newGameModel, properties = newGameProperties)
@@ -138,7 +141,11 @@ class GameManager(val gameRepository: GameRepository,
     }
 
     private fun checkForAllVotesCast(it: Game, gameId: GameId) {
-        if (it.model.players.all { (id, avatar) -> avatar.vote != null || id == it.model.narrator }) {
+        if (it.model.players.all { (id, avatar) ->
+                    avatar.vote != null // every player voted
+                    || id == it.model.narrator // except for narrator
+                    || avatar.sentCard == null // and those who did not send their card (e.g. new joiners)
+                }) {
             log.info { "All players voted (gameId=$gameId)" }
             countPoints(it.model)
             it.model.state = it.model.state.next()
@@ -220,6 +227,11 @@ class GameManager(val gameRepository: GameRepository,
                         vote = null, sentCard = null, proceedRequested = false, roundPointDelta = 0
                 )
             }
+            // we need to reset some values in removed players as well so they don't carry info from previous rounds
+            // when they get re-added and mess up stuff
+            it.properties.removedPlayers = it.properties.removedPlayers.mapValues { (_, avatar) ->
+                avatar.copy(vote = null, sentCard = null, proceedRequested = false, roundPointDelta = 0)
+            }.toMutableMap()
             it.model.roundResult = RoundResult.IN_PROGRESS
             it.model.narrator = nextNarrator(it) ?: it.model.narrator
             it.model.state = it.model.state.next()
