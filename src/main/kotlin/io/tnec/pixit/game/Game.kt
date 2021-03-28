@@ -38,8 +38,10 @@ data class GameModel(
         var state: GameState = GameState.WAITING_FOR_PLAYERS,
         var version: Long = 1,
         var roundResult: RoundResult = RoundResult.IN_PROGRESS,
-        var admin: UserId? = null
+        var admin: UserId? = null,
+        val name: String
 ) : Serializable {
+
     fun obfuscateFor(userId: UserId): GameModel = copy(
             players = players.mapValues {
                 if (it.key == userId) it.value else it.value.copy(

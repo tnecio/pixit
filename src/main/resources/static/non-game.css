@@ -19,7 +19,6 @@ h1 {
     border: 1px solid darkgray;
     width: 100%;
     box-sizing: border-box;
-    padding: 1em;
     text-align: center;
     font-size: 1.3em;
 
@@ -31,35 +30,89 @@ h1 {
 .mainForm > * {
     font-size: 1.3em;
     margin: 0.3em 0.1em;
+    padding: 1rem;
 }
 
 #playerName {
-    width: min(20em, 90%);
+    width: min(20em, 70%);
     font-size: 1.5em;
+}
+
+#langSelect {
+    font-size: 1.1em;
+    width: min(8em, 25%);
 }
 
 .invitation .playerName {
     font-weight: bold;
 }
 
-/* * * LOBBY SECTION * * */
+/* * * MAIN FORM LAYOUT * * */
 
-#lobby ol {
-    list-style-type: none;
+#player-settings {
+    width: 100%;
+}
+
+#play-with-friends, #play-with-strangers {
+    min-width: 45%;
+    box-sizing: border-box;
     margin: 0;
 }
 
-#lobby h4 {
+/* * * LOBBY SECTION * * */
+
+#play-with-friends h2, #play-with-strangers h2 {
+    font-size: 1.5rem;
+    margin: 0.25rem auto;
+    font-family: McLaren, sans-serif;
+}
+
+#play-with-friends button {
+    font-size: 1.5rem;
+    margin: 1.5rem auto;
+}
+
+#play-with-strangers h3 {
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+    font-weight: normal;
+}
+
+#play-with-strangers ol {
+    margin: 0;
+    padding: 0;
+    border: 1px solid black;
+    max-height: 20rem;
+    overflow: auto;
+}
+
+#play-with-strangers ol li:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.publicGameBox p, .createGameBox p {
+    margin: 0;
+    color: #333;
+    font-size: 0.9em;
+}
+
+.publicGameBox h4, .createGameBox h4 {
     margin: 0;
     font-family: "McLaren", "Chilanka", sans-serif;
+    font-size: 1.2em;
 }
 
 .publicGameBox, .createGameBox {
     display: block;
-    font-size: 1rem;
+    font-size: 0.9rem;
     background-color: white;
-    border: 1px solid darkgray;
-    padding: 1rem 0;
+    border-bottom: 1px solid darkgray;
+    padding: 0.25rem;
+    margin: 0 auto;
+}
+
+.createGameBox {
+    border-bottom: none;
 }
 
 /* * * ERROR HANDLING PAGES * * */

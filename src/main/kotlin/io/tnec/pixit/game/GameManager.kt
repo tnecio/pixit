@@ -36,7 +36,11 @@ class GameManager(val gameRepository: GameRepository,
                 isAcceptingUsers = true,
                 kickedUsers = mutableSetOf()
         )
-        val newGameModel = GameModel(narrator = userId, players = newPlayer(userId, newGame.playerName))
+        val newGameModel = GameModel(
+                narrator = userId,
+                players = newPlayer(userId, newGame.playerName),
+                name = newGame.gameName)
+
         return gameRepository.createGame(Game(model = newGameModel, properties = newGameProperties))
     }
 

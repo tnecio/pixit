@@ -10,6 +10,7 @@ var pixit = new Vue({
 
     data: {
         game: {
+            name: "",
             state: "WAITING_FOR_PLAYERS",
             word: null, /* {
                 value: string

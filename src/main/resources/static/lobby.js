@@ -32,15 +32,15 @@ var lobby = new Vue({
     </aside>
 </div>
 
-<div>
-    <input type="text" v-bind:placeholder="t.yourName" v-model="playerName" required>
+<div id="player-settings">
+    <input type="text" v-bind:placeholder="t.yourName" v-model="playerName" required id="playerName">
     <select id="langSelect" name="lang" v-model="lang">
         <option value="en">🇬🇧 English</option>
         <option value="pl">🇵🇱 polski</option>
     </select>
 </div>
 
-<div>
+<div id="play-with-friends">
     <h2 v-html="t.playWithFriends"></h2>
     <form action="/game" method="post">
         <input type="hidden" name="gameName" value="Private game">
@@ -51,22 +51,22 @@ var lobby = new Vue({
     </form>
 </div>
 
-<div>
+<div id="play-with-strangers">
     <h2 v-html="t.playWithStrangers"></h2>
     <nav>
-        <h3>Open public games</h3>
+        <h3>{{t.openPublicGames}}</h3>
         <ol>
             <li class="publicGameBox" v-for="game in games">
                 <h4><a v-bind:href="getGameLink(game.id)">{{game.name}}</a></h4>
-                (<span v-html="t.playersCount(game.playersCount)"></span>)
-                {{t.preferred_language}}: {{game.preferredLang}}
+                <p>
+                    (<span v-html="t.playersCount(game.playersCount)"></span>)
+                    {{t.preferred_language}}: {{game.preferredLang}}
+                </p>
             </li>
             <li class="createGameBox">
-                <h4>Create new public game</h4>
+                <h4>{{t.createPublicGame}}</h4>
                 <form action="/game" method="post">
-                    <label for="gameName">Name:
-                        <input type="text" name="gameName" id="gameName" placeholder="Game Name" />
-                    </label>
+                    <input type="text" name="gameName" id="gameName" placeholder="Game Name" />
                     <input type="hidden" name="playerName" v-bind:value="playerName">
                     <input type="hidden" name="preferredLanguage" v-bind:value="lang">
                     <input type="hidden" name="accessType" value="PUBLIC">
