@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<script th:fragment="copy">
+    const t = {
+        "preferred_language": "Preferred language",
+        "playersCount": function (x) {
+            if (x === 1) { return "1 player"; } else { return x +" players"; }
+        },
+        "yourName" : "Your name",
+        "createPrivateGame" : "Create a private game",
+        "joinPublicGame" : "Join a public game",
+        "playWithFriends" : "Play with friends",
+        "playWithStrangers" : "Play with strangers"
+    };
+</script>
+</body>
+</html>

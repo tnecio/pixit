@@ -87,6 +87,10 @@ class Requester {
     requestGameState() {
         this.send(new GameControlRequest("send-state", {}));
     }
+
+    kickOut(playerId) {
+        this.send(new GameControlRequest("kick-out", {"playerId": playerId}))
+    }
 }
 
 /*

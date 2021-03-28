@@ -95,7 +95,7 @@ Vue.component('card', {
 });
 
 Vue.component('playerEntry', {
-    props: ['player', 'isCurrent', 'isNarrator', 'gameState'],
+    props: ['playerId', 'player', 'isCurrent', 'isNarrator', 'isAdmin', 'gameState', 'showAdminControls'],
     created() {
         this.t = t;
     },
@@ -106,6 +106,16 @@ Vue.component('playerEntry', {
     >
         <b v-bind:title="player.name + (isNarrator ? ' (' + t.narrator + ')' : '')">{{player.name}}</b> 
         <span v-if="isCurrent">({{t.you}})</span>
+        <span v-if="isAdmin" style="color: darkred;">({{t.admin}})</span>
+        <span v-if="showAdminControls && !isAdmin">
+            <a
+                href="javascript:void()"
+                v-bind:title="t.kick_out"
+                style="color: darkred;"
+                v-on:click="$emit('kick-out', playerId)"
+            ><b>X</b>
+            </a>
+        </span>
         <span v-bind:title="t.still_thinking" v-if="isThinking(player, isCurrent, isNarrator, gameState)"> 💭</span>
         <br>
         {{player.points}}
@@ -114,14 +124,26 @@ Vue.component('playerEntry', {
     </div>
     `,
     methods: {
-        isThinking: function(player, isCurrent, isNarrator, gameState) {
-            if (isCurrent) { return false; }
-            if (gameState === 'WAITING_FOR_PLAYERS' && !player.startRequested) { return true; }
-            if (gameState === 'WAITING_TO_PROCEED' && !player.proceedRequested) { return true; }
+        isThinking: function (player, isCurrent, isNarrator, gameState) {
+            if (isCurrent) {
+                return false;
+            }
+            if (gameState === 'WAITING_FOR_PLAYERS' && !player.startRequested) {
+                return true;
+            }
+            if (gameState === 'WAITING_TO_PROCEED' && !player.proceedRequested) {
+                return true;
+            }
 
-            if (isNarrator) { return false; }
-            if (gameState === 'WAITING_FOR_VOTES' && player.vote === null) { return true; }
-            if (gameState === 'WAITING_FOR_CARDS' && player.sentCard === null) { return true; }
+            if (isNarrator) {
+                return false;
+            }
+            if (gameState === 'WAITING_FOR_VOTES' && player.vote === null) {
+                return true;
+            }
+            if (gameState === 'WAITING_FOR_CARDS' && player.sentCard === null) {
+                return true;
+            }
             return false;
         }
     }

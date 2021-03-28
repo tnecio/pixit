@@ -42,6 +42,26 @@ h1 {
     font-weight: bold;
 }
 
+/* * * LOBBY SECTION * * */
+
+#lobby ol {
+    list-style-type: none;
+    margin: 0;
+}
+
+#lobby h4 {
+    margin: 0;
+    font-family: "McLaren", "Chilanka", sans-serif;
+}
+
+.publicGameBox, .createGameBox {
+    display: block;
+    font-size: 1rem;
+    background-color: white;
+    border: 1px solid darkgray;
+    padding: 1rem 0;
+}
+
 /* * * ERROR HANDLING PAGES * * */
 
 .errorPage {

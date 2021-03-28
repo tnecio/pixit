@@ -93,6 +93,6 @@ class GameRepository(storeFactory: StoreFactory, gameRepositoryProperties: GameR
 
 @Component
 class GameRepositoryProperties {
-    @Value("\${game.persistenceTimeoutMs}")
+    @Value("\${pixit.game.persistenceTimeoutMs}")
     var gamePersistenceTimeoutMs: Long = 0
 }

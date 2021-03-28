@@ -29,7 +29,8 @@ var pixit = new Vue({
             },
             version: 0,
             narrator: null,
-            roundResult: "IN_PROGRESS"
+            roundResult: "IN_PROGRESS",
+            admin: null
         },
 
         myCards: {
@@ -70,10 +71,14 @@ var pixit = new Vue({
                 <playerEntry
                     v-for="k in playerIdsSorted"
                     v-bind:key="k"
+                    v-bind:playerId="k"
                     v-bind:player="game.players[k]"
                     v-bind:isCurrent="k == userId"
                     v-bind:isNarrator="k == game.narrator"
-                    v-bind:gameState="game.state">
+                    v-bind:isAdmin="k == game.admin"
+                    v-bind:showAdminControls="userId == game.admin"
+                    v-bind:gameState="game.state"
+                    @kick-out="(playerId) => requests.kickOut(playerId)">
                 </playerEntry>
             </aside>
             <span v-if="isRoundEnd()"><br><b v-html="roundEndSummary()"></b></span>

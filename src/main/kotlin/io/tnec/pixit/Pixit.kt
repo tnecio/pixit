@@ -6,6 +6,7 @@ import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
+import java.time.Clock
 import java.util.*
 
 
@@ -13,6 +14,9 @@ import java.util.*
 class PixitApplication : WebMvcConfigurer {
     @Bean
     fun restTemplate(builder: RestTemplateBuilder): RestTemplate = builder.build()
+
+    @Bean
+    fun clock(): Clock = Clock.systemUTC()
 }
 
 fun main(args: Array<String>) {

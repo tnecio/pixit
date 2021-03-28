@@ -2,25 +2,34 @@
 <html xmlns:th="http://www.thymeleaf.org"
       th:with="lang=${#locale.language}" th:lang="${lang}">
 <head>
+    <script th:replace="~{|fragments/i18n/${lang}/lobby-js| :: copy}"></script>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+
+        var lang = /*[[${lang}]]*/ 'en';
+
+        /*]]>*/
+    </script>
     <th:block th:insert="fragments/head :: headFragment (pageTitle='PiXiT! – Start')"></th:block>
     <link rel="stylesheet" href="/non-game.css">
 </head>
 
 <body>
+
+<noscript><strong>PiXiT absolutely requires JavaScript enabled to work!</strong></noscript>
+
 <header>
 <h1><a href="/">P<span style="font-size:1.2em;">i</span>X<span style="font-size:1.2em;">i</span>T!</a>
     <span style="color: mediumvioletred; font-size: 0.5em;" th:title="#{beta}">β</span></h1>
 </header>
 
-<form th:replace="fragments/langSelect :: copy"></form>
-
-<form class="mainForm" action="/start" method="post">
-    <input type="text" id="playerName" name="playerName" th:placeholder="#{yourName}">
-    <button type="submit" value="Submit" th:text="#{createGame}"></button>
-</form>
+<main id="lobby" class="mainForm"></main>
 
 <aside th:replace="~{|fragments/i18n/${lang}/description| :: copy}"></aside>
 
 <footer th:replace="fragments/footer :: copy"></footer>
+
+<script src="/vue.js"></script>
+<script src="/lobby.js"></script>
 </body>
 </html>

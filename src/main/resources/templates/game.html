@@ -12,6 +12,8 @@
         var playerName = /*[[${playerName}]]*/ 'UNSPECIFIED_PLAYER_NAME';
         var initialGame = /*[[${initialGame}]]*/ { };
 
+        window.history.replaceState({}, "PiXiT Game", "/game/" + gameId);
+
         /*]]>*/
     </script>
     <th:block th:insert="fragments/head :: headFragment (pageTitle='PiXiT!')"></th:block>
@@ -24,7 +26,6 @@
 <main id="pixit">
 
 </main>
-
 
 <aside th:replace="~{|fragments/i18n/${lang}/description| :: copy}"></aside>
 

@@ -1,41 +1,3 @@
-/* * * ERRORS SECTION * * */
-
-#errors {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, 0);
-    background-color: lavenderblush;
-    color: darkred;
-    border: 1px solid darkred;
-    border-radius: 5px;
-    opacity: 80%;
-    padding: 0.5em 1.5em;
-    width: min(25em, 80%);
-    text-align: center;
-}
-
-
-/* * * POP-UPS SECTION * * */
-.popups {
-    position: absolute;
-    left: 0;
-    top: 0;
-    margin: 1em;
-}
-
-.popups aside {
-    background-color: lavenderblush;
-    color: darkblue;
-    border: 1px solid darkblue;
-    border-radius: 5px;
-    opacity: 80%;
-    padding: 0.5em 1.5em;
-    width: min(20em, 60vw);
-    text-align: center;
-    margin-top: 1em;
-}
-
 /* * * COMMON AREA SECTION * * */
 
 #common-area {
@@ -275,6 +237,7 @@
 }
 
 /* * * ANIMATION * * */
+
 .cardmove-enter-active {
     transition-timing-function: ease-out;
     transition: opacity 1.5s, transform 1.5s;

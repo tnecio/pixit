@@ -11,16 +11,25 @@ data class Game(val model: GameModel, val properties: GameProperties) : Serializ
 
 typealias GameId = Id
 
+enum class GameAccessType {
+    PRIVATE,
+    PUBLIC
+}
+
 // Holds game's server-side configuration
 data class GameProperties(
         var sessions: Map<SessionId, UserId>,
         var users: Map<UserId, UserModel>,
-        var removedPlayers: MutableMap<UserId, Avatar> = HashMap()
+        var removedPlayers: MutableMap<UserId, Avatar> = HashMap(),
+        val accessType: GameAccessType,
+        val isAcceptingUsers: Boolean,
+        val timeCreated: Instant,
+        val kickedUsers: MutableSet<SessionId>
 ) : Serializable
 
 data class UserModel(var lastHeartbeat: Instant) : Serializable
 
-// This is the part of Game that will be serialized
+// This is the part of Game that will be serialized and sent to client-side
 data class GameModel(
         var players: Map<UserId, Avatar> = mapOf(),
         var narrator: UserId,
@@ -28,7 +37,8 @@ data class GameModel(
         var word: Word? = null,
         var state: GameState = GameState.WAITING_FOR_PLAYERS,
         var version: Long = 1,
-        var roundResult: RoundResult = RoundResult.IN_PROGRESS
+        var roundResult: RoundResult = RoundResult.IN_PROGRESS,
+        var admin: UserId? = null
 ) : Serializable {
     fun obfuscateFor(userId: UserId): GameModel = copy(
             players = players.mapValues {

@@ -106,12 +106,24 @@ class GameController(val gameManager: GameManager) {
 
         gameManager.proceed(gameId, sessionId)
     }
+
+    @MessageMapping("/{gameId}/{sessionId}/kick-out")
+    @SendTo("/topic/{gameId}/{sessionId}/response")
+    fun kickOut(request: PlayerIdentifierRequest,
+                @DestinationVariable gameId: GameId,
+                @DestinationVariable sessionId: SessionId) = answer(request) {
+        log.debug { "[${Instant.now()}] Got kick-out request: ${request} from ${sessionId}" }
+
+        gameManager.kickOut(gameId, sessionId, request)
+    }
 }
 
 // Helper class that is represented by "{ }" JSON
 class EmptyRequest
 
 data class CardIdentifierRequest(val cardId: CardId)
+
+data class PlayerIdentifierRequest(val playerId: UserId)
 
 data class WordWithCardIdRequest(val word: Word, val cardId: CardId)
 

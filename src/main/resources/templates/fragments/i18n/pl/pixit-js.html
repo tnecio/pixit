@@ -54,13 +54,15 @@
         "vote": "Głosuj",
         "select": "Wybierz",
         "you": "Ty",
+        "admin": "Admin",
+        "kick_out": "Wyrzuć",
 
         "points_fmt": function(x) {
             if (x == 1) { return "punkt"; } else {
-                let polski_xd = x % 100;
-                let polski_xd2 = x % 10;
-                if ((polski_xd2 == 2 || polski_xd2 == 3 || polski_xd2 == 4) &&
-                    (polski_xd < 10 || polski_xd > 20)) {
+                let dziesiatek = x % 100;
+                let jednosci = x % 10;
+                if ((jednosci == 2 || jednosci == 3 || jednosci == 4) &&
+                    (dziesiatek < 10 || dziesiatek > 20)) {
                     return "punkty";
                 }
                 return "punktów";

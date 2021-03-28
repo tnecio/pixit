@@ -8,47 +8,64 @@ import io.tnec.pixit.common.ValidationError
 import io.tnec.pixit.common.getUniqueId
 import mu.KotlinLogging
 import org.springframework.stereotype.Component
+import java.time.Clock
 import java.time.Instant
 import java.util.stream.Collectors.toList
 
 // TODO: way for games to have different image factories etc. via configuration each
+
+// TODO: break this class into smaller classes
 
 private val log = KotlinLogging.logger { }
 
 @Component
 class GameManager(val gameRepository: GameRepository,
                   val gameMessageSender: GameMessageSender,
-                  val avatarManager: AvatarManager
+                  val avatarManager: AvatarManager,
+                  val clock: Clock
 ) {
-    fun createGame(sessionId: SessionId, newUser: NewUser): GameId {
-        log.info { "createGame by $newUser (sessionId=${sessionId})" }
+    fun createGame(sessionId: SessionId, newGame: NewGame): GameId {
+        log.info { "createPublicGame: $newGame (sessionId=$sessionId)" }
 
         val userId: UserId = getUniqueId()
         val newGameProperties = GameProperties(
                 sessions = mapOf(sessionId to userId),
                 users = newUserPreferences(userId),
-                accessType = GameAccessType.PRIVATE,
-                timeCreated = clock.instant()
+                accessType = newGame.accessType,
+                timeCreated = clock.instant(),
+                isAcceptingUsers = true,
+                kickedUsers = mutableSetOf()
         )
-        val newGameModel = GameModel(narrator = userId, players = newPlayer(userId, newUser))
-        val newGame = Game(model = newGameModel, properties = newGameProperties)
-        return gameRepository.createGame(newGame)
+        val newGameModel = GameModel(narrator = userId, players = newPlayer(userId, newGame.playerName))
+        return gameRepository.createGame(Game(model = newGameModel, properties = newGameProperties))
     }
 
-    fun addPlayer(gameId: GameId, sessionId: SessionId, newUser: NewUser) = updateAndNotify(gameId) {
-        log.info { "addPlayer $newUser (gameId=$gameId, sessionId=$sessionId)" }
 
+    fun addPlayer(gameId: GameId, sessionId: SessionId, newUser: NewUser): UserId {
         val userId: UserId = getUniqueId()
-        it.properties.sessions += mapOf(sessionId to userId)
-        it.properties.users += newUserPreferences(userId)
-        it.model.players += newPlayer(userId, newUser)
+        updateAndNotify(gameId) {
+            log.info { "addPlayer $newUser (gameId=$gameId, sessionId=$sessionId)" }
+
+            if (it.properties.accessType == GameAccessType.PUBLIC) {
+                if (!it.properties.isAcceptingUsers) {
+                    throw ValidationError("Attempt to join a game that is not accepting new players (gameId=$gameId, sessionId=$sessionId)")
+                } else if (sessionId in it.properties.kickedUsers) {
+                    throw ValidationError("Attempt to join a game that has banned this user (gameId=$gameId, sessionId=$sessionId)")
+                }
+            }
+
+            it.properties.sessions += mapOf(sessionId to userId)
+            it.properties.users += newUserPreferences(userId)
+            it.model.players += newPlayer(userId, newUser.playerName)
+        }
+        return userId
     }
 
     private fun newUserPreferences(userId: UserId) = mapOf(userId to UserModel(
             lastHeartbeat = Instant.now()
     ))
 
-    private fun newPlayer(userId: UserId, newUser: NewUser) = mapOf(userId to avatarManager.newAvatar(newUser.playerName))
+    private fun newPlayer(userId: UserId, playerName: String) = mapOf(userId to avatarManager.newAvatar(playerName))
 
     fun start(gameId: GameId, sessionId: SessionId) = updateAndNotify(gameId) {
         val userId = it.getUserIdForSession(sessionId)
@@ -250,35 +267,52 @@ class GameManager(val gameRepository: GameRepository,
 
     fun removePlayer(gameId: GameId, userId: UserId) {
         updateAndNotify(gameId) {
-            if (it.model.narrator == userId && it.model.state != GameState.WAITING_TO_PROCEED) {
-                it.model.narrator = nextNarrator(it) ?: it.model.narrator
-                it.model.table = emptyList()
-                it.model.word = null
-                it.model.state = GameState.WAITING_FOR_WORD
-                gameMessageSender.notifyOneOffEvent(gameId, GameEvent.NARRATOR_LOST_ROUND_REPLAY)
-            }
-            it.properties.removedPlayers[userId] = it.model.players[userId]
-                    ?: throw ValidationError("No player $userId in game $gameId")
-            it.model.players = it.model.players.filterNot { it.key == userId }
+            removePlayerAction(gameId, it, userId)
+        }
+    }
 
-            if (it.model.players.size == 0) {
-                it.model.state = GameState.FINISHED
-            } else {
-                when (it.model.state) {
-                    (GameState.WAITING_FOR_PLAYERS) -> checkForAllStartsPressed(it, gameId)
-                    (GameState.WAITING_FOR_WORD) -> Unit
-                    (GameState.WAITING_FOR_CARDS) -> checkForAllCardsSent(it, gameId)
-                    (GameState.WAITING_FOR_VOTES) -> checkForAllVotesCast(it, gameId)
-                    (GameState.WAITING_TO_PROCEED) -> checkForAllProceedsRequested(it, gameId)
-                    else -> Unit
-                }
+    private fun removePlayerAction(gameId: GameId, it: Game, userId: UserId) {
+        if (it.model.narrator == userId && it.model.state != GameState.WAITING_TO_PROCEED) {
+            it.model.narrator = nextNarrator(it) ?: it.model.narrator
+            it.model.table = emptyList()
+            it.model.word = null
+            it.model.state = GameState.WAITING_FOR_WORD
+            gameMessageSender.notifyOneOffEvent(gameId, GameEvent.NARRATOR_LOST_ROUND_REPLAY)
+        }
+        if (userId == it.model.admin) {
+            it.model.admin = it.model.narrator // easy trick to always get a sensible new admin
+        }
+        it.properties.removedPlayers[userId] = it.model.players[userId]
+                ?: throw ValidationError("No player $userId in game $gameId")
+        it.model.players = it.model.players.filterNot { it.key == userId }
+
+        if (it.model.players.isEmpty()) {
+            it.model.state = GameState.FINISHED
+        } else {
+            when (it.model.state) {
+                (GameState.WAITING_FOR_PLAYERS) -> checkForAllStartsPressed(it, gameId)
+                (GameState.WAITING_FOR_WORD) -> Unit
+                (GameState.WAITING_FOR_CARDS) -> checkForAllCardsSent(it, gameId)
+                (GameState.WAITING_FOR_VOTES) -> checkForAllVotesCast(it, gameId)
+                (GameState.WAITING_TO_PROCEED) -> checkForAllProceedsRequested(it, gameId)
+                else -> Unit
             }
         }
+    }
 
-        val game = gameRepository.getGameSafe(gameId)
-        if (game.model.state == GameState.FINISHED) {
-            gameRepository.dropGame(gameId)
+    fun kickOut(gameId: GameId, sessionId: SessionId, request: PlayerIdentifierRequest) = updateAndNotify(gameId) {
+        val userId = it.getUserIdForSession(sessionId)
+        val kickee = request.playerId
+
+        if (it.model.admin != userId) {
+            throw ValidationError("User ${userId} is not the admin in game ${gameId}")
+        } else if (kickee !in it.model.players.keys) {
+            throw ValidationError("Player ${kickee} to be kicked is not in game ${gameId}")
         }
+        log.debug { "kickOut (gameId=$gameId, sessionId=$sessionId, kickee=$kickee)" }
+
+        removePlayerAction(gameId, it, kickee)
+        it.properties.kickedUsers.add(sessionId)
     }
 
     fun readdPlayer(gameId: GameId, sessionId: SessionId) = updateAndNotify(gameId) {
