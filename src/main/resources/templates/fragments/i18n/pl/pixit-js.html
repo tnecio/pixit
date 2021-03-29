@@ -23,8 +23,20 @@
         "waiting_to_proceed_fmt": function (phrase) {
             return `Oczekiwanie aż wszyscy gracze nacisną przycisk "Dalej". <br>Hasło: ${phrase}`;
         },
-        "finished": "Koniec gry!",
+        "finished_fmt": function (phrase) {
+            return `Ostatnie hasło: ${phrase}<br>
+                    Gra zostanie rozpoczęta od nowa w momencie gdy wszyscy gracze nacisną przycisk "Gra od początku".`;
+        },
         "corrupted": "Niestety, dane tej gry są nieprawidłowe. Dalsza rozgrywka jest niemożliwa.",
+        "congratulations": function (winnerNames) {
+            if (winnerNames.length === 0) {
+                return "Koniec gry! 🎉 ";
+            }
+            if (winnerNames.length === 1) {
+                return "Koniec gry! Zwycięzcą jest " + winnerNames[0] + "! 🎉 Gratulacje!";
+            }
+            return "Koniec gry! Zwyciężyli: " + winnerNames.join(", ") + "! 🎉 Gratulacje!";
+        },
 
         "all_voted_for_narrator": "Wszyscy odgadli obrazek narratora. +2 punkty dla wszystkich poza narratorem",
         "no_one_voted_for_narrator": "Nikt nie odgadł obrazka narratora. +2 punkty dla wszystkich poza narratorem",
@@ -34,6 +46,7 @@
         "waiting_for_others": "Oczekiwanie na pozostałych graczy...",
         "start": "Start",
         "proceed": "Dalej",
+        "start_over": "Gra od początku",
         "select_card": "Wybierz obraz i ustaw hasło",
         "set_phrase": "Ustaw hasło",
         "phrase": "Hasło:",

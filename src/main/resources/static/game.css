@@ -56,6 +56,12 @@
     background-color: orange;
 }
 
+#congratulations {
+    margin: 0.5em auto;
+    font-size: 1.6em;
+    font-family: "McLaren", sans-serif;
+}
+
 /* * TABLE SECTION * */
 
 #table {
@@ -81,7 +87,7 @@
     padding: 0 1em;
 }
 
-#pre-start, #round-end {
+.actionArea {
     width: 100%;
     text-align: center;
 }

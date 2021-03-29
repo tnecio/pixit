@@ -95,7 +95,7 @@ Vue.component('card', {
 });
 
 Vue.component('playerEntry', {
-    props: ['playerId', 'player', 'isCurrent', 'isNarrator', 'isAdmin', 'gameState', 'showAdminControls'],
+    props: ['playerId', 'player', 'isCurrent', 'isNarrator', 'isAdmin', 'isWinner', 'gameState', 'showAdminControls'],
     created() {
         this.t = t;
     },
@@ -104,7 +104,8 @@ Vue.component('playerEntry', {
         class="playerEntry"
         v-bind:class="{ narratorPlayerEntry: isNarrator }"
     >
-        <b v-bind:title="player.name + (isNarrator ? ' (' + t.narrator + ')' : '')">{{player.name}}</b> 
+        <b v-bind:title="player.name + (isNarrator ? ' (' + t.narrator + ')' : '')">{{player.name}}</b>
+        <span v-if="isWinner">🎉</span>
         <span v-if="isCurrent">({{t.you}})</span>
         <span v-if="isAdmin" style="color: darkred;">({{t.admin}})</span>
         <span v-if="showAdminControls && !isAdmin">

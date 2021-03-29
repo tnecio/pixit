@@ -12,7 +12,7 @@ data class Game(val model: GameModel, val properties: GameProperties) : Serializ
 typealias GameId = Id
 
 enum class GameAccessType {
-    PRIVATE,
+    PRIVATE, // might be deserialized from NewGame
     PUBLIC
 }
 
@@ -40,7 +40,8 @@ data class GameModel(
         var state: GameState = GameState.WAITING_FOR_PLAYERS,
         var version: Long = 1,
         var roundResult: RoundResult = RoundResult.IN_PROGRESS,
-        var admin: UserId? = null
+        var admin: UserId? = null,
+        var winners: List<UserId> = listOf()
 ) : Serializable {
 
     fun obfuscateFor(userId: UserId): GameModel = copy(
@@ -88,7 +89,7 @@ fun GameState.next(): GameState {
         GameState.WAITING_FOR_CARDS -> GameState.WAITING_FOR_VOTES
         GameState.WAITING_FOR_VOTES -> GameState.WAITING_TO_PROCEED
         GameState.WAITING_TO_PROCEED -> GameState.WAITING_FOR_WORD
-        GameState.FINISHED -> throw UnsupportedOperationException()
+        GameState.FINISHED -> GameState.WAITING_FOR_WORD
         GameState.CORRUPTED -> throw UnsupportedOperationException()
     }
 }

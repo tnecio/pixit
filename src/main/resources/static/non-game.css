@@ -21,7 +21,7 @@ h1 {
     box-sizing: border-box;
     text-align: center;
     font-size: 1.3em;
-    padding-bottom: 1rem;
+    padding: 1rem 0;
 
     display: flex;
     justify-content: center;

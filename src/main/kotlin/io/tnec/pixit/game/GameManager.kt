@@ -18,6 +18,8 @@ import java.util.stream.Collectors.toList
 
 private val log = KotlinLogging.logger { }
 
+const val WINNER_THRESHOLD = 30
+
 @Component
 class GameManager(val gameRepository: GameRepository,
                   val gameMessageSender: GameMessageSender,
@@ -40,7 +42,7 @@ class GameManager(val gameRepository: GameRepository,
         )
         val newGameModel = GameModel(
                 narrator = userId,
-                players = newPlayer(userId, newGame.playerName)
+                players = mapOf(userId to avatarManager.newAvatar(newGame.playerName))
         )
 
         return gameRepository.createGame(Game(model = newGameModel, properties = newGameProperties))
@@ -62,7 +64,7 @@ class GameManager(val gameRepository: GameRepository,
 
             it.properties.sessions += mapOf(sessionId to userId)
             it.properties.users += newUserPreferences(userId)
-            it.model.players += newPlayer(userId, newUser.playerName)
+            it.model.players += mapOf(userId to avatarManager.newAvatar(newUser.playerName))
         }
         return userId
     }
@@ -70,8 +72,6 @@ class GameManager(val gameRepository: GameRepository,
     private fun newUserPreferences(userId: UserId) = mapOf(userId to UserModel(
             lastHeartbeat = Instant.now()
     ))
-
-    private fun newPlayer(userId: UserId, playerName: String) = mapOf(userId to avatarManager.newAvatar(playerName))
 
     fun start(gameId: GameId, sessionId: SessionId) = updateAndNotify(gameId) {
         val userId = it.getUserIdForSession(sessionId)
@@ -166,12 +166,21 @@ class GameManager(val gameRepository: GameRepository,
     private fun checkForAllVotesCast(it: Game, gameId: GameId) {
         if (it.model.players.all { (id, avatar) ->
                     avatar.vote != null // every player voted
-                    || id == it.model.narrator // except for narrator
-                    || avatar.sentCard == null // and those who did not send their card (e.g. new joiners)
+                            || id == it.model.narrator // except for narrator
+                            || avatar.sentCard == null // and those who did not send their card (e.g. new joiners)
                 }) {
             log.info { "All players voted (gameId=$gameId)" }
             countPoints(it.model)
-            it.model.state = it.model.state.next()
+
+            // Check if we have a winner
+            it.model.winners = it.model.players.filter { (_, avatar) ->
+                avatar.points < WINNER_THRESHOLD && avatar.points + avatar.roundPointDelta >= WINNER_THRESHOLD
+            }.keys.toList()
+            if (it.model.winners.isNotEmpty()) {
+                it.model.state = GameState.FINISHED
+            } else {
+                it.model.state = it.model.state.next()
+            }
         }
     }
 
@@ -226,8 +235,10 @@ class GameManager(val gameRepository: GameRepository,
 
         if (it.model.players[userId] == null) {
             throw ValidationError("User ${userId} is not in game ${gameId}")
-        } else if (it.model.state != GameState.WAITING_TO_PROCEED) {
-            throw ValidationError("Game ${gameId} is not in ${GameState.WAITING_TO_PROCEED} state")
+        } else if (it.model.state != GameState.WAITING_TO_PROCEED &&
+                it.model.state != GameState.FINISHED) {
+            throw ValidationError("Game ${gameId} is not in ${GameState.WAITING_TO_PROCEED} or " +
+                    "${GameState.FINISHED} state")
         }
         log.debug { "proceed (gameId=$gameId, sessionId=$sessionId)" }
 
@@ -245,11 +256,18 @@ class GameManager(val gameRepository: GameRepository,
             it.model.table = emptyList()
             it.model.word = null
             it.model.players = it.model.players.mapValues { (_, avatar) ->
-                avatar.copy(
-                        points = avatar.points + avatar.roundPointDelta,
-                        vote = null, sentCard = null, proceedRequested = false, roundPointDelta = 0
-                )
+                if (it.model.state == GameState.WAITING_TO_PROCEED) {
+                    // Going to next round, keep name, points, and cards
+                    avatar.copy(
+                            points = avatar.points + avatar.roundPointDelta,
+                            vote = null, sentCard = null, proceedRequested = false, roundPointDelta = 0
+                    )
+                } else { // GameState.FINISHED
+                    // Starting over, keep only name
+                    avatarManager.newAvatar(avatar.name)
+                }
             }
+
             // we need to reset some values in removed players as well so they don't carry info from previous rounds
             // when they get re-added and mess up stuff
             it.properties.removedPlayers = it.properties.removedPlayers.mapValues { (_, avatar) ->

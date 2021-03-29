@@ -30,7 +30,8 @@ var pixit = new Vue({
             version: 0,
             narrator: null,
             roundResult: "IN_PROGRESS",
-            admin: null
+            admin: null,
+            winners: []
         },
 
         myCards: {
@@ -39,6 +40,7 @@ var pixit = new Vue({
         },
 
         shuffling: false,
+        winnerNames: [],
 
         connected: false,
 
@@ -74,6 +76,7 @@ var pixit = new Vue({
                     v-bind:playerId="k"
                     v-bind:player="game.players[k]"
                     v-bind:isCurrent="k == userId"
+                    v-bind:isWinner="k in game.winners"
                     v-bind:isNarrator="k == game.narrator"
                     v-bind:isAdmin="k == game.admin"
                     v-bind:showAdminControls="userId == game.admin"
@@ -85,11 +88,15 @@ var pixit = new Vue({
         </header>
     
         <div id="table">
+            <div id="congratulations" v-if="game.state == 'FINISHED'">
+                {{ t.congratulations(winnerNames) }}
+            </div>
+            
             <section id="game-guide">
                 <span id="game-state" v-html="gamePhaseGuide()"></span>
             </section>
             
-            <div id="pre-start" v-if="!gameStarted()">
+            <div id="pre-start" class="actionArea" v-if="!gameStarted()">
                 <button
                     class="copyLinkButton"
                     type="button"
@@ -106,13 +113,23 @@ var pixit = new Vue({
                 </button>
             </div>
             
-            <div id="round-end" v-if="isRoundEnd()">
+            <div id="round-end" class="actionArea" v-if="game.state == 'WAITING_TO_PROCEED'">
                 <button
                     @click="requests.proceed()"
                     v-bind:disabled="game.players[userId].proceedRequested"
                     class="actionButton"
                 >
                     {{ game.players[userId].proceedRequested ? t.waiting_for_others : t.proceed }}
+                </button>
+            </div>
+            
+            <div id="post-finish" class="actionArea" v-if="game.state == 'FINISHED'">
+                <button
+                    @click="requests.proceed()"
+                    v-bind:disabled="game.players[userId].proceedRequested"
+                    class="actionButton"
+                >
+                    {{ game.players[userId].proceedRequested ? t.waiting_for_others : t.start_over }}
                 </button>
             </div>
     
@@ -124,7 +141,7 @@ var pixit = new Vue({
                     v-bind:card="card"
                     v-bind:state="{
                         sendable: false, votable: canVote(card.id), choosable: false, chosen: false,
-                        narrators: game.state === 'WAITING_TO_PROCEED' && game.players[game.narrator].sentCard === card.id,
+                        narrators: isRoundEnd() && game.players[game.narrator].sentCard === card.id,
                         whoVotedNames: getWhoVotedNames(card.id),
                         owner: getOwnerOfCardOnTableName(card.id),
                         sentByPlayer: myCards.lastSent === card.id, votedByPlayer: myCards.lastVote === card.id
@@ -173,6 +190,10 @@ var pixit = new Vue({
                     setTimeout(() => { this.shuffling = false; }, 3000);
                 }
 
+                if (this.game.winners !== newGame.winners) {
+                    this.recalculateWinnerNames(newGame.winners);
+                }
+
                 this.game = newGame;
             } else {
                 console.log("Out of order game update " + newGame.version + " < " + this.game.version);
@@ -206,12 +227,12 @@ var pixit = new Vue({
             return this.game.state !== 'WAITING_FOR_WORD' && this.game.state !== 'WAITING_FOR_PLAYERS' && this.game.word;
         },
         isRoundEnd() {
-            return this.game.state === 'WAITING_TO_PROCEED';
+            return this.game.state === 'WAITING_TO_PROCEED' || this.game.state === 'FINISHED';
         },
 
-        /* WAITING_TO_PROCEED screen functions */
+        /* ROUND END screen functions */
         getWhoVotedNames(cardId) {
-            if (this.game.state !== 'WAITING_TO_PROCEED') { return null; }
+            if (!this.isRoundEnd()) { return null; }
             let res = [];
             for (let player in this.game.players) {
                 if (this.game.players[player].vote === cardId) { res.push(this.game.players[player].name); }
@@ -219,7 +240,7 @@ var pixit = new Vue({
             return res;
         },
         getOwnerOfCardOnTableName(cardId) {
-            if (this.game.state !== 'WAITING_TO_PROCEED') { return null; }
+            if (!this.isRoundEnd()) { return null; }
             for (let player in this.game.players) {
                 if (this.game.players[player].sentCard === cardId) { return this.game.players[player].name; }
             }
@@ -282,7 +303,7 @@ var pixit = new Vue({
             } else if (this.game.state === 'WAITING_TO_PROCEED') {
                 return t.waiting_to_proceed_fmt(phrase);
             } else if (this.game.state === 'FINISHED') {
-                return t.finished;
+                return t.finished_fmt(phrase);
             } else {
                 return t.corrupted;
             }
@@ -299,6 +320,16 @@ var pixit = new Vue({
             } else {
                 return "";
             }
+        },
+
+        /* WINNERS */
+        recalculateWinnerNames(newWinners) {
+            this.winnerNames = [];
+            newWinners.forEach((x) => {
+                if (x in this.game.players) { // edge-case: winners leaving in the moment of their victory
+                    this.winnerNames.push(this.game.players[x].name);
+                }
+            });
         }
     }
 });

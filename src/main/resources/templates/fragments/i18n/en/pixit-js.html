@@ -23,8 +23,20 @@
         "waiting_to_proceed_fmt": function (phrase) {
             return `All players must press 'Proceed' to begin next round! Phrase: <br>${phrase}`;
         },
-        "finished": "Game is over!",
+        "finished_fmt": function (phrase) {
+            return `Last phrase: ${phrase}<br>
+                    New game will begin once all the players press the 'Start over' button.`;
+        },
         "corrupted": "Sorry but this game instance is corrupted. No further play is possible",
+        "congratulations": function (winnerNames) {
+            if (winnerNames.length === 0) {
+                return "Koniec gry! 🎉 ";
+            }
+            if (winnerNames.length === 1) {
+                return "Game over! The winner is " + winnerNames[0] + "! 🎉 Congratulations!";
+            }
+            return "Game over! The winners are " + winnerNames.join(", ") + "! 🎉 Congratulations!";
+        },
 
         "all_voted_for_narrator": "All players voted for the narrator's card. +2 points for everyone except narrator",
         "no_one_voted_for_narrator": "No one voted for the narrator's card. +2 points for everyone except narrator",
@@ -34,6 +46,7 @@
         "waiting_for_others": "Waiting for other players...",
         "start": "Start",
         "proceed": "Proceed",
+        "start_over": "Start over",
         "select_card": "Select a card and set phrase",
         "set_phrase": "Set phrase",
         "phrase": "Phrase:",

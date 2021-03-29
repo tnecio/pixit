@@ -26,7 +26,7 @@ class HeartbeatController(val gameRepository: GameRepository, val gameManager: G
 
     @Scheduled(initialDelay = 30000, fixedDelay = 10000)
     fun removeDisconnectedUsers() {
-        log.info { "Removing disconnected users" }
+        log.debug { "Removing disconnected users" }
         var i = 0
 
         gameRepository.forEach { gameId: GameId, game: Game ->
@@ -40,6 +40,6 @@ class HeartbeatController(val gameRepository: GameRepository, val gameManager: G
             }
         }
 
-        log.info { "Removed $i disconnected users"}
+        log.debug { "Removed $i disconnected users"}
     }
 }
