@@ -44,9 +44,9 @@ class LobbyController(val gameManager: GameManager, val gameRepository: GameRepo
             if (game.properties.isAcceptingUsers && game.properties.accessType == GameAccessType.PUBLIC) {
                 res.add(PublicGameMetadata(
                         id = gameId,
-                        name = game.model.name,
+                        name = game.properties.name,
                         playersCount = game.model.players.size,
-                        preferredLang = "TODO"
+                        preferredLang = game.properties.preferredLang
                 ))
             }
         }

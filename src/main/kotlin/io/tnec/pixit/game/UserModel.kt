@@ -15,6 +15,11 @@ data class NewGame(val gameName: String,
                    val preferredLanguage: String,
                    val accessType: GameAccessType
 ) : Serializable {
+    init {
+        require(playerName.isNotBlank()) { "Player name is blank" }
+        require(gameName.isNotBlank()) { "Game name is blank" }
+    }
+
     fun toNewUser(): NewUser {
         return NewUser(playerName = playerName)
     }

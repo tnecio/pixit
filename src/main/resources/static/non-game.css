@@ -21,6 +21,7 @@ h1 {
     box-sizing: border-box;
     text-align: center;
     font-size: 1.3em;
+    padding-bottom: 1rem;
 
     display: flex;
     justify-content: center;
@@ -34,13 +35,17 @@ h1 {
 }
 
 #playerName {
-    width: min(20em, 70%);
+    flex-grow: 4;
     font-size: 1.5em;
+    margin: 0.25rem 1rem;
+    max-width: 80%;
 }
 
 #langSelect {
-    font-size: 1.1em;
-    width: min(8em, 25%);
+    font-size: 1em;
+    flex-grow: 1;
+    min-width: 5em;
+    max-width: 60%;
 }
 
 .invitation .playerName {
@@ -51,6 +56,10 @@ h1 {
 
 #player-settings {
     width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
 }
 
 #play-with-friends, #play-with-strangers {
@@ -113,6 +122,10 @@ h1 {
 
 .createGameBox {
     border-bottom: none;
+}
+
+#createGameForm > * {
+    font-size: 1.2em;
 }
 
 /* * * ERROR HANDLING PAGES * * */

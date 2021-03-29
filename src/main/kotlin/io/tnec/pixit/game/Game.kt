@@ -24,7 +24,9 @@ data class GameProperties(
         val accessType: GameAccessType,
         val isAcceptingUsers: Boolean,
         val timeCreated: Instant,
-        val kickedUsers: MutableSet<SessionId>
+        val kickedUsers: MutableSet<SessionId>,
+        val name: String,
+        val preferredLang: String
 ) : Serializable
 
 data class UserModel(var lastHeartbeat: Instant) : Serializable
@@ -38,8 +40,7 @@ data class GameModel(
         var state: GameState = GameState.WAITING_FOR_PLAYERS,
         var version: Long = 1,
         var roundResult: RoundResult = RoundResult.IN_PROGRESS,
-        var admin: UserId? = null,
-        val name: String
+        var admin: UserId? = null
 ) : Serializable {
 
     fun obfuscateFor(userId: UserId): GameModel = copy(

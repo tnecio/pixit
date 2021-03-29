@@ -34,12 +34,14 @@ class GameManager(val gameRepository: GameRepository,
                 accessType = newGame.accessType,
                 timeCreated = clock.instant(),
                 isAcceptingUsers = true,
-                kickedUsers = mutableSetOf()
+                kickedUsers = mutableSetOf(),
+                name = newGame.gameName,
+                preferredLang = newGame.preferredLanguage
         )
         val newGameModel = GameModel(
                 narrator = userId,
-                players = newPlayer(userId, newGame.playerName),
-                name = newGame.gameName)
+                players = newPlayer(userId, newGame.playerName)
+        )
 
         return gameRepository.createGame(Game(model = newGameModel, properties = newGameProperties))
     }
