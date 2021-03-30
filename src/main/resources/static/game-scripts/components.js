@@ -107,7 +107,7 @@ Vue.component('playerEntry', {
         <b v-bind:title="player.name + (isNarrator ? ' (' + t.narrator + ')' : '')">{{player.name}}</b>
         <span v-if="isWinner">🎉</span>
         <span v-if="isCurrent">({{t.you}})</span>
-        <span v-if="isAdmin" style="color: darkred;">({{t.admin}})</span>
+        <span v-if="isAdmin" style="color: darkred;" v-bind:title="t.adminTitle">({{t.admin}})</span>
         <span v-if="showAdminControls && !isAdmin">
             <a
                 href="javascript:void()"

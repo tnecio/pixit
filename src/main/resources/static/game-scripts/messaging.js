@@ -28,6 +28,9 @@ function connect() {
             stompClient.subscribe('/topic/' + gameId + '/event', event => {
                 handleGameEvent(JSON.parse(event.body));
             });
+            stompClient.subscribe('/topic/' + gameId + '/' + sessionId + '/event', event => {
+                handleGameEvent(JSON.parse(event.body));
+            });
             sendRequest(gameControlEndpoint("connected"), {});
             pixit.connectionUp();
             console.log("connectionUp");
@@ -102,8 +105,12 @@ function handleAcknowledgment(event) {
 }
 
 function handleGameEvent(event) {
-    const message = t[event.payload];
-    pixit.displayMessage(message);
+    if (event.payload === "KICKED_OUT") {
+        window.location.href = "/kicked-out"
+    } else {
+        const message = t[event.payload];
+        pixit.displayMessage(message);
+    }
 }
 
 

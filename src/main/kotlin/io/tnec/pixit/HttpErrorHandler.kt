@@ -18,7 +18,7 @@ class HttpErrorHandler : ErrorController {
         val statusCode = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE) as Int
         model.addAttribute("statusCode", statusCode)
         model.addAttribute("errorMessage", HttpStatus.valueOf(statusCode).reasonPhrase)
-        return "prettyError"
+        return "pretty-error"
     }
 
     override fun getErrorPath(): String? {

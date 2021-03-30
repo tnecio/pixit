@@ -20,6 +20,9 @@ private val log = KotlinLogging.logger {}
 class MainController(val gameManager: GameManager) {
     // GetMapping("/") is static
 
+    @GetMapping("/kicked-out")
+    fun getKickedOut() = "kicked-out"
+
     @PostMapping("/game")
     fun postGame(@ModelAttribute newGame: NewGame,
                  model: Model,
@@ -49,17 +52,21 @@ class MainController(val gameManager: GameManager) {
                 session: HttpSession): String {
         log.info { "/game/$id GET (sessionId=${session.id})" }
 
-        val userId = gameManager.getUserIdForSession(session.id, id)
-                ?: if (newUser != null) gameManager.addPlayer(id, session.id, newUser)
-                else return "redirect:/join/${id}"
+        try {
+            val userId = gameManager.getUserIdForSession(session.id, id)
+                    ?: if (newUser != null) gameManager.addPlayer(id, session.id, newUser)
+                    else return "redirect:/join/${id}"
 
-        model.addAttribute("sessionId", session.id)
-        model.addAttribute("userId", userId)
-        model.addAttribute("gameId", id)
+            model.addAttribute("sessionId", session.id)
+            model.addAttribute("userId", userId)
+            model.addAttribute("gameId", id)
 
-        model.addAttribute("initialGame", gameManager.getGameFor(id, userId))
+            model.addAttribute("initialGame", gameManager.getGameFor(id, userId))
 
-        return "game"
+            return "game"
+        } catch (e : IllegalAccessException) {
+            return "kicked-out"
+        }
     }
 
     @GetMapping("/join/{id}")

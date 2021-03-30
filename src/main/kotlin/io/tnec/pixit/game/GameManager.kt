@@ -42,7 +42,8 @@ class GameManager(val gameRepository: GameRepository,
         )
         val newGameModel = GameModel(
                 narrator = userId,
-                players = mapOf(userId to avatarManager.newAvatar(newGame.playerName))
+                players = mapOf(userId to avatarManager.newAvatar(newGame.playerName)),
+                admin = userId
         )
 
         return gameRepository.createGame(Game(model = newGameModel, properties = newGameProperties))
@@ -54,12 +55,10 @@ class GameManager(val gameRepository: GameRepository,
         updateAndNotify(gameId) {
             log.info { "addPlayer $newUser (gameId=$gameId, sessionId=$sessionId)" }
 
-            if (it.properties.accessType == GameAccessType.PUBLIC) {
-                if (!it.properties.isAcceptingUsers) {
-                    throw ValidationError("Attempt to join a game that is not accepting new players (gameId=$gameId, sessionId=$sessionId)")
-                } else if (sessionId in it.properties.kickedUsers) {
-                    throw ValidationError("Attempt to join a game that has banned this user (gameId=$gameId, sessionId=$sessionId)")
-                }
+            if (!it.properties.isAcceptingUsers) {
+                throw ValidationError("Attempt to join a game that is not accepting new players (gameId=$gameId, sessionId=$sessionId)")
+            } else if (sessionId in it.properties.kickedUsers) {
+                throw ValidationError("Attempt to join a game that has banned this user (gameId=$gameId, sessionId=$sessionId)")
             }
 
             it.properties.sessions += mapOf(sessionId to userId)
@@ -333,6 +332,9 @@ class GameManager(val gameRepository: GameRepository,
         val userId = it.getUserIdForSession(sessionId)
         val kickee = request.playerId
 
+        val kickeeSessionId = it.properties.sessions.filter { (_, u) -> u == kickee }.keys.first()
+        gameMessageSender.notifyOneOffEvent(gameId, kickeeSessionId, GameEvent.KICKED_OUT)
+
         if (it.model.admin != userId) {
             throw ValidationError("User ${userId} is not the admin in game ${gameId}")
         } else if (kickee !in it.model.players.keys) {
@@ -341,7 +343,7 @@ class GameManager(val gameRepository: GameRepository,
         log.debug { "kickOut (gameId=$gameId, sessionId=$sessionId, kickee=$kickee)" }
 
         removePlayerAction(gameId, it, kickee)
-        it.properties.kickedUsers.add(sessionId)
+        it.properties.kickedUsers.add(kickee)
     }
 
     fun readdPlayer(gameId: GameId, sessionId: SessionId) = updateAndNotify(gameId) {
@@ -389,7 +391,11 @@ class GameManager(val gameRepository: GameRepository,
         // TODO: consistent Nullable returns vs. exceptions
         val game = gameRepository.getGameSafe(gameId)
         try {
-            return game.getUserIdForSession(sessionId)
+            val res = game.getUserIdForSession(sessionId)
+            if (res in game.properties.kickedUsers) {
+                throw IllegalAccessException("This player has been kicked out of the game!")
+            }
+            return res
         } catch (e: ValidationError) {
             return null
         }

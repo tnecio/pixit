@@ -1,0 +1,28 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:with="lang=${#locale.language}" th:lang="${lang}">
+<head>
+    <th:block th:insert="fragments/head :: headFragment"></th:block>
+    <link rel="stylesheet" href="/non-game.css">
+</head>
+
+<body>
+<header>
+    <h1><a href="/">P<span style="font-size:1.2em;">i</span>X<span style="font-size:1.2em;">i</span>T!</a></h1>
+</header>
+
+<form th:replace="fragments/langSelect :: copy"></form>
+
+<main class="errorPage">
+    <h2 th:text="#{kicked_out}"></h2>
+    <span th:text="#{you_have_been_kicked_out}"></span>
+    <br><br>
+    <a href="/" th:text="#{go_back_to_homepage}"></a>
+</main>
+
+<footer th:replace="fragments/footer :: copy"></footer>
+
+<aside th:replace="fragments/banner :: copy"></aside>
+
+</body>
+</html>

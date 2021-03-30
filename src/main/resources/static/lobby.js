@@ -75,7 +75,7 @@ var lobby = new Vue({
             <li class="createGameBox">
                 <h4>{{t.createPublicGame}}</h4>
                 <form action="/game" method="post" id="createGameForm">
-                    <input type="text" name="gameName" id="gameName" placeholder="Game Name" required />
+                    <input type="text" name="gameName" id="gameName" v-bind:placeholder="t.gameRoomName" required />
                     <input type="hidden" name="playerName" v-bind:value="playerName">
                     <input type="hidden" name="preferredLanguage" v-bind:value="lang">
                     <input type="hidden" name="accessType" value="PUBLIC">
