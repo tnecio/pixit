@@ -2,14 +2,116 @@
 
 <html xmlns:th="http://www.thymeleaf.org">
 
+<!-- TODO RENAME APPROPRIATELY, REFACTOR lang select and feedback correctly separated -->
+
 <body>
 
-<form class="langSelectForm" action="#" method="get" th:fragment="copy">
-    <select id="langSelect" name="lang" onchange="this.form.submit()">
-        <option value="en" th:selected="${lang == 'en'}">🇬🇧 English</option> <!-- TODO selected = lang !!! -->
-        <option value="pl" th:selected="${lang == 'pl'}">🇵🇱 polski</option>
-    </select>
-</form>
+<div class="langSelectForm" th:fragment="copy">
+    <form>
+        <a href="#open-modal"><button id="feedbackButton" th:text="#{leave_feedback}" type="button"></button></a>
+    </form>
+
+    <form action="#" method="get">
+        <select id="langSelect" name="lang" onchange="this.form.submit()">
+            <option value="en" th:selected="${lang == 'en'}">🇬🇧 English</option>
+            <option value="pl" th:selected="${lang == 'pl'}">🇵🇱 polski</option>
+        </select>
+    </form>
+
+    <div id="open-modal" class="modal-window">
+        <form id="feedback-send-form">
+            <a href="#" title="Close" class="modal-close">X</a>
+            <h2 th:text="#{leave_feedback}"></h2>
+            <input type="text" id="feedback_name" name="feedback_name" placeholder="Name" required>
+            <input type="email" id="feedback_email" name="feedback_email" placeholder="Email (optional)">
+            <textarea id="feedback_message" name="feedback_message" required></textarea>
+            <button th:text="#{leave_feedback}" type="submit"></button>
+            <span id="feedback-confirmation"></span>
+        </form>
+    </div>
+
+    <style>
+        .modal-window {
+            position: fixed;
+            background-color: rgba(255, 255, 255, 0.25);
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 999;
+            visibility: hidden;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s;
+        }
+
+        .modal-window:target {
+            visibility: visible;
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-window > form {
+            width: 60vw;
+            height: 60vh;
+            position: absolute;
+            font-size: 1.25em;
+            top: 20vh;
+            left: 20vw;
+            /*transform: translate(-50%, -50%);*/
+            padding: 2em;
+            background: antiquewhite;
+            border: 1px solid gray;
+        }
+
+        .modal-window > form > h2 {
+            margin: 0 auto;
+            font-family: "McLaren", "Chilanka", sans-serif;
+            font-size: 2rem;
+        }
+
+        .modal-window > form > textarea {
+            height: 60%;
+            width: 80%;
+            border: 1px solid black;
+        }
+
+        .modal-close {
+            font-size: 1.25em;
+            font-weight: bold;
+            position: absolute;
+            right: 1.25em;
+            top: 1.25em;
+            color: black;
+        }
+    </style>
+
+    <script>
+        document.getElementById("feedback-send-form").addEventListener("submit", function (event) {
+            let req = new XMLHttpRequest();
+            req.open('POST', '/api/lobby/feedback', true);
+            req.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            req.onload = function(e) {
+                if (req.readyState === 4) {
+                    if (req.status === 200) {
+                        document.getElementById("feedback-confirmation").innerText = "Message sent. Thank you for your feedback!";
+                    } else {
+                        document.getElementById("feedback-confirmation").innerText = "Error sending message (status code: " + req.status + ")";
+                    }
+                }
+            };
+            req.onerror = function (e) {
+                document.getElementById("feedback-confirmation").innerText = "Error sending message.";
+            };
+            req.send(JSON.stringify({
+                "name" : document.getElementById("feedback_name").value,
+                "email" : document.getElementById("feedback_email").value,
+                "message" : document.getElementById("feedback_message").value
+            }));
+            event.preventDefault();
+        })
+    </script>
+</div>
 
 </body>
 

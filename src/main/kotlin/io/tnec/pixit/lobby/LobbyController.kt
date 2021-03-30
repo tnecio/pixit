@@ -1,6 +1,7 @@
 package io.tnec.pixit.lobby
 
 import io.tnec.pixit.game.*
+import mu.KotlinLogging
 import org.springframework.cache.CacheManager
 import org.springframework.cache.annotation.CacheEvict
 import org.springframework.cache.annotation.Cacheable
@@ -9,14 +10,16 @@ import org.springframework.cache.concurrent.ConcurrentMapCacheManager
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.scheduling.annotation.Scheduled
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 
 data class PublicGameMetadata(val id: GameId, val name: String, val playersCount: Int, val preferredLang: String)
 
+data class FeedbackMessage(val name: String, val email: String?, val message: String)
+
 data class PublicGamesListResponse(val games: List<PublicGameMetadata>)
+
+class EmptyResponse
 
 @Configuration
 @EnableCaching
@@ -32,6 +35,8 @@ class LobbyControllerCachingConfiguration {
         // do nothing other than cache-evict
     }
 }
+
+private val log = KotlinLogging.logger { }
 
 @RestController
 @RequestMapping("/api/lobby/")
@@ -51,5 +56,11 @@ class LobbyController(val gameManager: GameManager, val gameRepository: GameRepo
             }
         }
         return PublicGamesListResponse(res)
+    }
+
+    @PostMapping("feedback")
+    fun postFeedback(@RequestBody feedback: FeedbackMessage) : EmptyResponse {
+        log.warn { feedback }
+        return EmptyResponse()
     }
 }
