@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+
+<aside th:fragment="copy" id="cookie-banner">
+    <span th:utext="#{banner}"></span>
+    <button id="consent-cookies" onclick="consentToCookies()" th:text="#{consent}"></button>
+
+    <style>
+        #cookie-banner {
+            padding: 0.5rem;
+            width: 100%;
+            box-sizing: border-box;
+            text-align: center;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            background-color: #444;
+            color: white;
+            font-size: 0.75rem;
+            line-height: 1.1;
+        }
+
+        #cookie-banner a {
+            color: white;
+            text-decoration: underline;
+        }
+
+        #cookie-banner button {
+            font-size: 0.75rem;
+        }
+    </style>
+
+    <script>
+        const CONSENT_COOKIE_NAME = "consent1";
+
+        function getCookie(cookieName) {
+            const keyPart = cookieName + "=";
+            const decodedCookies = decodeURIComponent(document.cookie).split(';');
+
+            let res = null;
+            decodedCookies.forEach((c) => {
+                let trimmed = c.trimLeft();
+                if (trimmed.indexOf(keyPart) === 0) {
+                    res = trimmed.substring(keyPart.length, trimmed.length);
+                }
+            });
+            return res;
+        }
+
+        function setCookie(cookieName, cookieValue, expirationDays) {
+            const d = new Date();
+            d.setTime(d.getTime() + (expirationDays * 24 * 60 * 60 * 1000));
+
+            document.cookie = `${cookieName}=${cookieValue};expires=${d.toUTCString()};path=/`;
+        }
+
+        function consentToCookies() {
+            hideBanner();
+            setCookie(CONSENT_COOKIE_NAME, 1, 365);
+        }
+
+        function hideBanner() {
+            const cookieBanner = document.getElementById('cookie-banner');
+            cookieBanner.style = 'display: none;';
+        }
+
+        const hasCookieConsent = getCookie(CONSENT_COOKIE_NAME);
+        if (hasCookieConsent) {
+            hideBanner();
+        }
+
+    </script>
+</aside>
+
+</html>

@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org"
       th:with="lang=${#locale.language}" th:lang="${lang}">
 <head>
-    <th:block th:insert="fragments/head :: headFragment (pageTitle='PiXiT! – Start')"></th:block>
+    <th:block th:insert="fragments/head :: headFragment"></th:block>
     <link rel="stylesheet" href="/non-game.css">
 </head>
 
@@ -21,5 +21,8 @@
 </main>
 
 <footer th:replace="fragments/footer :: copy"></footer>
+
+<aside th:replace="fragments/banner :: copy"></aside>
+
 </body>
 </html>

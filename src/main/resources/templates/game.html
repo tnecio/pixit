@@ -2,6 +2,8 @@
 <html xmlns:th="http://www.thymeleaf.org"
       th:with="lang=${#locale.language}" th:lang="${lang}">
 <head>
+    <th:block th:insert="fragments/head :: headFragment"></th:block>
+    <link rel="stylesheet" href="/game.css">
     <script th:replace="~{|fragments/i18n/${lang}/pixit-js| :: copy}"></script>
     <script th:inline="javascript">
         /*<![CDATA[*/
@@ -16,8 +18,6 @@
 
         /*]]>*/
     </script>
-    <th:block th:insert="fragments/head :: headFragment (pageTitle='PiXiT!')"></th:block>
-    <link rel="stylesheet" href="/game.css">
 </head>
 <body>
 
