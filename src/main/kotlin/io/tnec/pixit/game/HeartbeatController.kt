@@ -32,7 +32,7 @@ class HeartbeatController(val gameRepository: GameRepository, val gameManager: G
         gameRepository.forEach { gameId: GameId, game: Game ->
             val now = clock.instant()
             for ((userId, user) in game.properties.users) {
-                if (user.lastHeartbeat.isBefore(now.minusMillis(20000))) {
+                if (user.lastHeartbeat.isBefore(now.minusMillis(10000))) {
                     log.debug { "Removing user $userId from $gameId (lastHeartbeat=${user.lastHeartbeat})" }
                     i++
                     gameManager.removePlayer(gameId, userId)

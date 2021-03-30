@@ -290,8 +290,13 @@ class GameManager(val gameRepository: GameRepository,
     }
 
     fun removePlayer(gameId: GameId, userId: UserId) {
+        var shouldDrop = false
         updateAndNotify(gameId) {
             removePlayerAction(gameId, it, userId)
+            shouldDrop = it.model.players.isEmpty() && it.properties.accessType == GameAccessType.PUBLIC
+        }
+        if (shouldDrop) {
+            gameRepository.dropGame(gameId)
         }
     }
 

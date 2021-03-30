@@ -32,7 +32,7 @@ class RedisStore<T : Serializable>(
     }
 
     override fun drop(id: Id) {
-        redisTemplate.delete(id)
+        redisTemplate.delete(prefix + id)
     }
 
     override fun forEach(action: (Id, T) -> Unit) {
