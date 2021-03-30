@@ -114,7 +114,8 @@ Vue.component('playerEntry', {
                 v-bind:title="t.kick_out"
                 style="color: darkred;"
                 v-on:click="$emit('kick-out', playerId)"
-            ><b>X</b>
+            >
+                <button type="button"><b>X</b></button>
             </a>
         </span>
         <span v-bind:title="t.still_thinking" v-if="isThinking(player, isCurrent, isNarrator, gameState)"> 💭</span>

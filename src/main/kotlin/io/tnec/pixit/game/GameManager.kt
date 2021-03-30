@@ -377,7 +377,7 @@ class GameManager(val gameRepository: GameRepository,
                 action(it)
             } catch (e: ValidationError) {
                 // Don't log the stacktrace, just take a note, and exit early
-                log.warn { "Validation error: ${e.message}" }
+                log.debug { "Validation error: ${e.message}" }
                 return@updateGame it
             }
             it.model.version += 1

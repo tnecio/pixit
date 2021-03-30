@@ -131,6 +131,9 @@ var pixit = new Vue({
                 >
                     {{ game.players[userId].proceedRequested ? t.waiting_for_others : t.start_over }}
                 </button>
+                
+                <br>
+                {{ t.tell_friends }}
             </div>
     
             <transition name="shufflingmove" mode="out-in">

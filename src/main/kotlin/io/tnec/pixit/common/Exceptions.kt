@@ -12,6 +12,6 @@ class NotFoundException(val id: Id) : RuntimeException()
 @ResponseStatus(code = HttpStatus.BAD_REQUEST)
 class ValidationError(val msg: String) : RuntimeException(msg) {
     init {
-        log.warn { msg }
+        log.debug { msg }
     }
 }

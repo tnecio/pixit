@@ -19,9 +19,10 @@
 <noscript><strong>PiXiT absolutely requires JavaScript enabled to work!</strong></noscript>
 
 <header>
-<h1><a href="/">P<span style="font-size:1.2em;">i</span>X<span style="font-size:1.2em;">i</span>T!</a>
-    <span style="color: mediumvioletred; font-size: 0.5em;" th:title="#{beta}">β</span></h1>
+<h1><a href="/">P<span style="font-size:1.2em;">i</span>X<span style="font-size:1.2em;">i</span>T!</a></h1>
 </header>
+
+<div th:replace="fragments/langSelect :: copy(false)"></div>
 
 <main id="lobby" class="mainForm"></main>
 

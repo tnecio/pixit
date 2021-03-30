@@ -6,12 +6,12 @@
 
 <body>
 
-<div class="langSelectForm" th:fragment="copy">
+<div class="langSelectForm" th:fragment="copy (showLangSelect)">
     <form>
         <a href="#open-modal"><button id="feedbackButton" th:text="#{leave_feedback}" type="button"></button></a>
     </form>
 
-    <form action="#" method="get">
+    <form action="#" method="get" th:if="${showLangSelect}">
         <select id="langSelect" name="lang" onchange="this.form.submit()">
             <option value="en" th:selected="${lang == 'en'}">🇬🇧 English</option>
             <option value="pl" th:selected="${lang == 'pl'}">🇵🇱 polski</option>
@@ -22,8 +22,8 @@
         <form id="feedback-send-form">
             <a href="#" title="Close" class="modal-close">X</a>
             <h2 th:text="#{leave_feedback}"></h2>
-            <input type="text" id="feedback_name" name="feedback_name" placeholder="Name" required>
-            <input type="email" id="feedback_email" name="feedback_email" placeholder="Email (optional)">
+            <input type="text" id="feedback_name" name="feedback_name" th:placeholder="#{yourName}" required>
+            <input type="email" id="feedback_email" name="feedback_email" th:placeholder="#{emailOpt}">
             <textarea id="feedback_message" name="feedback_message" required></textarea>
             <button th:text="#{leave_feedback}" type="submit"></button>
             <span id="feedback-confirmation"></span>
@@ -87,6 +87,13 @@
     </style>
 
     <script>
+        /*<![CDATA[*/
+
+        const sentSuccess = /*[[#{sent_success}]]*/ 'Message sent. Thank you for your feedback!';
+        const sentError = /*[[#{sent_error}]]*/ 'Error sending message';
+
+        /*]]>*/
+
         document.getElementById("feedback-send-form").addEventListener("submit", function (event) {
             let req = new XMLHttpRequest();
             req.open('POST', '/api/lobby/feedback', true);
@@ -94,14 +101,14 @@
             req.onload = function(e) {
                 if (req.readyState === 4) {
                     if (req.status === 200) {
-                        document.getElementById("feedback-confirmation").innerText = "Message sent. Thank you for your feedback!";
+                        document.getElementById("feedback-confirmation").innerText = sentSuccess;
                     } else {
-                        document.getElementById("feedback-confirmation").innerText = "Error sending message (status code: " + req.status + ")";
+                        document.getElementById("feedback-confirmation").innerText = sentError + " (status: " + req.status + ")";
                     }
                 }
             };
             req.onerror = function (e) {
-                document.getElementById("feedback-confirmation").innerText = "Error sending message.";
+                document.getElementById("feedback-confirmation").innerText = sentError + ".";
             };
             req.send(JSON.stringify({
                 "name" : document.getElementById("feedback_name").value,
