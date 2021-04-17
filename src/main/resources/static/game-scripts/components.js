@@ -114,7 +114,7 @@ Vue.component('playerEntry', {
                 href="javascript:void()"
                 v-bind:title="t.kick_out"
                 style="color: darkred;"
-                v-on:click="$emit('kick-out', playerId)"
+                v-on:click="kickOut()"
             >
                 <button type="button"><b>X</b></button>
             </a>
@@ -148,6 +148,13 @@ Vue.component('playerEntry', {
             }
             return gameState === 'WAITING_FOR_CARDS' && player.sentCard === null;
 
+        },
+
+        kickOut: function() {
+            let sure = confirm(t.confirm_kickout + this.player.name + "?");
+            if (sure) {
+                this.$emit('kick-out', this.playerId);
+            }
         }
     }
 });
@@ -175,7 +182,7 @@ Vue.component('chat', {
                 <b class="author">{{message.author}}</b> <span class="time">{{getTimeStr(message.time)}}</span>: {{message.content}}
             </div>
         </div>
-        <form class="new-message" v-on:submit.prevent="$emit('send-message', newMessage)" v-if="shown">
+        <form class="new-message" v-on:submit.prevent="sendMessage()" v-if="shown">
             <input v-model="newMessage" placeholder="Chat">
             <button>&gt;</button>
         </form>
@@ -184,7 +191,16 @@ Vue.component('chat', {
     methods: {
         getTimeStr: function(timeStr) {
             let d = new Date(timeStr);
-            return "" + d.getHours() + ":" + d.getMinutes();
+            let hour = d.getHours();
+            if (hour < 10) hour = "0" + hour;
+            let minutes = d.getMinutes();
+            if (minutes < 10) minutes = "0" + minutes;
+            return hour + ":" + minutes;
+        },
+
+        sendMessage: function () {
+            this.$emit('send-message', this.newMessage);
+            this.newMessage = "";
         }
     }
 });

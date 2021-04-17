@@ -1,5 +1,6 @@
 package io.tnec.pixit.game
 
+import io.tnec.pixit.common.NotFoundException
 import mu.KotlinLogging
 import org.springframework.messaging.handler.annotation.DestinationVariable
 import org.springframework.messaging.handler.annotation.MessageMapping
@@ -34,7 +35,11 @@ class HeartbeatController(val gameRepository: GameRepository, val gameManager: G
                 if (user.lastHeartbeat.isBefore(now.minusMillis(10000))) {
                     log.debug { "Removing user $userId from $gameId (lastHeartbeat=${user.lastHeartbeat})" }
                     i++
-                    gameManager.removePlayer(gameId, userId)
+                    try {
+                        gameManager.removePlayer(gameId, userId)
+                    } catch (e: NotFoundException) {
+                        log.error { "Game not found when iterating over all games in gameRepository, should never happen" }
+                    }
                 }
             }
         }
