@@ -24,6 +24,7 @@ const val WINNER_THRESHOLD = 30
 class GameManager(val gameRepository: GameRepository,
                   val gameMessageSender: GameMessageSender,
                   val avatarManager: AvatarManager,
+                  val pointsCounter: PointsCounter,
                   val clock: Clock
 ) {
     fun createGame(sessionId: SessionId, newGame: NewGame): GameId {
@@ -169,7 +170,7 @@ class GameManager(val gameRepository: GameRepository,
                             || avatar.sentCard == null // and those who did not send their card (e.g. new joiners)
                 }) {
             log.info { "All players voted (gameId=$gameId)" }
-            countPoints(it.model)
+            pointsCounter.countPoints(it.model)
 
             // Check if we have a winner
             it.model.winners = it.model.players.filter { (_, avatar) ->
@@ -179,52 +180,6 @@ class GameManager(val gameRepository: GameRepository,
                 it.model.state = GameState.FINISHED
             } else {
                 it.model.state = it.model.state.next()
-            }
-        }
-    }
-
-    private fun countPoints(model: GameModel) {
-        val narratorId = model.narrator
-        val whoseCardIsIt: MutableMap<CardId, UserId> = HashMap()
-        for ((playerId, avatar) in model.players) {
-            whoseCardIsIt[avatar.sentCard!!] = playerId
-        }
-
-        val whoVotedForWhom: MutableMap<UserId, UserId> = HashMap()
-        for ((playerId, avatar) in model.players) {
-            if (playerId == narratorId) continue
-            whoVotedForWhom[playerId] = whoseCardIsIt[avatar.vote!!] ?: continue
-        }
-
-        // If everyone voted on narrator's card: 2 points for everyone except the narrator
-        // The same, if no one voted
-        model.roundResult = when {
-            (whoVotedForWhom.all { it.value == narratorId }) -> RoundResult.ALL_VOTED_FOR_NARRATOR
-            (whoVotedForWhom.all { it.value != narratorId }) -> RoundResult.NO_ONE_VOTED_FOR_NARRATOR
-            else -> RoundResult.SOMEONE_VOTED_FOR_NARRATOR
-        }
-
-        if (model.roundResult != RoundResult.SOMEONE_VOTED_FOR_NARRATOR) {
-            model.players = model.players.mapValues {
-                if (it.key == narratorId) it.value else it.value.copy(roundPointDelta = 2)
-            }
-            return
-        }
-
-        // Otherwise:
-        // 3 points for the narrator
-        model.players[narratorId]!!.roundPointDelta = 3
-
-        // and additionally 1 point for each person who voted for your card if you're not the narrator
-        for (playerId in model.players.keys) {
-            val fooler = whoVotedForWhom[playerId] ?: continue
-            if (fooler == narratorId) continue
-            model.players[fooler]!!.roundPointDelta += 1
-        }
-        // and additionally 3 points for everyone who guessed narrator's card correctly
-        for ((playerId, votedFor) in whoVotedForWhom) {
-            if (votedFor == narratorId) {
-                model.players[playerId]!!.roundPointDelta += 3
             }
         }
     }
