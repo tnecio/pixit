@@ -100,10 +100,11 @@ Vue.component('playerEntry', {
         this.t = t;
     },
     template: `
-    <div
+    <tr
         class="playerEntry"
         v-bind:class="{ narratorPlayerEntry: isNarrator }"
     >
+    <td>
         <b v-bind:title="player.name + (isNarrator ? ' (' + t.narrator + ')' : '')">{{player.name}}</b>
         <span v-if="isWinner">🎉</span>
         <span v-if="isCurrent">({{t.you}})</span>
@@ -119,11 +120,13 @@ Vue.component('playerEntry', {
             </a>
         </span>
         <span v-bind:title="t.still_thinking" v-if="isThinking(player, isCurrent, isNarrator, gameState)"> 💭</span>
-        <br>
+    </td>
+    
+    <td>
         {{player.points}}
         <b v-if="player.roundPointDelta">+{{player.roundPointDelta}}</b>
-        {{t.points_fmt(player.points + player.roundPointDelta)}}
-    </div>
+    </td>
+    </tr>
     `,
     methods: {
         isThinking: function (player, isCurrent, isNarrator, gameState) {
@@ -143,10 +146,39 @@ Vue.component('playerEntry', {
             if (gameState === 'WAITING_FOR_VOTES' && player.vote === null) {
                 return true;
             }
-            if (gameState === 'WAITING_FOR_CARDS' && player.sentCard === null) {
-                return true;
-            }
-            return false;
+            return gameState === 'WAITING_FOR_CARDS' && player.sentCard === null;
+
         }
     }
+});
+
+const EXAMPLE_MESSAGE = {
+    author: "Someone",
+    time: "21:37",
+    content: "Hi!"
+};
+
+Vue.component('chat', {
+    props: ['messages'],
+    data: function () {
+        return {
+            newMessage: "",
+            shown: true
+        };
+    },
+    template: `
+    <aside class="chat">
+        <a href="javascript:void()" v-if="shown" v-on:click="shown = false" class="chatVisibLink">Hide chat</a>
+        <a href="javascript:void()" v-if="!shown" v-on:click="shown = true" class="chatVisibLink">Show chat</a>
+        <div class="messages" v-if="shown">
+            <div class="message" v-for="message in messages">
+                <b class="author">{{message.author}}</b> <span class="time">{{message.time}}</span>: {{message.content}}
+            </div>
+        </div>
+        <form class="new-message" v-on:submit.prevent="$emit('send-message', newMessage)" v-if="shown">
+            <input v-bind:value="newMessage" placeholder="Chat">
+            <button>&gt;</button>
+        </form>
+    </aside>
+`
 });

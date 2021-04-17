@@ -1,12 +1,11 @@
-/* * * COMMON AREA SECTION * * */
-
-#common-area {
-    width: 100%;
+main {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-evenly;
-    padding: 1em;
-    box-sizing: border-box;
+    flex-direction: row-reverse;
+}
+
+.langSelectForm {
+    position: relative;
 }
 
 /* * GAME INFO SECTION * */
@@ -14,10 +13,9 @@
 #game-info {
     flex-basis: 20%;
     flex-grow: 1;
-}
-
-#game-info > * {
-    padding: 0.25em;
+    min-width: 10em;
+    text-align: center;
+    padding: 0 1em;
 }
 
 #game-info h1 {
@@ -34,21 +32,21 @@
 }
 
 #game-players {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    margin: auto;
+    width: 100%;
+}
+
+#game-players td {
+    border: 1px solid gray;
 }
 
 .playerEntry {
-    display: block;
     font-size: 0.9em;
     background-color: white;
     border: 1px solid darkgray;
     margin: 0.5em;
     padding: 0.5em;
     min-width: 7.5em;
-    width: max-content;
+    width: 100%;
     height: min-content;
 }
 
@@ -62,13 +60,16 @@
     font-family: "McLaren", sans-serif;
 }
 
+/* * MAIN AREA * */
+
+#mainArea {
+    flex-basis: 75%;
+    flex-grow: 1;
+}
+
 /* * TABLE SECTION * */
 
 #table {
-    min-width: min(90vw, 500px);
-    flex-basis: 70%;
-    flex-grow: 1;
-
     display: flex;
     flex-wrap: wrap;
     align-content: center;
@@ -240,6 +241,61 @@
 
 .modal figcaption > button {
     font-size: 1.25em;
+}
+
+
+/* * * CHAT * * */
+.chat {
+    margin: 1em 0;
+    border: 1px solid gray;
+    padding: 0;
+}
+
+.chatVisibLink {
+    color: black;
+    text-decoration: underline;
+}
+
+.messages {
+    max-height: 50vh;
+    overflow: auto;
+    background-color: white;
+    margin:0;
+    text-align: left;
+    padding: 0.25em;
+    font-size: 0.9em;
+    border-bottom: 1px solid gray;
+}
+
+.time {
+    color: gray;
+}
+
+.chat form {
+    background-color: black;
+    text-align: left;
+    display: flex;
+    justify-content: space-between;
+    align-content: center;
+    align-items: center;
+    height: 3em;
+}
+
+.chat input {
+    width: 80%;
+    font-size: 0.8em;
+    margin-left: 0.25em;
+}
+
+.chat button {
+    flex-grow: 1;
+    background: none;
+    border: none;
+    font-size: 1.2em;
+    font-weight: bold;
+    font-family: "McLaren", sans-serif;
+    color: orange;
+    cursor: pointer;
 }
 
 /* * * ANIMATION * * */

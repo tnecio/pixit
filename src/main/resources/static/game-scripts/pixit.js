@@ -44,7 +44,49 @@ var pixit = new Vue({
 
         connected: false,
 
-        popups: []
+        popups: [],
+
+        messages: [{
+            author: "Someone",
+            time: "21:37",
+            content: "Hi!"
+        }, {
+            author: "Someone else",
+            time: "21:69",
+            content: "Hi, how are you?"
+        }, {
+            author: "Someone else",
+            time: "21:69",
+            content: "Hi, how are you?"
+        }, {
+            author: "Someone else",
+            time: "21:69",
+            content: "Hi, how are you?"
+        }, {
+            author: "Someone else",
+            time: "21:69",
+            content: "Hi, how are you?"
+        }, {
+            author: "Someone else",
+            time: "21:69",
+            content: "Hi, how are you?"
+        }, {
+            author: "Someone else",
+            time: "21:69",
+            content: "Hi, how are you?"
+        }, {
+            author: "Someone else",
+            time: "21:69",
+            content: "Hi, how are you?"
+        }, {
+            author: "Someone else",
+            time: "21:69",
+            content: "Hi, how are you?"
+        }, {
+            author: "Someone else",
+            time: "21:69",
+            content: "Hi, how are you?"
+        }]
     },
 
     computed: {
@@ -64,30 +106,34 @@ var pixit = new Vue({
             {{popup.message}}
         </aside>
     </div>
-
-    <section id="common-area">
-        <header id="game-info">
-            <h1><a href="/">P<span style="font-size:1.2em;">i</span>X<span style="font-size:1.2em;">i</span>T!</a></h1>
-            <aside id="game-players">
-                <h2 class="playersHeader">{{t.players}}:</h2>
-                <playerEntry
-                    v-for="k in playerIdsSorted"
-                    v-bind:key="k"
-                    v-bind:playerId="k"
-                    v-bind:player="game.players[k]"
-                    v-bind:isCurrent="k == userId"
-                    v-bind:isWinner="k in game.winners"
-                    v-bind:isNarrator="k == game.narrator"
-                    v-bind:isAdmin="k == game.admin"
-                    v-bind:showAdminControls="userId == game.admin"
-                    v-bind:gameState="game.state"
-                    @kick-out="(playerId) => requests.kickOut(playerId)">
-                </playerEntry>
-            </aside>
-            <span v-if="isRoundEnd()"><br><b v-html="roundEndSummary()"></b></span>
-        </header>
     
-        <div id="table">
+    <header id="game-info">
+        <h1><a href="/">P<span style="font-size:1.2em;">i</span>X<span style="font-size:1.2em;">i</span>T!</a></h1>
+        <table id="game-players">
+        <thead><tr><th><strong>{{t.players}}</strong></th><th>{{t.points}}</th></tr>
+        </thead>
+        <tbody>
+            <playerEntry
+                v-for="k in playerIdsSorted"
+                v-bind:key="k"
+                v-bind:playerId="k"
+                v-bind:player="game.players[k]"
+                v-bind:isCurrent="k == userId"
+                v-bind:isWinner="k in game.winners"
+                v-bind:isNarrator="k == game.narrator"
+                v-bind:isAdmin="k == game.admin"
+                v-bind:showAdminControls="userId == game.admin"
+                v-bind:gameState="game.state"
+                @kick-out="(playerId) => requests.kickOut(playerId)">
+            </playerEntry>
+        </tbody>
+        </table>
+        <span v-if="isRoundEnd()"><br><b v-html="roundEndSummary()"></b></span> <!-- TODO move into chat? -->
+        <chat v-bind:messages="messages"></chat>
+    </header>
+
+    <div id="mainArea">
+    <section id="table">
             <div id="congratulations" v-if="game.state == 'FINISHED'">
                 {{ t.congratulations(winnerNames) }}
             </div>
@@ -157,8 +203,7 @@ var pixit = new Vue({
                 {{t.shuffling}}
             </div>
             </transition>
-        </div>
-    </section>
+        </section>
     
     <section id="players-private-area" v-if="gameStarted()">
         <h2>{{t.your_deck}}</h2>
@@ -181,6 +226,7 @@ var pixit = new Vue({
             </card>
         </transition-group>
     </section>
+    </div>
 </main>
     `,
 
@@ -190,7 +236,9 @@ var pixit = new Vue({
             if (newGame.version > this.game.version) {
                 if (this.game.state === "WAITING_FOR_CARDS" && newGame.state === "WAITING_FOR_VOTES") {
                     this.shuffling = true;
-                    setTimeout(() => { this.shuffling = false; }, 3000);
+                    setTimeout(() => {
+                        this.shuffling = false;
+                    }, 3000);
                 }
 
                 if (this.game.winners !== newGame.winners) {
@@ -235,17 +283,25 @@ var pixit = new Vue({
 
         /* ROUND END screen functions */
         getWhoVotedNames(cardId) {
-            if (!this.isRoundEnd()) { return null; }
+            if (!this.isRoundEnd()) {
+                return null;
+            }
             let res = [];
             for (let player in this.game.players) {
-                if (this.game.players[player].vote === cardId) { res.push(this.game.players[player].name); }
+                if (this.game.players[player].vote === cardId) {
+                    res.push(this.game.players[player].name);
+                }
             }
             return res;
         },
         getOwnerOfCardOnTableName(cardId) {
-            if (!this.isRoundEnd()) { return null; }
+            if (!this.isRoundEnd()) {
+                return null;
+            }
             for (let player in this.game.players) {
-                if (this.game.players[player].sentCard === cardId) { return this.game.players[player].name; }
+                if (this.game.players[player].sentCard === cardId) {
+                    return this.game.players[player].name;
+                }
             }
         },
 

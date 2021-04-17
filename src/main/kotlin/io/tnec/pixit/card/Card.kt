@@ -14,6 +14,6 @@ data class Card(
 fun hiddenCard(id: CardId) = Card(
         // TODO true cardId should not be recoverable on the client from hidden card id
         id + "_hidden",
-        Image("/pixit.png", "Hidden card", "", ""),
+        Image("/img/pixit.png", "Hidden card", "", ""),
         revealed = false
 )
