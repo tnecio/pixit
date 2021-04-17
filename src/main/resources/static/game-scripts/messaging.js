@@ -31,6 +31,9 @@ function connect() {
             stompClient.subscribe('/topic/' + gameId + '/' + sessionId + '/event', event => {
                 handleGameEvent(JSON.parse(event.body));
             });
+            stompClient.subscribe('/topic/' + gameId + '/chat', event => {
+                handleChatUpdate(JSON.parse(event.body));
+            });
             sendRequest(gameControlEndpoint("connected"), {});
             pixit.connectionUp();
             console.log("connectionUp");
@@ -94,6 +97,10 @@ class Requester {
     kickOut(playerId) {
         this.send(new GameControlRequest("kick-out", {"playerId": playerId}))
     }
+
+    sendChat(msg) {
+        sendRequest("/v1/chat/" + gameId + "/" + sessionId + "/chat", { "msg": msg });
+    }
 }
 
 /*
@@ -111,6 +118,10 @@ function handleGameEvent(event) {
         const message = t[event.payload];
         pixit.displayMessage(message);
     }
+}
+
+function handleChatUpdate(event) {
+    pixit.handleChatUpdate(event);
 }
 
 

@@ -172,13 +172,19 @@ Vue.component('chat', {
         <a href="javascript:void()" v-if="!shown" v-on:click="shown = true" class="chatVisibLink">Show chat</a>
         <div class="messages" v-if="shown">
             <div class="message" v-for="message in messages">
-                <b class="author">{{message.author}}</b> <span class="time">{{message.time}}</span>: {{message.content}}
+                <b class="author">{{message.author}}</b> <span class="time">{{getTimeStr(message.time)}}</span>: {{message.content}}
             </div>
         </div>
         <form class="new-message" v-on:submit.prevent="$emit('send-message', newMessage)" v-if="shown">
-            <input v-bind:value="newMessage" placeholder="Chat">
+            <input v-model="newMessage" placeholder="Chat">
             <button>&gt;</button>
         </form>
     </aside>
-`
+`,
+    methods: {
+        getTimeStr: function(timeStr) {
+            let d = new Date(timeStr);
+            return "" + d.getHours() + ":" + d.getMinutes();
+        }
+    }
 });

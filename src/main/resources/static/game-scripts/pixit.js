@@ -46,47 +46,7 @@ var pixit = new Vue({
 
         popups: [],
 
-        messages: [{
-            author: "Someone",
-            time: "21:37",
-            content: "Hi!"
-        }, {
-            author: "Someone else",
-            time: "21:69",
-            content: "Hi, how are you?"
-        }, {
-            author: "Someone else",
-            time: "21:69",
-            content: "Hi, how are you?"
-        }, {
-            author: "Someone else",
-            time: "21:69",
-            content: "Hi, how are you?"
-        }, {
-            author: "Someone else",
-            time: "21:69",
-            content: "Hi, how are you?"
-        }, {
-            author: "Someone else",
-            time: "21:69",
-            content: "Hi, how are you?"
-        }, {
-            author: "Someone else",
-            time: "21:69",
-            content: "Hi, how are you?"
-        }, {
-            author: "Someone else",
-            time: "21:69",
-            content: "Hi, how are you?"
-        }, {
-            author: "Someone else",
-            time: "21:69",
-            content: "Hi, how are you?"
-        }, {
-            author: "Someone else",
-            time: "21:69",
-            content: "Hi, how are you?"
-        }]
+        messages: []
     },
 
     computed: {
@@ -129,7 +89,9 @@ var pixit = new Vue({
         </tbody>
         </table>
         <span v-if="isRoundEnd()"><br><b v-html="roundEndSummary()"></b></span> <!-- TODO move into chat? -->
-        <chat v-bind:messages="messages"></chat>
+        <chat v-bind:messages="messages"
+            @send-message="(msg) => requests.sendChat(msg)"
+        ></chat>
     </header>
 
     <div id="mainArea">
@@ -255,6 +217,10 @@ var pixit = new Vue({
                 this.requests.requestGameState();
                 console.log("Updating game due to version mismatch between heartbeat and local: " + version + " > " + this.game.version);
             }
+        },
+
+        handleChatUpdate: function (update) {
+            this.messages.push(update);
         },
 
         /* STATE */

@@ -80,7 +80,7 @@ class MainController(val gameManager: GameManager) {
             return getGame(id, model, session)
         }
 
-        val playerNames = gameManager.getPlayers(id).map { it.name }.toList()
+        val playerNames = gameManager.getPlayers(id).map { (_, v) -> v.name }.toList()
         model.addAttribute("playerNames", playerNames)
 
         return "join"

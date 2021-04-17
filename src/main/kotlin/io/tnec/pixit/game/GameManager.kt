@@ -362,8 +362,8 @@ class GameManager(val gameRepository: GameRepository,
         return game.model.obfuscateFor(userId)
     }
 
-    fun getPlayers(gameId: GameId): Collection<Avatar> =
-            gameRepository.getGameSafe(gameId).model.players.values
+    fun getPlayers(gameId: GameId): Map<UserId, Avatar> =
+            gameRepository.getGameSafe(gameId).model.players
 
     private fun Game.getUserIdForSession(sessionId: SessionId): UserId {
         return properties.sessions[sessionId]
