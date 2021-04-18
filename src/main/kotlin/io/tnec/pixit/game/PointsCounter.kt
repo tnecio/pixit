@@ -51,7 +51,10 @@ class PointsCounter {
         val whoVotedForWhom: MutableMap<UserId, UserId> = HashMap()
         for ((playerId, avatar) in model.players) {
             if (playerId == narratorId) continue
-            whoVotedForWhom[playerId] = whoseCardIsIt[avatar.vote!!] ?: continue
+            // someone might have joined after voting
+            if (avatar.vote != null) {
+                whoVotedForWhom[playerId] = whoseCardIsIt[avatar.vote!!] ?: continue
+            }
         }
 
         return whoVotedForWhom
