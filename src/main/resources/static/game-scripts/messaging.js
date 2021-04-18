@@ -113,7 +113,9 @@ function handleAcknowledgment(event) {
 
 function handleGameEvent(event) {
     if (event.payload === "KICKED_OUT") {
-        window.location.href = "/kicked-out"
+        window.location.href = "/kicked-out";
+    } else if (event.payload === "GAME_NOT_FOUND") {
+        window.location.reload();
     } else {
         const message = t[event.payload];
         pixit.displayMessage(message);

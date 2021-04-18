@@ -2,5 +2,6 @@ package io.tnec.pixit.game
 
 enum class GameEvent {
     NARRATOR_LOST_ROUND_REPLAY,
-    KICKED_OUT
+    KICKED_OUT,
+    GAME_NOT_FOUND
 }

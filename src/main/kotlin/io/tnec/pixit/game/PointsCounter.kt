@@ -41,6 +41,10 @@ class PointsCounter {
 
         val whoseCardIsIt: MutableMap<CardId, UserId> = HashMap()
         for ((playerId, avatar) in model.players) {
+            if (avatar.sentCard == null) {
+                // someone joined after card sending
+                continue
+            }
             whoseCardIsIt[avatar.sentCard!!] = playerId
         }
 

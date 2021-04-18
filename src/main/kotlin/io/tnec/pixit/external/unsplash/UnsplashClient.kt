@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component
 import org.springframework.web.client.RestTemplate
 import java.net.URI
 
+const val UTM_SUFFIX = "?utm_source=PiXiT&utm_medium=referral"
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class PhotoUrls(
         val thumb: String,
@@ -28,7 +30,7 @@ data class UserDescription(
         val bio: String?,
         val links: Map<String, String>
 ) {
-    fun getUnsplashHtmlLink() = links["html"] ?: "https://unsplash.com/"
+    fun getUnsplashHtmlLink() = (links["html"] ?: "https://unsplash.com/") + UTM_SUFFIX
     fun getDisplayName() = name ?: username
 }
 
@@ -38,10 +40,18 @@ data class GetPhotoResponse(
         @JsonProperty("alt_description") val alt: String?,
         val description: String?,
         val user: UserDescription,
-        val width: Int, val height: Int,
+        val width: Int,
+        val height: Int,
         val id: ImageId
 ) {
-    fun getAttribution() = "Photo by <a target='_blank' href='${user.getUnsplashHtmlLink()}?utm_source=pixit&utm_medium=referral'>${user.getDisplayName()}</a> on <a href='https://unsplash.com/?utm_source=pixit&utm_medium=referral'>Unsplash</a>"
+    fun getAttribution() = "Photo by " +
+            "<a target='_blank' href='${user.getUnsplashHtmlLink()}?utm_source=pixit&utm_medium=referral'>" +
+            user.getDisplayName() +
+            "</a>" +
+            " on " +
+            "<a href='https://unsplash.com/" + UTM_SUFFIX + "'>" +
+            "Unsplash" +
+            "</a>"
 
     fun toImage() = Image(
             url = urls.regular,

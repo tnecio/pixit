@@ -1,7 +1,6 @@
 main {
     display: flex;
     flex-wrap: wrap;
-    flex-direction: row-reverse;
 }
 
 .langSelectForm {
@@ -251,6 +250,7 @@ main {
     margin: 1em 0;
     border: 1px solid gray;
     padding: 0;
+    background-color: antiquewhite;
 }
 
 .chatVisibLink {
@@ -267,6 +267,7 @@ main {
     padding: 0.25em;
     font-size: 0.9em;
     border-bottom: 1px solid gray;
+    border-top: 1px solid gray;
 }
 
 .time {
@@ -274,7 +275,6 @@ main {
 }
 
 .chat form {
-    background-color: black;
     text-align: left;
     display: flex;
     justify-content: space-between;
@@ -296,7 +296,6 @@ main {
     font-size: 1.2em;
     font-weight: bold;
     font-family: "McLaren", sans-serif;
-    color: orange;
     cursor: pointer;
 }
 

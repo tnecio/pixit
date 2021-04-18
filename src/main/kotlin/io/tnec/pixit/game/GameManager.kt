@@ -178,6 +178,7 @@ class GameManager(val gameRepository: GameRepository,
             }.keys.toList()
             if (it.model.winners.isNotEmpty()) {
                 it.model.state = GameState.FINISHED
+                log.info { "Game $gameId ended, final state: $it.model" }
             } else {
                 it.model.state = it.model.state.next()
             }
@@ -203,8 +204,8 @@ class GameManager(val gameRepository: GameRepository,
 
     private fun checkForAllProceedsRequested(it: Game, gameId: GameId) {
         if (it.model.players.all { (_, avatar) -> avatar.proceedRequested }) {
-            log.info { "Proceeding to the next round (gameId=$gameId)" }
-            log.debug { "Game state at round-end (gameId=$gameId): ${it.model}" }
+            log.debug { "Proceeding to the next round (gameId=$gameId)" }
+            log.info { "Game state at round-end (gameId=$gameId): ${it.model}" }
 
             // Clear all variables + move points delta to points
             it.model.table = emptyList()
@@ -246,8 +247,12 @@ class GameManager(val gameRepository: GameRepository,
     fun removePlayer(gameId: GameId, userId: UserId) {
         var shouldDrop = false
         updateAndNotify(gameId) {
-            removePlayerAction(gameId, it, userId)
-            shouldDrop = it.model.players.isEmpty() && it.properties.accessType == GameAccessType.PUBLIC
+            try {
+                removePlayerAction(gameId, it, userId)
+            } catch (e: ValidationError) {
+                // ignore
+            }
+            shouldDrop = it.model.players.isEmpty()
         }
         if (shouldDrop) {
             gameRepository.dropGame(gameId)
@@ -306,8 +311,12 @@ class GameManager(val gameRepository: GameRepository,
 
         val userId = it.properties.sessions[sessionId]
                 ?: throw ValidationError("Player with sessionId=$sessionId did not play in the game $gameId")
+        if (it.model.players.containsKey(userId)) {
+            // nothing to do
+            return@updateAndNotify
+        }
         val removedPlayer = it.properties.removedPlayers.remove(userId)
-                ?: throw ValidationError("Player $userId did was not removed from the game $gameId")
+                ?: throw IllegalStateException("Player $userId is neither in removedPlayers nor players in game $gameId")
         it.model.players += mapOf(userId to removedPlayer)
     }
 
@@ -342,7 +351,7 @@ class GameManager(val gameRepository: GameRepository,
     }
 
     fun getUserIdForSession(sessionId: SessionId, gameId: GameId): UserId? {
-        log.debug { "getUserId (gameId=$gameId, sessionId=$sessionId)" }
+        log.trace { "getUserId (gameId=$gameId, sessionId=$sessionId)" }
         // TODO: consistent Nullable returns vs. exceptions
         val game = gameRepository.getGameSafe(gameId)
         try {
@@ -357,7 +366,7 @@ class GameManager(val gameRepository: GameRepository,
     }
 
     fun getGameFor(gameId: GameId, userId: UserId): GameModel {
-        log.debug { "getGameFor (gameId=$gameId, userId=$userId)" }
+        log.trace { "getGameFor (gameId=$gameId, userId=$userId)" }
         val game = gameRepository.getGameSafe(gameId)
         return game.model.obfuscateFor(userId)
     }

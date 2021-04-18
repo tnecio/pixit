@@ -110,14 +110,14 @@ var pixit = new Vue({
                     type="button"
                     onclick="navigator.clipboard.writeText(location)"
                 >
-                    {{t.copy_to_clipboard}}
+                    {{ t.copy_to_clipboard }}
                 </button>
                 <button 
                     @click="requests.startGame()"
-                    v-bind:disabled="game.players[userId].startRequested"
+                    v-bind:disabled="game.players[userId].startRequested || playersCount() < 3"
                     class="actionButton"
                 >
-                    {{ game.players[userId].startRequested ? t.waiting_for_others : t.start }}
+                    {{ getStartButtonText() }}
                 </button>
             </div>
             
@@ -298,6 +298,19 @@ var pixit = new Vue({
         },
 
         /* USER GUIDE */
+        getStartButtonText() {
+            if (this.game.players[userId].startRequested) {
+                return t.waiting_for_others;
+            } else if (this.playersCount() < 3) {
+                return t.not_enough_players;
+            } else {
+                return t.start;
+            }
+        },
+        playersCount() {
+            return Object.keys(this.game.players).length;
+        },
+
         gamePhaseGuide() {
             const phrase = this.game.word ? `<span class="phrase">${this.game.word.value}</span>` : null;
 

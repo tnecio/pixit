@@ -9,7 +9,9 @@ data class Card(
         val id: CardId,
         val image: Image,
         val revealed: Boolean = true
-): Serializable
+): Serializable {
+    override fun toString(): String = "Card(id=$id, image=${image.url}, revealed=$revealed)"
+}
 
 fun hiddenCard(id: CardId) = Card(
         // TODO true cardId should not be recoverable on the client from hidden card id

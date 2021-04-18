@@ -21,7 +21,7 @@ private val log = KotlinLogging.logger { }
  */
 @Component
 class GameRepository(storeFactory: StoreFactory, gameRepositoryProperties: GameRepositoryProperties) {
-    private var store: Store<Game> = storeFactory.get("Game", gameRepositoryProperties.gamePersistenceTimeoutMs)
+    private var store: Store<Game> = storeFactory.get("Game", null) // TODO null -> remove persistenceTimeout from method
     private val rwls: ConcurrentMap<Id, ReentrantReadWriteLock> = ConcurrentHashMap()
 
     init {

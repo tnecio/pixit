@@ -40,9 +40,9 @@ class UnsplashMetadataRepository(storeFactory: StoreFactory, val unsplashClient:
         }
     }
 
-    @Scheduled(fixedRate = 900000) // 15 minutes
+    @Scheduled(fixedRate = 300000) // 5 minutes
     fun updateImageStore() {
-        if (keys.size > 25_000) { // Let's not increase our memory usage indefinitely
+        if (keys.size > 50_000) { // Let's not increase our memory usage indefinitely
             log.info { "Repository size is ${keys.size}, skipping update" }
             return
         }
@@ -55,6 +55,7 @@ class UnsplashMetadataRepository(storeFactory: StoreFactory, val unsplashClient:
                     keys.add(it.id)
                 }
             }
+            log.info { "New repository size is ${keys.size}" }
         } catch (e: ResourceAccessException) {
             log.warn { "Failed to connect with Unsplash: $e" }
         }

@@ -35,7 +35,7 @@ class GameController(val gameManager: GameManager) {
     fun connected(request: EmptyRequest,
                   @DestinationVariable gameId: GameId,
                   @DestinationVariable sessionId: SessionId) = answer(request) {
-        log.debug { "[${Instant.now()}] Got connected: ${request} from ${sessionId}" }
+        log.debug { "[${Instant.now()}] Got connected with sessionId=$sessionId" }
 
         try {
             // Re-add player if he was removed before
@@ -134,7 +134,7 @@ class GameMessageSender(@Autowired val simpTemplate: SimpMessagingTemplate) {
 
     fun notifyGameUpdate(game: Game, gameId: GameId) {
         for ((sessionId, userId) in game.properties.sessions) {
-            log.debug { "Sending an update (gameId=$gameId, userId=$userId, sessionId=$sessionId)" }
+            log.trace { "Sending an update (gameId=$gameId, userId=$userId, sessionId=$sessionId)" }
 
             simpTemplate.convertAndSend(usersUpdatesTopic(gameId, sessionId),
                     Message("gameUpdate", game.model.obfuscateFor(userId))
