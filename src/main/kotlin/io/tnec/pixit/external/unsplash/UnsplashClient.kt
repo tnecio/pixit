@@ -45,7 +45,7 @@ data class GetPhotoResponse(
         val id: ImageId
 ) {
     fun getAttribution() = "Photo by " +
-            "<a target='_blank' href='${user.getUnsplashHtmlLink()}?utm_source=pixit&utm_medium=referral'>" +
+            "<a target='_blank' href='${user.getUnsplashHtmlLink()}'>" +
             user.getDisplayName() +
             "</a>" +
             " on " +
