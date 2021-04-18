@@ -167,18 +167,28 @@ const EXAMPLE_MESSAGE = {
 
 Vue.component('chat', {
     props: ['messages'],
+    created() {
+        this.t = t;
+    },
     data: function () {
         return {
             newMessage: "",
             shown: true
         };
     },
+    computed: {
+        reverseMessages: function() {
+            // not using .reverse() to avoid modifying the original array
+            const msgs = this.messages;
+            return msgs.map((item, idx) => msgs[msgs.length - 1 - idx])
+        }
+    },
     template: `
     <aside class="chat">
-        <a href="javascript:void(0);" v-if="shown" v-on:click="shown = false" class="chatVisibLink">Hide chat</a>
-        <a href="javascript:void(0);" v-if="!shown" v-on:click="shown = true" class="chatVisibLink">Show chat</a>
+        <a href="javascript:void(0);" v-if="shown" v-on:click="shown = false" class="chatVisibLink">{{t.hide_chat}}</a>
+        <a href="javascript:void(0);" v-if="!shown" v-on:click="shown = true" class="chatVisibLink">{{t.show_chat}}</a>
         <div class="messages" v-if="shown">
-            <div class="message" v-for="message in messages">
+            <div class="message" v-for="message in reverseMessages">
                 <b class="author">{{message.author}}</b> <span class="time">{{getTimeStr(message.time)}}</span>: {{message.content}}
             </div>
         </div>

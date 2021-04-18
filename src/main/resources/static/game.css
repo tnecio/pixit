@@ -268,6 +268,13 @@ main {
     font-size: 0.9em;
     border-bottom: 1px solid gray;
     border-top: 1px solid gray;
+
+    display: flex;
+    flex-direction: column-reverse;
+}
+
+.message {
+    width: 100%;
 }
 
 .time {
