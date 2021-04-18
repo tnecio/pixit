@@ -77,6 +77,7 @@ main {
     background-color: white;
     border: 1px solid darkgray;
     padding: 0.5em;
+    margin: 0.25em;
 }
 
 #game-guide {
@@ -121,6 +122,7 @@ main {
     flex-grow: 1;
     background-color: antiquewhite;
     border: 1px solid darkgray;
+    margin: 0.25em;
 }
 
 #players-private-area > h2 {

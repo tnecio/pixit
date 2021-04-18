@@ -175,8 +175,8 @@ Vue.component('chat', {
     },
     template: `
     <aside class="chat">
-        <a href="javascript:void()" v-if="shown" v-on:click="shown = false" class="chatVisibLink">Hide chat</a>
-        <a href="javascript:void()" v-if="!shown" v-on:click="shown = true" class="chatVisibLink">Show chat</a>
+        <a href="javascript:void(0);" v-if="shown" v-on:click="shown = false" class="chatVisibLink">Hide chat</a>
+        <a href="javascript:void(0);" v-if="!shown" v-on:click="shown = true" class="chatVisibLink">Show chat</a>
         <div class="messages" v-if="shown">
             <div class="message" v-for="message in messages">
                 <b class="author">{{message.author}}</b> <span class="time">{{getTimeStr(message.time)}}</span>: {{message.content}}
