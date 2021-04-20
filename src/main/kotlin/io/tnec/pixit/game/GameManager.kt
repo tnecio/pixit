@@ -205,7 +205,6 @@ class GameManager(val gameRepository: GameRepository,
     private fun checkForAllProceedsRequested(it: Game, gameId: GameId) {
         if (it.model.players.all { (_, avatar) -> avatar.proceedRequested }) {
             log.debug { "Proceeding to the next round (gameId=$gameId)" }
-            log.info { "Game state at round-end (gameId=$gameId): ${it.model}" }
 
             // Clear all variables + move points delta to points
             it.model.table = emptyList()
