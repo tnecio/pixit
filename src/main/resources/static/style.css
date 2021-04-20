@@ -72,7 +72,7 @@ li {
     }
 
     .mobileOnly {
-        display: unset;
+        display: block;
     }
 }
 
