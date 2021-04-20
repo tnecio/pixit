@@ -29,7 +29,7 @@ data class GameProperties(
         val preferredLang: String
 ) : Serializable
 
-data class UserModel(var lastHeartbeat: Instant) : Serializable
+data class UserModel(var lastHeartbeat: Instant, var removed: Boolean) : Serializable
 
 // This is the part of Game that will be serialized and sent to client-side
 data class GameModel(

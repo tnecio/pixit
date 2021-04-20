@@ -70,7 +70,7 @@ class GameManager(val gameRepository: GameRepository,
     }
 
     private fun newUserPreferences(userId: UserId) = mapOf(userId to UserModel(
-            lastHeartbeat = Instant.now()
+            lastHeartbeat = Instant.now(), removed = false
     ))
 
     fun start(gameId: GameId, sessionId: SessionId) = updateAndNotify(gameId) {
@@ -269,6 +269,11 @@ class GameManager(val gameRepository: GameRepository,
         }
         if (userId == it.model.admin) {
             it.model.admin = it.model.narrator // easy trick to always get a sensible new admin
+        }
+        if (it.properties.users.containsKey(userId)) {
+            it.properties.users[userId]!!.removed = true
+        } else {
+            throw ValidationError("No user $userId in game $gameId")
         }
         it.properties.removedPlayers[userId] = it.model.players[userId]
                 ?: throw ValidationError("No player $userId in game $gameId")

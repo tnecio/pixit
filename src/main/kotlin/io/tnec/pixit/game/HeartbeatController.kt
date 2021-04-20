@@ -40,12 +40,12 @@ class HeartbeatController(val gameRepository: GameRepository,
 
         gameRepository.forEach { gameId: GameId, game: Game ->
             val now = clock.instant()
-            var gameToleranceMs = 10_000L
+            var gameToleranceMs = 10_000L // 10 seconds default for public rooms so if unused, they disappear quickly
             if (game.properties.accessType == GameAccessType.PRIVATE) {
-                gameToleranceMs = 36000_000L // 10 hours
+                gameToleranceMs = 36000_000L // 10 hours to allow pre-creating private rooms
             }
 
-            if (game.properties.users.size == 0
+            if (game.model.players.size == 0
                     && Duration.between(game.properties.timeCreated, now).toMillis() > gameToleranceMs
             ) {
                 log.debug { "Marking game $gameId to drop" }
@@ -53,13 +53,15 @@ class HeartbeatController(val gameRepository: GameRepository,
             }
 
             for ((userId, user) in game.properties.users) {
-                if (user.lastHeartbeat.isBefore(now.minusMillis(10_000L))) {
+                if (user.removed) continue
+
+                if (user.lastHeartbeat.isBefore(now.minusMillis(120_000L))) {
                     log.debug { "Removing user $userId from $gameId (lastHeartbeat=${user.lastHeartbeat})" }
                     i++
                     try {
                         gameManager.removePlayer(gameId, userId)
                     } catch (e: NotFoundException) {
-                        log.error { "Game not found when iterating over all games in gameRepository, should never happen" }
+                        log.error { "Game $gameId not found when iterating over all games in gameRepository, should never happen (userId=$userId)" }
                     }
                 }
             }
