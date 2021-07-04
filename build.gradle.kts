@@ -20,6 +20,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-data-redis")
 	implementation("org.springframework.session:spring-session-data-redis")
+	implementation("org.springframework.boot:spring-boot-starter-mail")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
@@ -34,6 +35,8 @@ dependencies {
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
 	implementation("io.github.microutils:kotlin-logging:1.12.0")
 	implementation("ch.qos.logback:logback-classic:1.2.3")
+	
+	annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 
