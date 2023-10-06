@@ -52,16 +52,30 @@ class HeartbeatController(val gameRepository: GameRepository,
                 gamesToDrop.add(gameId)
             }
 
-            for ((userId, user) in game.properties.users) {
-                if (user.removed) continue
-
-                if (user.lastHeartbeat.isBefore(now.minusMillis(120_000L))) {
-                    log.debug { "Removing user $userId from $gameId (lastHeartbeat=${user.lastHeartbeat})" }
-                    i++
+            val maxGameDurationMs = 3600_00_000L; // Max 100 hours per game
+            if (Duration.between(game.properties.timeCreated, now).toMillis() > maxGameDurationMs
+            ) {
+                log.debug { "Marking game $gameId to drop because it exceeded maxGameDurationMs" }
+                gamesToDrop.add(gameId)
+                for ((userId, user) in game.properties.users) {
                     try {
                         gameManager.removePlayer(gameId, userId)
                     } catch (e: NotFoundException) {
-                        log.error { "Game $gameId not found when iterating over all games in gameRepository, should never happen (userId=$userId)" }
+                        log.error { "Game $gameId not found when iterating over all games in gameRepository (userId=$userId)" }
+                    }
+                }
+            } else {
+                for ((userId, user) in game.properties.users) {
+                    if (user.removed) continue
+
+                    if (user.lastHeartbeat.isBefore(now.minusMillis(120_000L))) {
+                        log.debug { "Removing user $userId from $gameId (lastHeartbeat=${user.lastHeartbeat})" }
+                        i++
+                        try {
+                            gameManager.removePlayer(gameId, userId)
+                        } catch (e: NotFoundException) {
+                            log.error { "Game $gameId not found when iterating over all games in gameRepository (userId=$userId)" }
+                        }
                     }
                 }
             }
