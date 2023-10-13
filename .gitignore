@@ -32,3 +32,10 @@ out/
 
 ### VS Code ###
 .vscode/
+
+playground/
+gradle/
+gradlew
+gradlew.bat
+
+src/main/resources/*.properties
