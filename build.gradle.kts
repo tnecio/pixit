@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "io.tnec"
-version = "0.0.1-SNAPSHOT"
+version = "0.0.2-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 
 repositories {

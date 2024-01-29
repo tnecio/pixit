@@ -76,7 +76,12 @@ class LobbyController(val gameManager: GameManager,
     @PostMapping("feedback")
     fun postFeedback(@RequestBody feedback: FeedbackMessage) : EmptyResponse {
         log.warn { feedback }
-        val replyTo = "${feedback.name} <${feedback.email}>" ?: "noreply+" + feedbackConfiguration.from
+        val replyTo =
+            if (feedbackConfiguration.from.isBlank()) {
+                "${feedback.name} <${feedback.email}>"
+            } else {
+                "noreply+" + feedbackConfiguration.from
+            }
         emailService.sendEmail(feedbackConfiguration.from, replyTo, feedbackConfiguration.to,
         "Pixit feedback",
         "From: ${feedback.name} <${feedback.email}>\n\n${feedback.message}")

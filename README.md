@@ -18,9 +18,9 @@ Dependencies:
 Copy `application.properties` into `application-dev.properties` and `application-prod.properties`, then fill the missing
 values for the local/dev and prod environments.
 
-Use `gradle build` to build, `gradle jar` to produce a JAR file.
+Use `gradle build` to build, `gradle jar` (or `./gradlew bootJar`) to produce a JAR file.
 
-Use `java -jar build/libs/pixit-0.0.1-SNAPSHOT.jar --spring.profiles.active=dev` to run locally in dev mode. Access
+Use `java -jar build/libs/pixit-0.0.2-SNAPSHOT.jar --spring.profiles.active=dev` to run locally in dev mode. Access
 at http://localhost:8080/.
 
-Use `java -jar build/libs/pixit-0.0.1-SNAPSHOT.jar --spring.profiles.active=prod` to run in production mode.
+Use `java -jar build/libs/pixit-0.0.2-SNAPSHOT.jar --spring.profiles.active=prod` to run in production mode.
